@@ -1,0 +1,49 @@
+Dokumentimi i Projektit: Sistemi për Menaxhimin e Transportit Publik dhe Shërbimeve të Taksive
+Përshkrimi i Projektit
+Projekti synon të krijojë një sistem të menaxhimit të transportit publik dhe shërbimeve të taksive, i cili lejon përdoruesit të rezervojnë, ndjekin, dhe organizojnë udhëtimet e tyre në kohë reale. Ky sistem do të përfshijë dy shërbime kryesore: transportin publik me autobus dhe shërbimet e taksive. Përdoruesit do të kenë gjithashtu mundësinë të bëjnë rezervime për udhëtime speciale dhe të marrin oferta për udhëtime të organizuara në vende specifike.
+Funksionalitetet Kryesore
+1.	Rezervime Online:
+a.	Përdoruesit mund të rezervojnë udhëtimet e tyre me autobus ose taksi përmes një formulari online.
+b.	Mund të bëhen rezervime për ngjarje speciale si udhëtime turistike.
+2.	Ndjekja në Kohë Reale e Autobusëve:
+a.	Përdoruesit mund të ndjekin lëvizjen e autobusit në kohë reale në hartë (Google Maps/Mapbox), me të dhëna të simuluara.
+b.	ETA (Koha e Pritshme e Mbërritjes) për secilën ndalesë do të përditësohet automatikisht.
+3.	Organizimi i Udhëtimeve Speciale:
+a.	Udhëtime të organizuara në Shqipëri ose destinacione të tjera do të ofrohen si paketa speciale.
+b.	Përdoruesit mund të regjistrohen dhe të rezervojnë vendin e tyre për këto udhëtime.
+4.	Shërbimet e Taksive:
+a.	Përdoruesit mund të rezervojnë taksi në një datë dhe kohë specifike.
+b.	Opsioni për taksi luksoze ose shërbime të personalizuara do të jetë gjithashtu i disponueshëm.
+5.	Paneli i Administratorit 
+Administratori ka akses në menaxhimin e rezervimeve, udhëtimeve, dhe ofertave të ndryshme.
+Menaxhimi i përdoruesve, udhëtimeve të autobusëve dhe shërbimeve të taksive, përfshirë statistikat dhe raportet.
+6.	Login dhe Regjistrim:
+a.	 Sistemi do të përfshijë autentikim për përdoruesit dhe regjistrim për    përdorues të rinj.
+b.	 Login/Register me validim të përdoruesve për akses të rezervimeve dhe ndjekjes së autobusëve.
+7.	Sistemi i Notifikimeve:
+Përdoruesit do të marrin notifikime me email për konfirmimin e rezervimeve dhe përditësime për udhëtime.
+
+Struktura e Navigimit të Website-it
+1. Header & Navbar:
+•	Home – Faqja kryesore ku prezantohen shërbimet.
+•	About Us – Informacion mbi kompaninë dhe misionin e saj.
+•	Services:
+o	Transport Publik – Informacion për rrjetin e autobusëve dhe rezervimet.
+o	Shërbimet e Taksive – Rezervime dhe oferta për shërbimet e taksive.
+•	Special Reservations – Ngjarje speciale dhe shërbime të rezervimit.
+•	Organized Trips – Udhëtime të organizuara dhe oferta.
+•	Contact Us – Formular për komunikimin me ekipin e shërbimeve.
+2. Footer:
+•	Lidhje për në rrjetet sociale, politikën e privatësisë, dhe termat e përdorimit.
+Implementimi i Simulimit të Lëvizjes së Autobusëve në Kohë Reale
+Ne mungesë të autobusëve të vërtetë me GPS, lëvizja e autobusëve në kohë reale do të simulohet duke përdorur të dhëna të paracaktuara për rrugët dhe algoritme që përditësojnë pozicionin e autobusit në intervale të rregullta. Kjo do të realizohet përmes:
+•	Google Maps API ose Mapbox për vizualizimin e hartës.
+•	JavaScript për të simuluar lëvizjen e autobusit dhe për të përditësuar vendndodhjen e tij.
+Teknologjitë që do të Përdoren
+•	Front-End: CSS3, JavaScript, Tailwind CSS (për stilizim), Google Maps API.
+•	Back-End: .NET Core me C#: Si teknologjia bazë për krijimin e API-ve dhe logjikës së biznesit në server.
+•	Database: MySQL për ruajtjen e të dhënave për autobusët, ndalesat, rezervimet, dhe udhëtimet speciale.
+Faqja e Ndjekjes së Autobusit në Kohë Reale
+Kjo faqe do të tregojë një hartë ku përdoruesi mund të shohë pozicionin aktual të autobusit në rrugën e tij të simuluar. Do të përfshijë:
+•	Ndalesat e autobusit me kohën e pritshme të mbërritjes.
+•	Lëvizja e autobusit do të përditësohet çdo disa sekonda duke përdorur një algoritëm të simuluar të lëvizjes.
