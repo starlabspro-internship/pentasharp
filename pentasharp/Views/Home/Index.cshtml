@@ -1,8 +1,69 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = "_Layout"; // Ensure your layout file name matches
+    ViewData["Title"] = "Bus Schedule";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container my-5">
+    <h1 class="text-center mb-4">Bus Schedule</h1>
+
+    <!-- Search bar -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <div class="input-group rounded">
+                <input type="search" class="form-control rounded" placeholder="Search by destination or company" aria-label="Search" aria-describedby="search-addon" />
+                <span class="input-group-text border-0 bg-primary text-white" id="search-addon">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-dark text-white text-center">
+                    <h5 class="fw-bold mb-0">Express Transit Co.</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <h6 class="fw-bolder text-primary">Bus from City A</h6>
+                        <h6 class="fw-bolder text-primary">Bus to City C</h6>
+                        <p class="mb-2">Bus Number: <strong>123</strong></p>
+                        <p>Departure: <strong>10:00 AM</strong></p>
+                        <p>Arrival: <strong>1:00 PM</strong></p>
+                        <p>Price: <strong>$15.00</strong></p>
+                        <span class="badge rounded-pill bg-success">Scheduled</span>
+                    </div>
+                </div>
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <a class="btn btn-outline-primary mt-auto" href="#">Book Ticket</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-dark text-white text-center">
+                    <h5 class="fw-bold mb-0">Cityline Buses</h5>
+                </div>
+                <div class="card-body">
+                <div class="card-body">
+                    <div class="text-center">
+                        <h6 class="fw-bolder text-primary">Bus from City A</h6>
+                        <h6 class="fw-bolder text-primary">Bus to City B</h6>
+                        <p class="mb-2">Bus Number: <strong>456</strong></p>
+                        <p>Departure: <strong>11:30 AM</strong></p>
+                        <p>Arrival: <strong>2:30 PM</strong></p>
+                        <p>Price: <strong>$20.00</strong></p>
+                        <span class="badge rounded-pill bg-danger">Cancelled</span>
+                    </div>
+                </div>
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <a class="btn btn-outline-primary mt-auto" href="#">Book Ticket</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
