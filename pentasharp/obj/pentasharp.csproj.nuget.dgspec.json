@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\LENOVO\\Source\\Repos\\pentasharp\\pentasharp\\pentasharp.csproj": {}
+    "C:\\Users\\TECHCOM\\source\\repos\\pentasharp\\pentasharp\\pentasharp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\LENOVO\\Source\\Repos\\pentasharp\\pentasharp\\pentasharp.csproj": {
+    "C:\\Users\\TECHCOM\\source\\repos\\pentasharp\\pentasharp\\pentasharp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\LENOVO\\Source\\Repos\\pentasharp\\pentasharp\\pentasharp.csproj",
+        "projectUniqueName": "C:\\Users\\TECHCOM\\source\\repos\\pentasharp\\pentasharp\\pentasharp.csproj",
         "projectName": "pentasharp",
-        "projectPath": "C:\\Users\\LENOVO\\Source\\Repos\\pentasharp\\pentasharp\\pentasharp.csproj",
-        "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\LENOVO\\Source\\Repos\\pentasharp\\pentasharp\\obj\\",
+        "projectPath": "C:\\Users\\TECHCOM\\source\\repos\\pentasharp\\pentasharp\\pentasharp.csproj",
+        "packagesPath": "C:\\Users\\TECHCOM\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\TECHCOM\\source\\repos\\pentasharp\\pentasharp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\TECHCOM\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -27,8 +27,6 @@
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
-          "C:\\Users\\LENOVO\\Downloads\\Telerik 2024": {},
-          "C:\\Users\\LENOVO\\Downloads\\allInOneNuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -76,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400-preview.0.24324.5/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

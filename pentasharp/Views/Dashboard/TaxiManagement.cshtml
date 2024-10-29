@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Taxi Management";
+}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Taxi Management</h1>
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for taxis or locations" id="searchInput">
+                <button class="btn btn-primary" onclick="searchTaxis()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Company Name</th>
+                    <th>Taxi Number</th>
+                    <th>Driver</th>
+                    <th>Current Location</th>
+                    <th>Pickup Location</th>
+                    <th>Drop-off Location</th>
+                    <th>Fare</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sample Company</td>
+                    <td>TAXI1234</td>
+                    <td>John Doe</td>
+                    <td>Main Street</td>
+                    <td>City Center</td>
+                    <td>Airport</td>
+                    <th>12$</th>
+                    <td>Available</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
