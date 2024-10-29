@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Dashboard</h1>
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow border-light h-100">
+                <img src="https://img.freepik.com/premium-vector/bus-stop-city-idea-transportation_277904-3781.jpg" class="card-img-top img-fluid" alt="Bus Schedule Management" style="max-height: 300px; width: 100%;" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center">Bus Schedule Management</h5>
+                    <p class="card-text text-center">Manage bus schedules, routes, and timings efficiently.</p>
+                    <div class="text-center mt-auto">
+                        <a href="@Url.Action("BusManagement", "Dashboard")" class="btn btn-primary">Manage Bus Schedules</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow border-light h-100">
+                <img src="https://img.freepik.com/premium-vector/young-girl-stands-bus-stop-waits-her-taxi_529344-151.jpg" class="card-img-top img-fluid" alt="Taxi Management" style="max-height: 300px; width: 100%;" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-center">Taxi Management</h5>
+                    <p class="card-text text-center">Oversee taxi bookings, availability, and driver assignments.</p>
+                    <div class="text-center mt-auto">
+                        <a href="@Url.Action("TaxiManagement", "Dashboard")" class="btn btn-primary">Manage Taxis</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

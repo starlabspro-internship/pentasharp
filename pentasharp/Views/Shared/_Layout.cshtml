@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,20 +25,23 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Bus Schedule</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Dashboardd">Dashboard</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
                         </li>
-                         @if (ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" && ViewContext.RouteData.Values["action"].ToString() == "Dashboardd")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="CreateCompany">Create Company</a>
-                            </li>
-                        }
+                        @if (currentController == "Dashboard" && currentAction == "BusManagement")
+                         {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="CreateBusCompany">Create Bus Company</a>
                         </li>
+                         }
+                        @if (currentController == "Dashboard" && currentAction == "TaxiManagement")
+                         {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="CreateTaxiCompany">Create Taxi Company</a>
+                        </li>
+                         }
                     </ul>
                     <button type="button" class="btn btn-outline-dark" onclick="location.href='@Url.Action("Login", "Account")'">Login</button>
                     <button type="button" class="btn btn-outline-dark ms-2" onclick="location.href='@Url.Action("Register", "Account")'">Register</button>

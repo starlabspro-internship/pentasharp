@@ -1,0 +1,40 @@
+@{
+    ViewBag.Title = "Add Taxi Company and Taxis";
+}
+
+<h2>Add Taxi Company</h2>
+<form method="post" action="/TaxiCompanies/AddCompany">
+    <div class="form-group">
+        <label for="CompanyName">Company Name</label>
+        <input type="text" id="CompanyName" name="CompanyName" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="ContactInfo">Contact Info</label>
+        <input type="text" id="ContactInfo" name="ContactInfo" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Company</button>
+</form>
+
+<hr />
+
+<h2>Add Taxi</h2>
+<form method="post" action="/Taxis/AddTaxi">
+    <div class="form-group">
+        <label for="TaxiCompanyId">Taxi Company</label>
+        <select id="TaxiCompanyId" name="TaxiCompanyId" class="form-control" required>
+            <option value="">Select a Company</option>
+            <option value="1">City Taxi Co.</option>
+            <option value="2">Metro Taxi Services</option>
+            <option value="3">Express Cabs</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="LicensePlate">License Plate</label>
+        <input type="text" id="LicensePlate" name="LicensePlate" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="DriverName">Driver Name</label>
+        <input type="text" id="DriverName" name="DriverName" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Taxi</button>
+</form>
