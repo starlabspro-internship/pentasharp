@@ -1,14 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.Models.Entities
 {
-    public enum UserRole
-    {
-        User,
-        AdminBussiness
-    }
-
     public class User
     {
         [Key]
