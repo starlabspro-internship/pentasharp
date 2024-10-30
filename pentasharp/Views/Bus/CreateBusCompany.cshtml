@@ -1,41 +1,125 @@
-@* CreateBusCompany.cshtml *@
 @{
     ViewBag.Title = "Add Company and Bus";
 }
 
-<h2>Add Bus Company</h2>
-<form method="post" action="/BusCompanies/AddCompany">
-    <div class="form-group">
-        <label for="CompanyName">Company Name</label>
-        <input type="text" id="CompanyName" name="CompanyName" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label for="ContactInfo">Contact Info</label>
-        <input type="text" id="ContactInfo" name="ContactInfo" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Add Company</button>
-</form>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Add Bus Company</h2>
 
-<hr />
+    <form method="post" action="/BusCompanies/AddCompany" class="mb-5">
+        <div class="form-group">
+            <label for="CompanyName" class="form-label">Company Name</label>
+            <input type="text" id="CompanyName" name="CompanyName" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="ContactInfo" class="form-label">Contact Info</label>
+            <input type="text" id="ContactInfo" name="ContactInfo" class="form-control" required />
+        </div>
+        <button type="submit" class="btnn btn btn-primary mt-3">Add Company</button>
+    </form>
 
-<h2>Add Bus</h2>
-<form method="post" action="/Buses/AddBus">
-    <div class="form-group">
-        <label for="BusNumber">Bus Number</label>
-        <input type="text" id="BusNumber" name="BusNumber" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label for="BusCompanyId">Bus Company</label>
-        <select id="BusCompanyId" name="BusCompanyId" class="form-control" required>
-            <option value="">Select a Company</option>
-            <option value="1">City Transport Co.</option>
-            <option value="2">Metro Lines</option>
-            <option value="3">Express Bus Service</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="Capacity">Capacity</label>
-        <input type="number" id="Capacity" name="Capacity" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Add Bus</button>
-</form>
+    <hr class="my-5" />
+
+    <h2 class="text-center mb-4">Add Bus</h2>
+
+    <form method="post" action="/Buses/AddBus" class="mb-5">
+        <div class="form-group">
+            <label for="BusNumber" class="form-label">Bus Number</label>
+            <input type="text" id="BusNumber" name="BusNumber" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="BusCompanyId" class="form-label">Bus Company</label>
+            <select id="BusCompanyId" name="BusCompanyId" class="form-select" required>
+                <option value="">Select a Company</option>
+                <option value="1">City Transport Co.</option>
+                <option value="2">Metro Lines</option>
+                <option value="3">Express Bus Service</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="Capacity" class="form-label">Capacity</label>
+            <input type="number" id="Capacity" name="Capacity" class="form-control" required />
+        </div>
+        <button type="submit" class="btnn btn btn-primary mt-3">Add Bus</button>
+    </form>
+
+    <hr class="my-5" />
+
+    <h2 class="text-center mb-4">Delete Bus</h2>
+
+    <form method="post" action="/Buses/DeleteBus" onsubmit="return confirmDelete()">
+        <div class="form-group">
+            <label for="BusId" class="form-label">Select Bus to Delete</label>
+            <select id="BusId" name="BusId" class="form-select" required>
+                <option value="">Select a Bus</option>
+                <option value="1">Bus 101</option>
+                <option value="2">Bus 202</option>
+                <option value="3">Bus 303</option>
+            </select>
+        </div>
+        <button type="submit" class="btnn btn btn-danger mt-3">Delete Bus</button>
+    </form>
+</div>
+
+<script>
+    function confirmDelete() {
+        const busId = document.getElementById('BusId').value;
+        if (!busId) {
+            alert("Please select a bus to delete.");
+            return false;
+        }
+        return confirm("Are you sure you want to delete this bus?");
+    }
+</script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #343a40;
+    }
+
+    .container {
+        max-width: 800px;
+        padding: 20px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .btnn {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btnn:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    hr {
+        border-top: 1px solid #007bff;
+    }
+</style>

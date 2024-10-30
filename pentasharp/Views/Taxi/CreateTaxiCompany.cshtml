@@ -2,39 +2,124 @@
     ViewBag.Title = "Add Taxi Company and Taxis";
 }
 
-<h2>Add Taxi Company</h2>
-<form method="post" action="/TaxiCompanies/AddCompany">
-    <div class="form-group">
-        <label for="CompanyName">Company Name</label>
-        <input type="text" id="CompanyName" name="CompanyName" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label for="ContactInfo">Contact Info</label>
-        <input type="text" id="ContactInfo" name="ContactInfo" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Add Company</button>
-</form>
+<div class="container my-5">
+    <h2 class="text-center mb-4">Add Taxi Company</h2>
 
-<hr />
+    <form method="post" action="/TaxiCompanies/AddCompany" class="mb-5">
+        <div class="form-group">
+            <label for="CompanyName" class="form-label">Company Name</label>
+            <input type="text" id="CompanyName" name="CompanyName" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="ContactInfo" class="form-label">Contact Info</label>
+            <input type="text" id="ContactInfo" name="ContactInfo" class="form-control" required />
+        </div>
+        <button type="submit" class="btnn btn btn-primary mt-3">Add Company</button>
+    </form>
 
-<h2>Add Taxi</h2>
-<form method="post" action="/Taxis/AddTaxi">
-    <div class="form-group">
-        <label for="TaxiCompanyId">Taxi Company</label>
-        <select id="TaxiCompanyId" name="TaxiCompanyId" class="form-control" required>
-            <option value="">Select a Company</option>
-            <option value="1">City Taxi Co.</option>
-            <option value="2">Metro Taxi Services</option>
-            <option value="3">Express Cabs</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="LicensePlate">License Plate</label>
-        <input type="text" id="LicensePlate" name="LicensePlate" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label for="DriverName">Driver Name</label>
-        <input type="text" id="DriverName" name="DriverName" class="form-control" required />
-    </div>
-    <button type="submit" class="btn btn-primary">Add Taxi</button>
-</form>
+    <hr class="my-5" />
+
+    <h2 class="text-center mb-4">Add Taxi</h2>
+
+    <form method="post" action="/Taxis/AddTaxi" class="mb-5">
+        <div class="form-group">
+            <label for="TaxiCompanyId" class="form-label">Taxi Company</label>
+            <select id="TaxiCompanyId" name="TaxiCompanyId" class="form-select" required>
+                <option value="">Select a Company</option>
+                <option value="1">City Taxi Co.</option>
+                <option value="2">Metro Taxi Services</option>
+                <option value="3">Express Cabs</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="LicensePlate" class="form-label">License Plate</label>
+            <input type="text" id="LicensePlate" name="LicensePlate" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label for="DriverName" class="form-label">Driver Name</label>
+            <input type="text" id="DriverName" name="DriverName" class="form-control" required />
+        </div>
+        <button type="submit" class="btnn btn btn-primary mt-3">Add Taxi</button>
+    </form>
+
+    <hr class="my-5" />
+
+    <h2 class="text-center mb-4">Delete Taxi</h2>
+
+    <form method="post" action="/Taxis/DeleteTaxi" onsubmit="return confirmDelete()">
+        <div class="form-group">
+            <label for="TaxiId" class="form-label">Select Taxi to Delete</label>
+            <select id="TaxiId" name="TaxiId" class="form-select" required>
+                <option value="">Select a Taxi</option>
+                <option value="1">Taxi 101</option>
+                <option value="2">Taxi 202</option>
+                <option value="3">Taxi 303</option>
+            </select>
+        </div>
+        <button type="submit" class="btnn btn btn-danger mt-3">Delete Taxi</button>
+    </form>
+</div>
+
+<script>
+    function confirmDelete() {
+        const taxiId = document.getElementById('TaxiId').value;
+        if (!taxiId) {
+            alert("Please select a taxi to delete.");
+            return false;
+        }
+        return confirm("Are you sure you want to delete this taxi?");
+    }
+</script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #343a40;
+    }
+
+    .container {
+        max-width: 800px;
+        padding: 20px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        font-size: 2rem;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .btnn {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btnn:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    hr {
+        border-top: 1px solid #007bff;
+    }
+</style>

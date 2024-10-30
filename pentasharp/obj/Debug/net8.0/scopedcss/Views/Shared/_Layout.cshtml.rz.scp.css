@@ -75,3 +75,51 @@ button.accept-policy[b-i9nluyn3fc] {
 .btn-secondary:hover[b-i9nluyn3fc] {
     background-color: #6c757d;
 }
+section[b-i9nluyn3fc] {
+    width: 100%;
+}
+
+.container-fluid[b-i9nluyn3fc] {
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn-custom[b-i9nluyn3fc] {
+    border-radius: 30px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .btn-custom:hover[b-i9nluyn3fc] {
+        background-color: #0056b3;
+        color: #ffffff;
+    }
+
+    .btn-custom:focus[b-i9nluyn3fc],
+    .btn-custom:active[b-i9nluyn3fc] {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-custom:active[b-i9nluyn3fc] {
+        transform: translateY(1px);
+    }
+html[b-i9nluyn3fc], body[b-i9nluyn3fc] {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+.full-height[b-i9nluyn3fc] {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+}
+
+main[b-i9nluyn3fc] {
+    flex: 1; /* Allows main content to take the remaining space */
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+

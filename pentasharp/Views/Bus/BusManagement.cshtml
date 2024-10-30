@@ -4,6 +4,7 @@
 
 <div class="container my-5">
     <h1 class="text-center mb-4">Bus Schedule Management</h1>
+
     <div class="row mb-4">
         <div class="col-md-8 mx-auto">
             <div class="input-group">
@@ -53,7 +54,7 @@
 </div>
 
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addModalLabel">Add Bus Schedule</h5>
@@ -99,7 +100,7 @@
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editModalLabel">Edit Bus Schedule</h5>
@@ -163,3 +164,69 @@
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #343a40;
+    }
+
+    .container {
+        max-width: 1200px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: #007bff;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .table thead th {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.2s ease;
+        }
+
+    .btn {
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .modal-header {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+    }
+</style>
+
+<script>
+    function searchSchedules() {
+ 
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const saveChangesBtn = document.getElementById('saveChangesBtn');
+        saveChangesBtn.addEventListener('click', function () {
+            const form = document.getElementById('editScheduleForm');
+       
+        });
+    });
+</script>

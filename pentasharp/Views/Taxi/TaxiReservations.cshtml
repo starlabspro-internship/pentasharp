@@ -1,43 +1,71 @@
+@{
+    ViewBag.Title = "Taxi Reservations";
+}
+
 <div class="container my-5">
     <h1 class="text-center mb-4">Taxi Reservations</h1>
+
     <div class="row mb-4">
         <div class="col-md-6 mx-auto">
-            <div class="input-group rounded">
-                <input type="search" class="form-control rounded" placeholder="Search by company name" aria-label="Search" aria-describedby="search-addon" />
-                <span class="input-group-text border-0 bg-primary text-white" id="search-addon">
+            <div class="input-group">
+                <input type="search" class="form-control" placeholder="Search by company name" aria-label="Search" aria-describedby="search-addon" />
+                <span class="input-group-text bg-primary text-white" id="search-addon">
                     <i class="fas fa-search"></i>
                 </span>
             </div>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col mb-4">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h5 class="fw-bold mb-1">Taxi Company Name</h5>
-                    <small class="text-light">Reliable & Safe Transport</small>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="company-box p-3 mb-4 shadow-sm rounded">
+                <h5 class="company-name">City Taxi Co.</h5>
+                <p class="text-muted">Reliable & Safe Transport</p>
+                <p><strong>Available Taxis:</strong> <span class="text-success">15</span></p>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    <span class="text-muted">Operating in Downtown & Suburbs</span>
                 </div>
-                <div class="card-body p-4 text-center">
-                    <img src="https://blog.infinitecab.com/wp-content/uploads/2022/03/feature-image.jpg" class="rounded-circle mb-3" alt="Taxi Logo" style="width: 80px; height: 80px;">
-                    <p class="text-muted mb-1">Fleet: <span class="fw-bold">20 vehicles</span></p>
-                    <p class="text-muted mb-3">Available Taxis: <span class="fw-bold text-success">15</span></p>
-                    <div class="d-flex justify-content-center align-items-center mb-3">
-                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
-                        <span class="text-muted">Operating in Downtown & Suburbs</span>
-                    </div>
+                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#bookingModal" data-company="City Taxi Co.">
+                    Book Taxi
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="company-box p-3 mb-4 shadow-sm rounded">
+                <h5 class="company-name">Metro Taxi Services</h5>
+                <p class="text-muted">Fast & Convenient Service</p>
+                <p><strong>Available Taxis:</strong> <span class="text-success">10</span></p>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    <span class="text-muted">Citywide Coverage</span>
                 </div>
-                <div class="card-footer text-center border-top-0 bg-light">
-                    <button class="btn btn-primary w-75" data-bs-toggle="modal" data-bs-target="#bookingModal">
-                        Book Taxi
-                    </button>
+                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#bookingModal" data-company="Metro Taxi Services">
+                    Book Taxi
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="company-box p-3 mb-4 shadow-sm rounded">
+                <h5 class="company-name">Express Cabs</h5>
+                <p class="text-muted">On-Demand Taxi Service</p>
+                <p><strong>Available Taxis:</strong> <span class="text-success">20</span></p>
+                <div class="location-info">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    <span class="text-muted">Servicing All Areas</span>
                 </div>
+                <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#bookingModal" data-company="Express Cabs">
+                    Book Taxi
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="bookingModalLabel">Confirm Your Booking</h5>
@@ -45,7 +73,7 @@
             </div>
             <div class="modal-body">
                 <div id="bookingDetails">
-                    <p><strong>Taxi Company:</strong> Taxi Company Name</p>
+                    <p><strong>Taxi Company:</strong> <span id="companyName"></span></p>
                     <div class="mb-3">
                         <label for="pickupLocation" class="form-label">Pickup Location</label>
                         <input type="text" class="form-control" id="pickupLocation" placeholder="Enter pickup location" required>
@@ -67,3 +95,62 @@
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #f4f7fa;
+        font-family: 'Arial', sans-serif;
+        color: #343a40;
+    }
+
+    .company-box {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .company-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .company-name {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .location-info {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+    .text-muted {
+        color: #6c757d;
+    }
+</style>
+
+<script>
+    const bookingModal = document.getElementById('bookingModal');
+    bookingModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const companyName = button.getAttribute('data-company');
+        const companyNameElement = document.getElementById('companyName');
+        companyNameElement.textContent = companyName;
+    });
+</script>

@@ -1,33 +1,116 @@
-@{
-    ViewData["Title"] = "Dashboard";
-}
+<head>
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/dashboard.css")" />
+    <title>@ViewData["Title"]</title>
+</head>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4">Dashboard</h1>
+    <h1>Dashboard</h1>
     <div class="row">
         <div class="col-lg-6 mb-4">
-            <div class="card shadow border-light h-100">
-                <img src="https://img.freepik.com/premium-vector/bus-stop-city-idea-transportation_277904-3781.jpg" class="card-img-top img-fluid" alt="Bus Schedule Management" style="max-height: 300px; width: 100%;" />
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-center">Bus Schedule Management</h5>
-                    <p class="card-text text-center">Manage bus schedules, routes, and timings efficiently.</p>
-                    <div class="text-center mt-auto">
-                        <a href="@Url.Action("BusManagement", "Bus")" class="btn btn-primary">Manage Bus Schedules</a>
+            <div class="card h-100">
+                <div class="card-header">
+                    Bus Schedule Management
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Efficiently manage bus schedules, routes, and timings with ease.</p>
+                    <div class="text-center">
+                        <a href="@Url.Action("BusManagement", "Bus")" class="btnn">Manage Bus Schedules</a>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 mb-4">
-            <div class="card shadow border-light h-100">
-                <img src="https://img.freepik.com/premium-vector/young-girl-stands-bus-stop-waits-her-taxi_529344-151.jpg" class="card-img-top img-fluid" alt="Taxi Management" style="max-height: 300px; width: 100%;" />
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title text-center">Taxi Management</h5>
-                    <p class="card-text text-center">Oversee taxi bookings, availability, and driver assignments.</p>
-                    <div class="text-center mt-auto">
-                        <a href="@Url.Action("TaxiManagement", "Taxi")" class="btn btn-primary">Manage Taxis</a>
+            <div class="card h-100">
+                <div class="card-header">
+                    Taxi Management
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Oversee taxi bookings, availability, and driver assignments seamlessly.</p>
+                    <div class="text-center">
+                        <a href="@Url.Action("TaxiManagement", "Taxi")" class="btnn">Manage Taxis</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #343a40;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        padding: 30px;
+        margin: auto;
+    }
+
+    h1 {
+        color: #343a40;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-header {
+        background-color: #007bff; 
+        color: white;
+        padding: 20px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: #495057;
+        flex-grow: 1;
+    }
+
+    .btnn {
+        background-color: #28a745;
+        color: white;
+        border-radius: 20px;
+        padding: 12px 24px;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        border: none;
+        font-size: 1rem;
+    }
+
+        .btnn:hover {
+            background-color: #218838; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        }
+
+    a {
+        text-decoration: none;
+    }
+</style>
