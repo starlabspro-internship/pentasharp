@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-    public class AccountController : Controller
+    public class AuthenticateController : Controller
     {
         public IActionResult Login()
         {

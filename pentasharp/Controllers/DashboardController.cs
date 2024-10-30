@@ -8,21 +8,5 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-        public IActionResult BusManagement()
-        {
-            return View();
-        }
-        public IActionResult CreateBusCompany()
-        {
-            return View();
-        }
-        public IActionResult TaxiManagement()
-        {
-            return View();
-        }
-        public IActionResult CreateTaxiCompany()
-        {
-            return View();
-        }
     }
 }

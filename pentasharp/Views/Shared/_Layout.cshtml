@@ -30,16 +30,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
                         </li>
-                        @if (currentController == "Dashboard" && currentAction == "BusManagement")
+                        @if (currentController == "BusManagement" && currentAction == "BusManagement")
                          {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="CreateBusCompany">Create Bus Company</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="BusManagement" asp-action="CreateBusCompany">Create Bus Company</a>
                         </li>
                          }
-                        @if (currentController == "Dashboard" && currentAction == "TaxiManagement")
+                        @if (currentController == "TaxiManagement" && currentAction == "TaxiManagement")
                          {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="CreateTaxiCompany">Create Taxi Company</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TaxiManagement" asp-action="CreateTaxiCompany">Create Taxi Company</a>
                         </li>
                          }
                     </ul>
