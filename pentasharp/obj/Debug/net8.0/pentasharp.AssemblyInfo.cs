@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("pentasharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a51bce8771908cc810f01a2e333a82f910ee2b0b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22c7d1972fd1779b5af594ebf6383e3a17eb6386")]
 [assembly: System.Reflection.AssemblyProductAttribute("pentasharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("pentasharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

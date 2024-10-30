@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pentasharp.Data;
 
@@ -11,9 +12,11 @@ using pentasharp.Data;
 namespace pentasharp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241030220925_UpdateTaxiCompanyRelationship")]
+    partial class UpdateTaxiCompanyRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,65 +101,6 @@ namespace pentasharp.Migrations
                     b.ToTable("TaxiCompanies");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.TaxiReservations", b =>
-                {
-                    b.Property<int>("ReservationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("DropoffLocation")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<decimal>("Fare")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<string>("PickupLocation")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("ReservationTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaxiId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("TripEndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("TripStartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ReservationId");
-
-                    b.HasIndex("TaxiId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TaxiReservations");
-                });
-
             modelBuilder.Entity("pentasharp.Models.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -216,38 +160,9 @@ namespace pentasharp.Migrations
                     b.Navigation("TaxiCompany");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.TaxiReservations", b =>
-                {
-                    b.HasOne("pentasharp.Models.Entities.Taxi", "Taxi")
-                        .WithMany("TaxiReservations")
-                        .HasForeignKey("TaxiId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("pentasharp.Models.Entities.User", "User")
-                        .WithMany("TaxiReservations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Taxi");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
-                {
-                    b.Navigation("TaxiReservations");
-                });
-
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiCompany", b =>
                 {
                     b.Navigation("Taxis");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.User", b =>
-                {
-                    b.Navigation("TaxiReservations");
                 });
 #pragma warning restore 612, 618
         }

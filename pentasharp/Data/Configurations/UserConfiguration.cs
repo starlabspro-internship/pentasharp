@@ -12,6 +12,7 @@ namespace pentasharp.Data.Configurations
             ConfigureProperties(builder);
             ConfigureIndexes(builder);
             ConfigureDefaults(builder);
+            ConfigureRelationships(builder);
         }
 
         private void ConfigureKeys(EntityTypeBuilder<User> builder)
@@ -61,6 +62,12 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValue(false);
             builder.Property(u => u.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+        }
+        private void ConfigureRelationships(EntityTypeBuilder<User> builder)
+        {
+            builder.HasMany(u => u.TaxiReservations)
+                .WithOne(tr => tr.User) 
+                .HasForeignKey(tr => tr.UserId); 
         }
     }
 }

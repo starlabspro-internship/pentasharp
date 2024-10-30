@@ -10,10 +10,16 @@ namespace pentasharp.Data
         {
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<TaxiCompany> TaxiCompanies { get; set; }
+        public DbSet<Taxi> Taxis { get; set; }
+        public DbSet<TaxiReservations> TaxiReservations { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            base.OnModelCreating(modelBuilder);
            modelBuilder.ApplyConfiguration(new UserConfiguration());
+           modelBuilder.ApplyConfiguration(new TaxiCompanyConfiguration());
+           modelBuilder.ApplyConfiguration(new TaxiConfiguration());
+            modelBuilder.ApplyConfiguration(new TaxiReservationsConfiguration());
         }
     }
 }
