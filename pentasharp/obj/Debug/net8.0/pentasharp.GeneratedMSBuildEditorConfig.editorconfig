@@ -26,12 +26,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aGVudGljYXRlXFJlZ2lzdGVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/BusManagement.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzXEJ1c01hbmFnZW1lbnQuY3NodG1s
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/BusReservations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzXEJ1c1Jlc2VydmF0aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/BusReservationsManagement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzXEJ1c1Jlc2VydmF0aW9uc01hbmFnZW1lbnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/BusSchedule.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzXEJ1c1NjaGVkdWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/BusScheduleManagement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzXEJ1c1NjaGVkdWxlTWFuYWdlbWVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Bus/CreateBusCompany.cshtml]
@@ -58,12 +66,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxDcmVhdGVUYXhpQ29tcGFueS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Taxi/TaxiManagement.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxUYXhpTWFuYWdlbWVudC5jc2h0bWw=
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Taxi/TaxiBookings.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxUYXhpQm9va2luZ3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Taxi/TaxiBookingsManagement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxUYXhpQm9va2luZ3NNYW5hZ2VtZW50LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Taxi/TaxiReservations.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxUYXhpUmVzZXJ2YXRpb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/Taxi/TaxiReservationsManagement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGF4aVxUYXhpUmVzZXJ2YXRpb25zTWFuYWdlbWVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/TECHCOM/source/repos/pentasharp/pentasharp/Views/_ViewImports.cshtml]

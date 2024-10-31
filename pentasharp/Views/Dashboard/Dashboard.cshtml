@@ -1,116 +1,168 @@
-<head>
-    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/dashboard.css")" />
-    <title>@ViewData["Title"]</title>
-</head>
+@{
+    ViewData["Title"] = "Dashboard";
+}
 
 <div class="container my-5">
-    <h1>Dashboard</h1>
-    <div class="row">
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    Bus Schedule Management
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Efficiently manage bus schedules, routes, and timings with ease.</p>
-                    <div class="text-center">
-                        <a href="@Url.Action("BusManagement", "Bus")" class="btnn">Manage Bus Schedules</a>
-                    </div>
-                </div>
-            </div>
+    <h1 class="text-center mb-5 fw-bold dashboard-title">Dashboard</h1>
+
+    <div class="dashboard-container">
+        <div class="dashboard-card gradient-card">
+            <div class="card-icon"><i class="fas fa-bus-alt"></i></div>
+            <h3>Bus Schedules</h3>
+            <p class="stat-number">45</p>
+            <p>Available</p>
+            <a href="@Url.Action("BusScheduleManagement", "Bus")" class="dashboard-link">Manage</a>
         </div>
-        <div class="col-lg-6 mb-4">
-            <div class="card h-100">
-                <div class="card-header">
-                    Taxi Management
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Oversee taxi bookings, availability, and driver assignments seamlessly.</p>
-                    <div class="text-center">
-                        <a href="@Url.Action("TaxiManagement", "Taxi")" class="btnn">Manage Taxis</a>
-                    </div>
-                </div>
-            </div>
+
+        <div class="dashboard-card gradient-card">
+            <div class="card-icon"><i class="fas fa-ticket-alt"></i></div>
+            <h3>Reservations</h3>
+            <p class="stat-number">350</p>
+            <p>Total Reservations</p>
+            <a href="@Url.Action("BusReservationsManagement", "Bus")" class="dashboard-link">View</a>
+        </div>
+
+        <div class="dashboard-card gradient-card">
+            <div class="card-icon"><i class="fas fa-taxi"></i></div>
+            <h3>Taxi Bookings</h3>
+            <p class="stat-number">120</p>
+            <p>Taxi Bookings</p>
+            <a href="@Url.Action("TaxiBookingsManagement", "Taxi")" class="dashboard-link">Manage</a>
+        </div>
+
+        <div class="dashboard-card gradient-card">
+            <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+            <h3>Taxi Reservations</h3>
+            <p class="stat-number">80</p>
+            <p>Today’s Reservations</p>
+            <a href="@Url.Action("TaxiReservationsManagement", "Taxi")" class="dashboard-link">Manage</a>
         </div>
     </div>
+
+    <div class="circular-chart-container mt-5">
+        <h2 class="text-center mb-4 fw-bold text-secondary">Usage Snapshot</h2>
+        <canvas id="circularChart" style="max-width: 250px; margin: auto;"></canvas>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('circularChart').getContext('2d');
+    const circularChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Bus Reservations Used', 'Taxi Reservations Used', 'Available'],
+            datasets: [{
+                data: [45, 35, 20], 
+                backgroundColor: ['#42a5f5', '#66bb6a', '#ffd54f'],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '70%',
+            animation: {
+                animateRotate: true,
+                loop: true,
+                duration: 3000
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
 <style>
     body {
-        background-color: #f8f9fa;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #343a40;
-        margin: 0;
-        padding: 0;
+        background-color: #f0f2f5;
+        font-family: 'Poppins', sans-serif;
+        color: #333;
     }
 
-    .container {
-        max-width: 1200px;
-        padding: 30px;
+    .dashboard-title {
+        font-size: 2.5rem;
+        color: #1a237e;
+        text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .dashboard-card {
+        flex: 1 1 250px;
+        max-width: 250px;
+        border-radius: 12px;
+        padding: 20px;
+        background: linear-gradient(135deg, #2196f3, #64b5f6);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        color: #ffffff;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-icon {
+        font-size: 2.2rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 10px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #ffd54f;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .dashboard-card p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 10px;
+    }
+
+    .dashboard-link {
+        display: inline-block;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        color: #333;
+        background-color: #ffd54f;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.2s;
+        box-shadow: 0 5px 10px rgba(255, 193, 7, 0.4);
+    }
+
+        .dashboard-link:hover {
+            background-color: #ffc107;
+            transform: scale(1.05);
+        }
+
+    .circular-chart-container {
+        max-width: 300px;
         margin: auto;
     }
-
-    h1 {
-        color: #343a40;
-        font-weight: 600;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .card {
-        border: none;
-        border-radius: 12px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-        }
-
-    .card-header {
-        background-color: #007bff; 
-        color: white;
-        padding: 20px;
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
-        text-align: center;
-        font-size: 1.25rem;
-        font-weight: 600;
-    }
-
-    .card-body {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .card-text {
-        font-size: 1rem;
-        margin-bottom: 20px;
-        color: #495057;
-        flex-grow: 1;
-    }
-
-    .btnn {
-        background-color: #28a745;
-        color: white;
-        border-radius: 20px;
-        padding: 12px 24px;
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-        border: none;
-        font-size: 1rem;
-    }
-
-        .btnn:hover {
-            background-color: #218838; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
-        }
-
-    a {
-        text-decoration: none;
-    }
 </style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

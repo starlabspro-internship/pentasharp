@@ -2,86 +2,133 @@
     ViewBag.Title = "Bus Schedule";
 }
 
-<div class="container mt-5">
-    <h1 class="text-center mb-4">Bus Schedule</h1>
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <form class="form-inline justify-content-center">
-                <div class="form-group mb-2">
-                    <label for="departure" class="sr-only">Departure</label>
-                    <input type="text" class="form-control" id="departure" placeholder="Departure Location">
+<div class="container my-5">
+    <div id="introSection" class="text-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">Bus Schedule</h1>
+        <p class="lead text-muted">Find the perfect bus route for your journey</p>
+    </div>
+
+    <div id="searchFormContainer" class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form class="form-inline justify-content-center bg-light p-4 rounded shadow-sm" onsubmit="handleSearch(event)">
+                <div class="form-group mb-3 mx-2">
+                    <input type="text" class="form-control form-control-md px-3 py-2" id="departure" placeholder="Departure" required style="min-width: 200px;">
                 </div>
-                <div class="form-group mb-2">
-                    <label for="arrival" class="sr-only">Arrival</label>
-                    <input type="text" class="form-control" id="arrival" placeholder="Arrival Location">
+                <div class="form-group mb-3 mx-2">
+                    <input type="text" class="form-control form-control-md px-3 py-2" id="arrival" placeholder="Arrival" required style="min-width: 200px;">
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">Search</button>
+                <div class="form-group mb-3 mx-2">
+                    <input type="date" class="form-control form-control-md px-3 py-2" id="date" required style="min-width: 150px;">
+                </div>
+                <div class="form-group mx-2 mt-3">
+                    <button type="submit" class="btn btn-primary btn-md rounded-pill px-4 py-2">Search</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <table class="table table-striped table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Bus Number</th>
-                <th scope="col">Departure Time</th>
-                <th scope="col">Arrival Time</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>101</td>
-                <td>09:00 AM</td>
-                <td>11:00 AM</td>
-                <td>2h</td>
-                <td><span class="badge badge-secondary">On Time</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bookingModal">Book</button></td>
-            </tr>
-            <tr>
-                <td>102</td>
-                <td>10:30 AM</td>
-                <td>12:30 PM</td>
-                <td>2h</td>
-                <td><span class="badge badge-secondary">Delayed</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bookingModal">Book</button></td>
-            </tr>
-            <tr>
-                <td>103</td>
-                <td>12:00 PM</td>
-                <td>02:00 PM</td>
-                <td>2h</td>
-                <td><span class="badge badge-danger">Cancelled</span></td>
-                <td class="text-center"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#bookingModal">Book</button></td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="busScheduleContainer" class="container"></div>
+
+    <button id="scrollToTopBtn" class="btn btn-secondary rounded-circle" onclick="scrollToTop()" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px;">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 </div>
 
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="bookingModalLabel">Confirm Your Booking</h5>
+                <h5 class="modal-title fw-bold" id="bookingModalLabel">Confirm Your Booking</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Bus Number:</strong> <span id="modalBusNumber">101</span></p>
-                <p><strong>Departure:</strong> <span id="modalDeparture">09:00 AM</span></p>
-                <p><strong>Arrival:</strong> <span id="modalArrival">11:00 AM</span></p>
+                <p><strong>From:</strong> <span id="modalDeparture"></span></p>
+                <p><strong>To:</strong> <span id="modalArrival"></span></p>
                 <div class="mb-3">
-                    <label for="passengerName" class="form-label">Your Name</label>
-                    <input type="text" class="form-control" id="passengerName" value="John Doe" readonly>
+                    <input type="text" class="form-control" id="passengerNameInput" readonly>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary">Confirm Booking</button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const loggedInUserName = "Gani Lala"; 
+
+    function handleSearch(event) {
+        event.preventDefault();
+
+        document.getElementById('introSection').style.display = 'none';
+        document.getElementById('searchFormContainer').classList.add('mt-5');
+
+        const busScheduleContainer = document.getElementById('busScheduleContainer');
+        busScheduleContainer.innerHTML = '';
+
+        for (let i = 0; i < 2; i++) {
+            const scheduleCard = `
+                <div class="container my-3" style="max-width: 600px;">
+                    <div class="card shadow-sm border-0 p-4 rounded-4">
+                        <div class="row align-items-center">
+                            <div class="col-5 d-flex align-items-start">
+                                <div class="me-3 text-center">
+                                    <p class="mb-1 text-danger fw-bold">19:00</p>
+                                    <span class="text-muted small">Tirana</span>
+                                </div>
+                                <div class="d-flex flex-column align-items-center mx-3">
+                                    <span class="text-danger"><i class="fas fa-circle"></i></span>
+                                    <div style="width: 2px; height: 40px; background-color: #dcdcdc;"></div>
+                                    <span class="text-secondary"><i class="fas fa-map-marker-alt"></i></span>
+                                </div>
+                                <div class="ms-3 text-center">
+                                    <p class="mb-1 text-dark fw-bold">23:00</p>
+                                    <span class="text-muted small">Pristina</span>
+                                </div>
+                            </div>
+                            <div class="col-7 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-bus-alt text-secondary me-2"></i>
+                                    <span class="fw-bold text-dark">Sharri</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="text-danger fw-bold fs-5">€15</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary rounded-pill px-3 py-1" onclick="openBookingModal('Tirana', 'Pristina')">Book Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            busScheduleContainer.insertAdjacentHTML('beforeend', scheduleCard);
+        }
+
+        if (busScheduleContainer.children.length > 2) {
+            document.getElementById('scrollToTopBtn').style.display = 'block';
+        }
+    }
+
+    function openBookingModal(departure, arrival) {
+        document.getElementById('modalDeparture').textContent = departure;
+        document.getElementById('modalArrival').textContent = arrival;
+        document.getElementById('passengerNameInput').value = loggedInUserName; 
+        new bootstrap.Modal(document.getElementById('bookingModal')).show();
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const dateInput = document.getElementById("date");
+        const today = new Date().toISOString().split("T")[0];
+        dateInput.value = today;
+        dateInput.placeholder = today;
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

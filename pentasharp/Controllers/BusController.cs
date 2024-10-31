@@ -10,7 +10,17 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        public IActionResult BusManagement()
+        public IActionResult BusReservations()
+        {
+            return View();
+        }
+        
+        public IActionResult BusReservationsManagement()
+        {
+            return View();
+        }
+
+        public IActionResult BusScheduleManagement()
         {
             return View();
         }

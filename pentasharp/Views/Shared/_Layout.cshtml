@@ -12,46 +12,94 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
+    <style>
+        /* Custom styles for Navbar */
+        .navbar-custom {
+            background-color: #007bff;
+            padding: 1rem;
+        }
+
+        .navbar-brand {
+            color: #ffffff !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: #ffffff !important;
+            transition: color 0.3s ease;
+        }
+
+            .nav-link:hover {
+                color: #f0f0f0 !important;
+            }
+
+        .btn-custom {
+            background-color: #ffffff;
+            color: #007bff;
+            border-color: #ffffff;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+            .btn-custom:hover {
+                background-color: #f0f0f0;
+                color: #0056b3;
+            }
+
+        /* Custom styles for Footer */
+        .footer-custom {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+            .footer-custom a {
+                color: #007bff;
+                text-decoration: none;
+            }
+
+                .footer-custom a:hover {
+                    color: #0056b3;
+                }
+    </style>
 </head>
 <body>
     @if (!(currentController == "Authenticate" && (currentAction == "Login" || currentAction == "Register")))
     {
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Pentasharp</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
-                            </li>
-                            @if (currentController == "Bus" && currentAction == "BusManagement")
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-custom shadow-sm mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PentaSharp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
+                        </li>
+                        @if (currentController == "Bus" && currentAction == "BusManagement")
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Bus" asp-action="CreateBusCompany">Create Bus Company</a>
-                                </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Bus" asp-action="CreateBusCompany">Create Bus Company</a>
+                        </li>
                             }
-                            @if (currentController == "Taxi" && currentAction == "TaxiManagement")
+                        @if (currentController == "Taxi" && currentAction == "TaxiManagement")
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Taxi" asp-action="CreateTaxiCompany">Create Taxi Company</a>
-                                </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Taxi" asp-action="CreateTaxiCompany">Create Taxi Company</a>
+                        </li>
                             }
-                        </ul>
-                        <div class="d-flex">
-                            <button type="button" class="btn btn-outline-dark btn-custom me-2" onclick="location.href='@Url.Action("Login", "Authenticate")'">Login</button>
-                        </div>
+                    </ul>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-custom me-2" onclick="location.href='@Url.Action("Login", "Authenticate")'">Login</button>
                     </div>
                 </div>
-            </nav>
-        </header>
+            </div>
+        </nav>
+    </header>
     }
 
     <div class="container-fluid">
@@ -62,11 +110,12 @@
 
     @if (!(currentController == "Authenticate" && (currentAction == "Login" || currentAction == "Register")))
     {
-        <footer class="border-top footer text-muted">
-            <div class="container text-center py-3">
-                &copy; 2024 - Pentasharp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-            </div>
-        </footer>
+    <footer class="footer-custom border-top text-muted mt-4 py-3">
+        <div class="container text-center">
+            <span>&copy; 2024 - PentaSharp | </span>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+        </div>
+    </footer>
     }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

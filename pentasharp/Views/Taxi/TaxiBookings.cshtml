@@ -1,9 +1,9 @@
 @{
-    ViewData["Title"] = "Taxi Reservations";
+    ViewData["Title"] = "Taxi Bookings";
 }
 
 <div class="container my-5">
-    <h1 class="text-center mb-4 fw-bold text-primary">Taxi Reservations</h1>
+    <h1 class="text-center mb-4 fw-bold text-primary">Taxi Bookings</h1>
 
     <div id="searchFormContainer" class="row justify-content-center mb-5">
         <div class="col-md-8">
@@ -20,16 +20,16 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6 form-group">
-                        <label for="reservationTime" class="form-label">Reservation Time</label>
-                        <input type="time" class="form-control" id="reservationTime" required>
+                        <label for="bookingTime" class="form-label">Pickup Time</label>
+                        <input type="time" class="form-control" id="bookingTime" required>
                     </div>
                     <div class="col-md-6 form-group">
-                        <label for="reservationDate" class="form-label">Reservation Date</label>
-                        <input type="date" class="form-control" id="reservationDate" required>
+                        <label for="passengerCount" class="form-label">Number of Passengers</label>
+                        <input type="number" class="form-control" id="passengerCount" placeholder="Enter Passenger Count" min="1" required>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-2 shadow-sm">Search</button>
+                    <button type="submit" class="btn btn-primary btn-md rounded-pill px-4 py-2">Search</button>
                 </div>
             </form>
         </div>
@@ -38,19 +38,18 @@
     <div id="resultsContainer" class="container"></div>
 </div>
 
-<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reservationModalLabel">Confirm Your Reservation</h5>
+                <h5 class="modal-title" id="bookingModalLabel">Confirm Your Booking</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p><strong>Pickup Location:</strong> <span id="modalPickupLocation"></span></p>
                 <p><strong>Dropoff Location:</strong> <span id="modalDropoffLocation"></span></p>
-                <p><strong>Reservation Date:</strong> <span id="modalReservationDate"></span></p>
-                <p><strong>Reservation Time:</strong> <span id="modalReservationTime"></span></p>
-                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                <p><strong>Pickup Time:</strong> <span id="modalPickupTime"></span></p>
+                <p><strong>Number of Passengers:</strong> <span id="modalPassengerCount"></span></p>
                 <p><strong>Fare:</strong> <span id="modalFare"></span></p>
                 <div class="mb-3">
                     <label for="modalPassengerName" class="form-label">Passenger Name</label>
@@ -59,7 +58,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Confirm Reservation</button>
+                <button type="button" class="btn btn-primary">Confirm Booking</button>
             </div>
         </div>
     </div>
@@ -73,8 +72,8 @@
 
         const pickupLocation = document.getElementById('pickupLocation').value;
         const dropoffLocation = document.getElementById('dropoffLocation').value;
-        const reservationTime = document.getElementById('reservationTime').value;
-        const reservationDate = document.getElementById('reservationDate').value;
+        const bookingTime = document.getElementById('bookingTime').value;
+        const passengerCount = document.getElementById('passengerCount').value;
 
         const resultsContainer = document.getElementById('resultsContainer');
         resultsContainer.innerHTML = '';
@@ -91,11 +90,11 @@
                             <div class="col-5">
                                 <h5 class="fw-bold">Economy Taxi</h5>
                                 <p class="text-muted">Reliable and comfortable</p>
-                                <p><i class="fas fa-calendar-alt me-2"></i> ${reservationDate}</p>
+                                <p><i class="fas fa-user-friends me-2"></i> Up to 3 Passengers</p>
                             </div>
                             <div class="col-3 text-end">
                                 <h4 class="text-dark">$${fare}</h4>
-                                <button class="btn btn-primary rounded-pill px-4 py-2 shadow" onclick="openReservationModal('${pickupLocation}', '${dropoffLocation}', '${reservationDate}', '${reservationTime}', '${fare}')">Reserve Now</button>
+                                <button class="btn btn-dark rounded-pill" onclick="openBookingModal('${pickupLocation}', '${dropoffLocation}', '${bookingTime}', '${passengerCount}', '${fare}')">Select</button>
                             </div>
                         </div>
                     </div>
@@ -105,16 +104,14 @@
         }
     }
 
-    function openReservationModal(pickupLocation, dropoffLocation, reservationDate, reservationTime, fare) {
+    function openBookingModal(pickupLocation, dropoffLocation, bookingTime, passengerCount, fare) {
         document.getElementById('modalPickupLocation').textContent = pickupLocation;
         document.getElementById('modalDropoffLocation').textContent = dropoffLocation;
-        document.getElementById('modalReservationDate').textContent = reservationDate;
-        document.getElementById('modalReservationTime').textContent = reservationTime;
-        document.getElementById('modalStatus').textContent = "Pending";
+        document.getElementById('modalPickupTime').textContent = bookingTime;
+        document.getElementById('modalPassengerCount').textContent = passengerCount;
         document.getElementById('modalFare').textContent = `$${fare}`;
         document.getElementById('modalPassengerName').value = loggedInUserName;
-        const reservationModal = new bootstrap.Modal(document.getElementById('reservationModal'));
-        reservationModal.show();
+        new bootstrap.Modal(document.getElementById('bookingModal')).show();
     }
 </script>
 
@@ -140,18 +137,20 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-        font-weight: 600;
-        transition: background-color 0.3s ease, transform 0.3s ease;
+    .vehicle-img {
+        width: 100px;
+        height: auto;
+        border-radius: 5px;
     }
 
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.2);
-        }
+    .badge {
+        font-size: 0.85rem;
+    }
+
+    .text-muted {
+        font-size: 0.9rem;
+        color: #6c757d !important;
+    }
 
     .btn-dark {
         background-color: #343a40;
@@ -164,4 +163,3 @@
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>

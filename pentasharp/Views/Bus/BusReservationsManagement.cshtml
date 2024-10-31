@@ -1,0 +1,185 @@
+@{
+    ViewData["Title"] = "Bus Reservations Management";
+}
+
+<div class="container my-5">
+    <h1 class="text-center mb-4 fw-bold text-primary">Bus Reservations Management</h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4 fw-bold text-secondary">Manage Current Bus Reservations</h2>
+            <table class="table table-bordered shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Route</th>
+                        <th>Bus Number</th>
+                        <th>Passenger</th>
+                        <th>Reservation Date</th>
+                        <th>Departure Time</th>
+                        <th>Seats Reserved</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>New York to Washington</td>
+                        <td>NY123</td>
+                        <td>John Doe</td>
+                        <td>2024-11-15</td>
+                        <td>08:00 AM</td>
+                        <td>3</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="editReservation()">Edit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center fw-bold">
+                    Incoming Reservations
+                </div>
+                <div class="card-body">
+                    <div class="reservation-item d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <p><strong>Passenger:</strong> Jane Smith</p>
+                            <p>Route: Central Station to Downtown</p>
+                            <p><strong>Bus Number:</strong> DT456</p>
+                            <p><strong>Reservation Date:</strong> <span class="text-primary">2024-11-16</span></p>
+                            <p><strong>Departure Time:</strong> 09:30 AM</p>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <button class="btn btn-sm btn-success mb-1">Confirm</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="reservation-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <p><strong>Passenger:</strong> Michael Johnson</p>
+                            <p>Route: Uptown to City Park</p>
+                            <p><strong>Bus Number:</strong> CP789</p>
+                            <p><strong>Reservation Date:</strong> <span class="text-primary">2024-11-18</span></p>
+                            <p><strong>Departure Time:</strong> 10:45 AM</p>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <button class="btn btn-sm btn-success mb-1">Confirm</button>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editReservationModal" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="editReservationModalLabel">Edit Bus Reservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Edit the details of the bus reservation below:</p>
+                <div class="mb-3">
+                    <label for="editRoute" class="form-label">Route</label>
+                    <input type="text" id="editRoute" class="form-control" value="New York to Washington" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="editBusNumber" class="form-label">Bus Number</label>
+                    <input type="text" id="editBusNumber" class="form-control" value="NY123" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="editPassenger" class="form-label">Passenger Name</label>
+                    <input type="text" id="editPassenger" class="form-control" value="John Doe" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="editDate" class="form-label">Reservation Date</label>
+                    <input type="date" id="editDate" class="form-control" value="2024-11-15">
+                </div>
+                <div class="mb-3">
+                    <label for="editDepartureTime" class="form-label">Departure Time</label>
+                    <input type="time" id="editDepartureTime" class="form-control" value="08:00">
+                </div>
+                <div class="mb-3">
+                    <label for="editSeats" class="form-label">Seats Reserved</label>
+                    <input type="number" id="editSeats" class="form-control" value="3">
+                </div>
+                <div class="mb-3">
+                    <label for="editStatus" class="form-label">Status</label>
+                    <select id="editStatus" class="form-select">
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editReservation() {
+        new bootstrap.Modal(document.getElementById('editReservationModal')).show();
+    }
+</script>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+    .table {
+        background-color: #ffffff;
+    }
+
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+    .btn-info {
+        color: #fff;
+        background-color: #17a2b8;
+    }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+    .btn-success:hover {
+        background-color: #28a745;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .reservation-item {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 0;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
