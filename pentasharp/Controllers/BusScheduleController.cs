@@ -2,20 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-    public class BusController : Controller
+    public class BusScheduleController : Controller
     {
 
         public IActionResult BusSchedule()
-        {
-            return View();
-        }
-
-        public IActionResult BusReservations()
-        {
-            return View();
-        }
-        
-        public IActionResult BusReservationsManagement()
         {
             return View();
         }
@@ -25,7 +15,17 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        public IActionResult CreateBusCompany()
+        public IActionResult AddBusCompany()
+        {
+            return View(); 
+        }
+
+        public IActionResult ConfirmPassengers()
+        {
+            return View();
+        }
+
+        public IActionResult ManageBusSchedules()
         {
             return View();
         }

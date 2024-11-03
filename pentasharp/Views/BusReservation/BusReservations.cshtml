@@ -57,7 +57,9 @@
                 <p><strong>To:</strong> <span id="modalArrival"></span></p>
                 <p><strong>Reservation Date:</strong> <span id="modalReservationDate"></span></p>
                 <p><strong>Number of Seats:</strong> <span id="modalNumberOfSeats"></span></p>
-                <p><strong>Status:</strong> <span class="badge bg-warning text-dark">Pending</span></p>
+                <p><strong>Total Amount:</strong> <span id="modalTotalAmount"></span></p>
+                <p><strong>Payment Status:</strong> <span id="modalPaymentStatus"></span></p>
+                <p><strong>Status:</strong> <span id="modalStatus" class="badge bg-warning text-dark">Pending</span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -77,6 +79,10 @@
         const arrival = document.getElementById('arrival').value;
         const reservationDate = document.getElementById('reservationDate').value;
         const numberOfSeats = document.getElementById('numberOfSeats').value;
+        const pricePerSeat = 15; 
+        const totalAmount = pricePerSeat * numberOfSeats;
+        const paymentStatus = "Unpaid";
+        const status = "Pending";
 
         const busReservationContainer = document.getElementById('busReservationContainer');
         busReservationContainer.innerHTML = '';
@@ -90,10 +96,11 @@
                                 <h5 class="fw-bold text-dark mb-1">Sharri Travel</h5>
                                 <p class="text-muted mb-1">From <strong>${departure}</strong> to <strong>${arrival}</strong></p>
                                 <p class="text-muted">Seats: ${numberOfSeats} | Date: ${reservationDate}</p>
+                                <p class="text-muted">Total: €${totalAmount}</p>
                             </div>
                             <div class="col-4 text-end">
-                                <span class="badge bg-success mb-2">€15 per seat</span>
-                                <button class="btn btn-dark rounded-pill" onclick="openReservationModal('${departure}', '${arrival}', '${reservationDate}', '${numberOfSeats}')">Reserve Now</button>
+                                <span class="badge bg-success mb-2">€${pricePerSeat} per seat</span>
+                                <button class="btn btn-dark rounded-pill" onclick="openReservationModal('${departure}', '${arrival}', '${reservationDate}', '${numberOfSeats}', '€${totalAmount}', '${paymentStatus}', '${status}')">Reserve Now</button>
                             </div>
                         </div>
                     </div>
@@ -107,11 +114,14 @@
         }
     }
 
-    function openReservationModal(departure, arrival, reservationDate, numberOfSeats) {
+    function openReservationModal(departure, arrival, reservationDate, numberOfSeats, totalAmount, paymentStatus, status) {
         document.getElementById('modalDeparture').textContent = departure;
         document.getElementById('modalArrival').textContent = arrival;
         document.getElementById('modalReservationDate').textContent = reservationDate;
         document.getElementById('modalNumberOfSeats').textContent = numberOfSeats;
+        document.getElementById('modalTotalAmount').textContent = totalAmount;
+        document.getElementById('modalPaymentStatus').textContent = paymentStatus;
+        document.getElementById('modalStatus').textContent = status;
         new bootstrap.Modal(document.getElementById('reservationModal')).show();
     }
 

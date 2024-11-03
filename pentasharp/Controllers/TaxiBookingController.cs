@@ -2,13 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-	public class TaxiController : Controller
+	public class TaxiBookingController : Controller
 	{
-		public IActionResult TaxiReservations()
-		{
-			return View();
-		}
-
 		public IActionResult TaxiBookings()
 		{
 			return View();
@@ -17,14 +12,19 @@ namespace WebApplication1.Controllers
         public IActionResult TaxiBookingsManagement()
         {
             return View();
-        }
+		}
 
-        public IActionResult TaxiReservationsManagement()
+		public IActionResult IncomingBookings()
+		{
+			return View();
+		}
+
+        public IActionResult ManageCurrentBookings()
         {
             return View();
         }
-		 
-        public IActionResult CreateTaxiCompany()
+
+        public IActionResult AddTaxiCompany()
 		{
 			return View();
 		}

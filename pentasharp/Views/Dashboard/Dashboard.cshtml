@@ -1,47 +1,107 @@
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Management Dashboard";
 }
 
 <div class="container my-5">
-    <h1 class="text-center mb-5 fw-bold dashboard-title">Dashboard</h1>
 
-    <div class="dashboard-container">
-        <div class="dashboard-card gradient-card">
-            <div class="card-icon"><i class="fas fa-bus-alt"></i></div>
-            <h3>Bus Schedules</h3>
-            <p class="stat-number">45</p>
-            <p>Available</p>
-            <a href="@Url.Action("BusScheduleManagement", "Bus")" class="dashboard-link">Manage</a>
+    <div class="row g-4 dashboard-container justify-content-center" style="margin-top: -20px;">
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-bus-alt fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Bus Schedules</h6>
+                    <p class="stat-number">45</p>
+                    <a href="@Url.Action("BusScheduleManagement", "BusSchedule")" class="dashboard-link mt-auto">Manage</a>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard-card gradient-card">
-            <div class="card-icon"><i class="fas fa-ticket-alt"></i></div>
-            <h3>Reservations</h3>
-            <p class="stat-number">350</p>
-            <p>Total Reservations</p>
-            <a href="@Url.Action("BusReservationsManagement", "Bus")" class="dashboard-link">View</a>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-ticket-alt fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Bus Reservations</h6>
+                    <p class="stat-number">350</p>
+                    <a href="@Url.Action("BusReservationsManagement", "BusReservation")" class="dashboard-link mt-auto">View</a>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard-card gradient-card">
-            <div class="card-icon"><i class="fas fa-taxi"></i></div>
-            <h3>Taxi Bookings</h3>
-            <p class="stat-number">120</p>
-            <p>Taxi Bookings</p>
-            <a href="@Url.Action("TaxiBookingsManagement", "Taxi")" class="dashboard-link">Manage</a>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-taxi fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Taxi Bookings</h6>
+                    <p class="stat-number">120</p>
+                    <a href="@Url.Action("TaxiBookingsManagement", "TaxiBooking")" class="dashboard-link mt-auto">Manage</a>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard-card gradient-card">
-            <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
-            <h3>Taxi Reservations</h3>
-            <p class="stat-number">80</p>
-            <p>Today’s Reservations</p>
-            <a href="@Url.Action("TaxiReservationsManagement", "Taxi")" class="dashboard-link">Manage</a>
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Taxi Reservations</h6>
+                    <p class="stat-number">80</p>
+                    <a href="@Url.Action("TaxiReservationsManagement", "TaxiReservation")" class="dashboard-link mt-auto">Manage</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4 col-sm-6">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-user-tie fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Taxi Driver</h6>
+                    <p class="stat-number">25</p>
+                    <a href="@Url.Action("TaxiDriverManagement", "TaxiDriver")" class="dashboard-link mt-auto">Manage</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="circular-chart-container mt-5">
-        <h2 class="text-center mb-4 fw-bold text-secondary">Usage Snapshot</h2>
-        <canvas id="circularChart" style="max-width: 250px; margin: auto;"></canvas>
+    <div class="row g-4 mt-4 align-items-center justify-content-center">
+        <div class="col-lg-3 col-md-4 col-sm-6 d-flex justify-content-center">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Add New Company and Bus</h6>
+                    <a href="@Url.Action("AddBusCompany", "BusSchedule")" class="dashboard-link mt-auto">Add</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 text-center">
+            <h6 class="fw-bold text-secondary visually-hidden">Usage Snapshot</h6>
+            <div style="max-width: 200px; margin: 0 auto;">
+                <canvas id="circularChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6 d-flex justify-content-center">
+            <div class="card compact-card text-center shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon-container mb-2">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                    <h6 class="card-title">Add New Company and Taxi</h6>
+                    <a href="@Url.Action("AddTaxiCompany", "TaxiBooking")" class="dashboard-link mt-auto">Add</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -53,7 +113,7 @@
         data: {
             labels: ['Bus Reservations Used', 'Taxi Reservations Used', 'Available'],
             datasets: [{
-                data: [45, 35, 20], 
+                data: [45, 35, 20],
                 backgroundColor: ['#42a5f5', '#66bb6a', '#ffd54f'],
                 hoverOffset: 4
             }]
@@ -61,11 +121,6 @@
         options: {
             responsive: true,
             cutout: '70%',
-            animation: {
-                animateRotate: true,
-                loop: true,
-                duration: 3000
-            },
             plugins: {
                 legend: {
                     display: true,
@@ -78,91 +133,73 @@
 
 <style>
     body {
-        background-color: #f0f2f5;
+        background-color: #f7f9fc;
         font-family: 'Poppins', sans-serif;
         color: #333;
     }
 
     .dashboard-title {
-        font-size: 2.5rem;
+        font-size: 2rem;
         color: #1a237e;
         text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
     }
 
     .dashboard-container {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
-        flex-wrap: wrap;
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
     }
 
-    .dashboard-card {
-        flex: 1 1 250px;
-        max-width: 250px;
-        border-radius: 12px;
-        padding: 20px;
-        background: linear-gradient(135deg, #2196f3, #64b5f6);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        color: #ffffff;
+    .compact-card {
+        height: 200px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #4f8bff, #6fb1fc);
+        color: #fff;
         text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
-        .dashboard-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        .compact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
-    .card-icon {
-        font-size: 2.2rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin-bottom: 10px;
-    }
-
-    .dashboard-card h3 {
-        font-size: 1.3rem;
-        font-weight: 600;
+    .icon-container {
         color: #ffd54f;
-        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255, 213, 79, 0.15);
+        border-radius: 50%;
+        margin: 0 auto;
     }
 
-    .stat-number {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #fff;
-    }
-
-    .dashboard-card p {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 10px;
+    .compact-card .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 5px;
     }
 
     .dashboard-link {
-        display: inline-block;
-        padding: 8px 16px;
-        font-size: 0.9rem;
+        padding: 5px 10px;
+        font-size: 0.85rem;
         color: #333;
         background-color: #ffd54f;
-        border-radius: 50px;
-        text-decoration: none;
+        border-radius: 20px;
         font-weight: 600;
-        transition: background-color 0.3s, transform 0.2s;
-        box-shadow: 0 5px 10px rgba(255, 193, 7, 0.4);
+        box-shadow: 0 4px 8px rgba(255, 213, 79, 0.4);
+        text-decoration: none;
+        margin-top: auto;
     }
 
         .dashboard-link:hover {
             background-color: #ffc107;
             transform: scale(1.05);
         }
-
-    .circular-chart-container {
-        max-width: 300px;
-        margin: auto;
-    }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
