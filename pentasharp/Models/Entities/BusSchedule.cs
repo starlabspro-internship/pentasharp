@@ -16,7 +16,10 @@ namespace pentasharp.Models.Entities
         public DateTime ArrivalTime { get; set; }  
 
         [Required]
-        public decimal Price { get; set; }  
+        public decimal Price { get; set; }
+
+        [Required]
+        public int AvailableSeats { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  

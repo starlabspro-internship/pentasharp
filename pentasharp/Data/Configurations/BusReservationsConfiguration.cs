@@ -27,6 +27,12 @@ namespace pentasharp.Data.Configurations
             builder.Property(br => br.ReservationDate)
                 .IsRequired();
 
+            builder.Property(br => br.TotalAmount).HasPrecision(18, 2)
+                .IsRequired();
+
+            builder.Property(br => br.PaymentStatus)
+                .IsRequired();
+
             builder.Property(br => br.NumberOfSeats)
                 .IsRequired();
 

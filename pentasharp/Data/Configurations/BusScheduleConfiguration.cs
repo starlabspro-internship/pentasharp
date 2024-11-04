@@ -35,6 +35,9 @@ namespace pentasharp.Data.Configurations
                 .HasColumnType("decimal(18, 2)")
                 .HasPrecision(18, 2);
 
+            builder.Property(bs => bs.AvailableSeats)
+                .IsRequired();
+
             builder.Property(bs => bs.Status)
                 .IsRequired();
 

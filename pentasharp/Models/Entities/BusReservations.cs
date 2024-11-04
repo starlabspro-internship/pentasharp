@@ -13,7 +13,13 @@ namespace pentasharp.Models.Entities
         public DateTime ReservationDate { get; set; }  
 
         [Required]
-        public int NumberOfSeats { get; set; } 
+        public int NumberOfSeats { get; set; }
+
+        [Required]
+        public decimal TotalAmount { get; set; }  
+
+        [Required]
+        public PaymentStatus PaymentStatus { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
