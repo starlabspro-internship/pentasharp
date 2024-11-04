@@ -35,5 +35,9 @@ namespace pentasharp.Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<TaxiReservations> TaxiReservations { get; set; } = new List<TaxiReservations>();
+
+        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
+        public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
+
     }
 }
