@@ -1,2 +1,6 @@
 Project Documentation (2).txt
 .vs/
+bin/
+obj/
+./pentasharp/bin
+./pentasharp/obj
