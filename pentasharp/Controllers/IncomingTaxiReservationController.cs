@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication1.Controllers
 {
-    public class TaxiReservationController : Controller
+    public class IncomingTaxiReservationController : Controller
     {
-        public IActionResult TaxiReservations()
+        public IActionResult IncomingReservations()
         {
             return View();
         }

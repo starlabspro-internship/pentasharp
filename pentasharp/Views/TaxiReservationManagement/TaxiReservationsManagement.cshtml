@@ -1,20 +1,20 @@
 @{
-    ViewData["Title"] = "Taxi Bookings Management Dashboard";
+    ViewData["Title"] = "Taxi Reservations Management";
 }
 
 <div class="container my-5">
-    <h1 class="text-center fw-bold text-primary mb-4">Taxi Bookings Management Dashboard</h1>
+    <h1 class="text-center mb-4 fw-bold text-primary">Taxi Reservations Dashboard</h1>
 
     <div class="row g-4 justify-content-center">
         <div class="col-md-4 d-flex">
             <div class="card text-center shadow-sm action-card flex-fill">
                 <div class="card-body d-flex flex-column align-items-center justify-content-between">
                     <div class="icon-container mb-3">
-                        <i class="fas fa-user-clock fa-3x text-primary"></i>
+                        <i class="fas fa-calendar-check fa-3x text-primary"></i>
                     </div>
-                    <h5 class="card-title text-primary fw-bold">Incoming Bookings</h5>
-                    <p class="card-text text-muted">View and confirm new taxi bookings.</p>
-                    <a href="@Url.Action("IncomingBookings", "TaxiBooking")" class="btn btn-outline-primary">View Bookings</a>
+                    <h5 class="card-title text-primary fw-bold">Incoming Reservations</h5>
+                    <p class="card-text text-muted">View and confirm upcoming taxi reservations.</p>
+                    <a href="@Url.Action("IncomingReservations", "IncomingTaxiReservation")" class="btn btn-outline-primary">View Incoming Reservations</a>
                 </div>
             </div>
         </div>
@@ -23,11 +23,11 @@
             <div class="card text-center shadow-sm action-card flex-fill">
                 <div class="card-body d-flex flex-column align-items-center justify-content-between">
                     <div class="icon-container mb-3">
-                        <i class="fas fa-taxi fa-3x text-primary"></i>
+                        <i class="fas fa-list-alt fa-3x text-primary"></i>
                     </div>
-                    <h5 class="card-title text-primary fw-bold">Manage Current Bookings</h5>
-                    <p class="card-text text-muted">Edit and manage ongoing taxi bookings.</p>
-                    <a href="@Url.Action("ManageCurrentBookings", "TaxiBooking")" class="btn btn-outline-primary">Manage Bookings</a>
+                    <h5 class="card-title text-primary fw-bold">Manage Current Reservations</h5>
+                    <p class="card-text text-muted">Manage and update details for ongoing reservations.</p>
+                    <a href="@Url.Action("ManageCurrentReservations", "TaxiReservationManagement")" class="btn btn-outline-primary">Manage Reservations</a>
                 </div>
             </div>
         </div>
@@ -61,6 +61,10 @@
         align-items: center;
         justify-content: center;
         background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    .btn {
+        margin-top: auto;
     }
 </style>
 
