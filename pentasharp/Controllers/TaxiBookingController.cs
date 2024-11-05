@@ -9,22 +9,7 @@ namespace WebApplication1.Controllers
 			return View();
 		}
 
-        public IActionResult TaxiBookingsManagement()
-        {
-            return View();
-		}
-
 		public IActionResult IncomingBookings()
-		{
-			return View();
-		}
-
-        public IActionResult ManageCurrentBookings()
-        {
-            return View();
-        }
-
-        public IActionResult AddTaxiCompany()
 		{
 			return View();
 		}

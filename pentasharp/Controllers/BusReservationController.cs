@@ -14,15 +14,6 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
-        public IActionResult ConfirmPassengers()
-        {
-            return View();
-        }
-
-        public IActionResult ViewPassangers()
-        { 
-            return View();
-        }
         public IActionResult ManageBusSchedules()
         {
             return View();
