@@ -12,22 +12,23 @@ namespace pentasharp.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Bus",
+                name: "Buses",
                 columns: table => new
                 {
                     BusId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BusCompanyId = table.Column<int>(type: "int", nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    BusNumber = table.Column<int>(type: "int", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Bus", x => x.BusId);
+                    table.PrimaryKey("PK_Buses", x => x.BusId);
                     table.ForeignKey(
-                        name: "FK_Bus_BusCompanies_BusCompanyId",
+                        name: "FK_Buses_BusCompanies_BusCompanyId",
                         column: x => x.BusCompanyId,
                         principalTable: "BusCompanies",
                         principalColumn: "BusCompanyId",
@@ -35,8 +36,8 @@ namespace pentasharp.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bus_BusCompanyId",
-                table: "Bus",
+                name: "IX_Buses_BusCompanyId",
+                table: "Buses",
                 column: "BusCompanyId");
         }
 
@@ -44,7 +45,7 @@ namespace pentasharp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Bus");
+                name: "Buses");
         }
     }
 }

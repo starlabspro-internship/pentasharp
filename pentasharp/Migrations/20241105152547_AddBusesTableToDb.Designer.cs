@@ -12,8 +12,8 @@ using pentasharp.Data;
 namespace pentasharp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241105101225_AddBusRoutesTableToDb")]
-    partial class AddBusRoutesTableToDb
+    [Migration("20241105152547_AddBusesTableToDb")]
+    partial class AddBusesTableToDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,36 +24,6 @@ namespace pentasharp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("pentasharp.Models.Entities.Bus", b =>
-                {
-                    b.Property<int>("BusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
-
-                    b.Property<int>("BusCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BusId");
-
-                    b.HasIndex("BusCompanyId");
-
-                    b.ToTable("Bus");
-                });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
                 {
@@ -120,6 +90,39 @@ namespace pentasharp.Migrations
                     b.HasKey("RouteId");
 
                     b.ToTable("BusRoutes");
+                });
+
+            modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
+                {
+                    b.Property<int>("BusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
+
+                    b.Property<int>("BusCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("BusId");
+
+                    b.HasIndex("BusCompanyId");
+
+                    b.ToTable("Buses");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
@@ -305,7 +308,7 @@ namespace pentasharp.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.Bus", b =>
+            modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
                 {
                     b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
                         .WithMany("Buses")

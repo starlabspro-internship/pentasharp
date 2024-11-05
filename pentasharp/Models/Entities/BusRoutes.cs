@@ -9,18 +9,11 @@ namespace pentasharp.Models.Entities
 
         [Required]
         [MaxLength(100)]
-        public string RouteName { get; set; } = string.Empty;
+        public string FromLocation { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
-        public string StartLocation { get; set; } = string.Empty;
-
-        [Required]
-        [MaxLength(100)]
-        public string EndLocation { get; set; } = string.Empty;
-
-        [Required]
-        public double Distance { get; set; }  
+        public string ToLocation { get; set; } = string.Empty;
 
         [Required]
         public TimeSpan EstimatedDuration { get; set; } 

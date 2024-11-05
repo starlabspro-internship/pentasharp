@@ -23,20 +23,13 @@ namespace pentasharp.Data.Configurations
             builder.Property(br => br.RouteId)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(br => br.RouteName)
+            builder.Property(br => br.FromLocation)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(br => br.StartLocation)
+            builder.Property(br => br.ToLocation)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            builder.Property(br => br.EndLocation)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            builder.Property(br => br.Distance)
-                .IsRequired();
 
             builder.Property(br => br.EstimatedDuration)
                 .IsRequired();
@@ -51,7 +44,14 @@ namespace pentasharp.Data.Configurations
 
         private void ConfigureIndexes(EntityTypeBuilder<BusRoutes> builder)
         {
-            builder.HasIndex(br => br.RouteName);
+            builder.HasIndex(br => br.FromLocation)
+                .HasDatabaseName("IX_BusRoutes_FromLocation");
+
+            builder.HasIndex(br => br.ToLocation)
+                .HasDatabaseName("IX_BusRoutes_ToLocation");
+            
+            builder.HasIndex(br => new { br.FromLocation, br.ToLocation })
+                .HasDatabaseName("IX_BusRoutes_FromToLocation");
         }
     }
 }

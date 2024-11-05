@@ -4,9 +4,9 @@ using pentasharp.Models.Entities;
 
 namespace pentasharp.Data.Configurations
 {
-    public class BusConfiguration : IEntityTypeConfiguration<Bus>
+    public class BusesConfiguration : IEntityTypeConfiguration<Buses>
     {
-        public void Configure(EntityTypeBuilder<Bus> builder)
+        public void Configure(EntityTypeBuilder<Buses> builder)
         {
             ConfigureKeys(builder);
             ConfigureProperties(builder);
@@ -15,20 +15,23 @@ namespace pentasharp.Data.Configurations
             ConfigureRelationships(builder);
         }
 
-        private void ConfigureKeys(EntityTypeBuilder<Bus> builder) 
+        private void ConfigureKeys(EntityTypeBuilder<Buses> builder) 
         {
             builder.HasKey(b => b.BusId);
         }
 
-        private void ConfigureProperties(EntityTypeBuilder<Bus> builder)
+        private void ConfigureProperties(EntityTypeBuilder<Buses> builder)
         {
             builder.Property(b => b.BusId)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(b => b.Capacity)
+            builder.Property(b => b.Status)
                 .IsRequired();
 
-            builder.Property(b => b.Status)
+            builder.Property(b => b.BusNumber)
+                .IsRequired();
+
+            builder.Property(b => b.Capacity)
                 .IsRequired();
 
             builder.Property(b => b.CreatedAt)
@@ -38,18 +41,18 @@ namespace pentasharp.Data.Configurations
             builder.Property(b => b.UpdatedAt);
         }
 
-        private void ConfigureIndexes(EntityTypeBuilder<Bus> builder)
+        private void ConfigureIndexes(EntityTypeBuilder<Buses> builder)
         {
             builder.HasIndex(b => b.Status);
         }
 
-        private void ConfigureDefaults(EntityTypeBuilder<Bus> builder)
+        private void ConfigureDefaults(EntityTypeBuilder<Buses> builder)
         {
             builder.Property(b => b.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
         }
 
-        private void ConfigureRelationships(EntityTypeBuilder<Bus> builder)
+        private void ConfigureRelationships(EntityTypeBuilder<Buses> builder)
         {
             builder.HasOne(b => b.BusCompany)
                 .WithMany(bc => bc.Buses)

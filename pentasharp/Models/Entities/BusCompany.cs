@@ -16,7 +16,7 @@ namespace pentasharp.Models.Entities
         [Required]  
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<Bus> Buses { get; set; } = new List<Bus>();
+        public ICollection<Buses> Buses { get; set; } = new List<Buses>();
 
     }
 }

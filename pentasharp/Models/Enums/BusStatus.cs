@@ -2,9 +2,7 @@
 {
     public enum BusStatus
     {
-        Available,
-        Busy,
-        Start,
-        End
+        Active,
+        Inactive,
     }
 }

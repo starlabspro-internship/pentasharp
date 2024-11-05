@@ -22,36 +22,6 @@ namespace pentasharp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("pentasharp.Models.Entities.Bus", b =>
-                {
-                    b.Property<int>("BusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
-
-                    b.Property<int>("BusCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BusId");
-
-                    b.HasIndex("BusCompanyId");
-
-                    b.ToTable("Bus");
-                });
-
             modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
                 {
                     b.Property<int>("BusCompanyId")
@@ -90,23 +60,15 @@ namespace pentasharp.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Distance")
-                        .HasColumnType("float");
-
-                    b.Property<string>("EndLocation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<TimeSpan>("EstimatedDuration")
                         .HasColumnType("time");
 
-                    b.Property<string>("RouteName")
+                    b.Property<string>("FromLocation")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("StartLocation")
+                    b.Property<string>("ToLocation")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -117,6 +79,39 @@ namespace pentasharp.Migrations
                     b.HasKey("RouteId");
 
                     b.ToTable("BusRoutes");
+                });
+
+            modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
+                {
+                    b.Property<int>("BusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
+
+                    b.Property<int>("BusCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("BusId");
+
+                    b.HasIndex("BusCompanyId");
+
+                    b.ToTable("Buses");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
@@ -302,7 +297,7 @@ namespace pentasharp.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.Bus", b =>
+            modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
                 {
                     b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
                         .WithMany("Buses")
