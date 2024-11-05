@@ -13,6 +13,9 @@ namespace pentasharp.Data
         public DbSet<TaxiCompany> TaxiCompanies { get; set; }
         public DbSet<Taxi> Taxis { get; set; }
         public DbSet<TaxiReservations> TaxiReservations { get; set; }
+        public DbSet<BusCompany> BusCompanies { get; set; }
+        public DbSet<Bus> Bus { get; set; }
+        public DbSet<BusRoutes> BusRoutes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            base.OnModelCreating(modelBuilder);
