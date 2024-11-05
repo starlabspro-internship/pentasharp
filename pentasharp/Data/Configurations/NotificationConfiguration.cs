@@ -14,7 +14,7 @@ namespace pentasharp.Data.Configurations
 
         private void ConfigureKeys(EntityTypeBuilder<Notifications> builder)
         {
-            builder.HasKey(tb => tb.BookingId);
+            builder.HasKey(n => n.NotificationId);
         }
 
         private void ConfigureProperties(EntityTypeBuilder<Notifications> builder)
