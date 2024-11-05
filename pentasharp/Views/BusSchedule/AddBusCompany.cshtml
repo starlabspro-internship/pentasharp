@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "Manage Companies and Buses";
+}
+
+<div class="container my-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Add Bus Company</h3>
+                <form asp-action="AddCompany" asp-controller="Company" method="post">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" id="companyName" name="companyName" class="form-control" required placeholder="Enter Company Name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyAddress" class="form-label">Address</label>
+                        <input type="text" id="companyAddress" name="companyAddress" class="form-control" required placeholder="Enter Company Address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <input type="tel" id="contactNumber" name="contactNumber" class="form-control" required placeholder="Enter Contact Number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="Enter Company Email">
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Company</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Add Bus</h3>
+                <form asp-action="AddBus" asp-controller="Bus" method="post">
+                    <div class="mb-3">
+                        <label for="busNumber" class="form-label">Bus Number</label>
+                        <input type="text" id="busNumber" name="busNumber" class="form-control" required placeholder="Enter Bus Number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Select Company</label>
+                        <select id="company" name="companyId" class="form-select" required>
+                            <option value="" disabled selected>Select Company</option>
+                            <option value="1">Company A</option>
+                            <option value="2">Company B</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Capacity</label>
+                        <input type="number" id="capacity" name="capacity" class="form-control" required placeholder="Enter Bus Capacity">
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Bus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+        color: #007bff;
+        font-weight: 700;
+    }
+
+    h3 {
+        color: #343a40;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
