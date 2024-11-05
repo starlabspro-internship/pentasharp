@@ -58,13 +58,17 @@ namespace pentasharp.Data.Configurations
         private void ConfigureRelationships(EntityTypeBuilder<Taxi> builder)
         {
             builder.HasOne(t => t.TaxiCompany)
-                .WithMany(tc => tc.Taxis)
-                .HasForeignKey(t => t.TaxiCompanyId)
-                .OnDelete(DeleteBehavior.Cascade);
+        .WithMany(tc => tc.Taxis)
+        .HasForeignKey(t => t.TaxiCompanyId)
+        .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(t => t.TaxiReservations)
-                .WithOne(tr => tr.Taxi) 
-                .HasForeignKey(tr => tr.TaxiId); 
+                .WithOne(tr => tr.Taxi)
+                .HasForeignKey(tr => tr.TaxiId);
+
+            builder.HasMany(t => t.TaxiBookings)
+                .WithOne(tb => tb.Taxi)
+                .HasForeignKey(tb => tb.TaxiId);
         }
     }
 }
