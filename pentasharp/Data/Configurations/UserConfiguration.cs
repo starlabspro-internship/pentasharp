@@ -66,8 +66,16 @@ namespace pentasharp.Data.Configurations
         private void ConfigureRelationships(EntityTypeBuilder<User> builder)
         {
             builder.HasMany(u => u.TaxiReservations)
-                .WithOne(tr => tr.User) 
-                .HasForeignKey(tr => tr.UserId); 
+                .WithOne(tr => tr.User)
+                .HasForeignKey(tr => tr.UserId);
+
+            builder.HasMany(u => u.TaxiBookings)
+                .WithOne(tb => tb.User)
+                .HasForeignKey(tb => tb.UserId);
+
+            builder.HasMany(u => u.Notifications)
+                .WithOne(n => n.User)
+                .HasForeignKey(n => n.UserId);
         }
     }
 }

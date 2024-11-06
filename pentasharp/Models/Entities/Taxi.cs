@@ -34,5 +34,8 @@ namespace pentasharp.Models.Entities
         public TaxiCompany TaxiCompany { get; set; } = null!;
 
         public ICollection<TaxiReservations> TaxiReservations { get; set; } = new List<TaxiReservations>();
+
+        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
+
     }
 }
