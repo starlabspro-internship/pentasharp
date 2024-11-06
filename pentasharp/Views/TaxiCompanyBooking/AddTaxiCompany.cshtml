@@ -1,0 +1,107 @@
+@{
+    ViewData["Title"] = "Add Taxi Company & Taxi";
+}
+
+<div class="container my-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Add Taxi Company</h3>
+                <form id="companyForm">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="companyName" placeholder="Enter Company Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyAddress" class="form-label">Company Address</label>
+                        <input type="text" class="form-control" id="companyAddress" placeholder="Enter Company Address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyPhone" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="companyPhone" placeholder="Enter Contact Number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="companyEmail" placeholder="Enter Company Email" required>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-primary btn-lg px-4" onclick="saveCompany()">Save Company</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Add Taxi</h3>
+                <form id="taxiForm">
+                    <div class="mb-3">
+                        <label for="companySelect" class="form-label">Select Company</label>
+                        <select id="companySelect" class="form-select" required>
+                            <option value="">Select Company</option>
+                            <option value="1">Company A</option>
+                            <option value="2">Company B</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="licensePlate" class="form-label">License Plate</label>
+                        <input type="text" class="form-control" id="licensePlate" placeholder="Enter License Plate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="driverName" class="form-label">Driver Name</label>
+                        <input type="text" class="form-control" id="driverName" placeholder="Enter Driver Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="driverPhone" class="form-label">Driver Contact Number</label>
+                        <input type="tel" class="form-control" id="driverPhone" placeholder="Enter Driver Contact Number" required>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-primary btn-lg px-4" onclick="saveTaxi()">Save Taxi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function saveCompany() {
+
+        alert("Company saved successfully!");
+    }
+
+    function saveTaxi() {
+
+        alert("Taxi saved successfully!");
+    }
+</script>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+        color: #007bff;
+        font-weight: 700;
+    }
+
+    h3 {
+        color: #343a40;
+    }
+
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-outline-success:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
