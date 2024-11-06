@@ -5,16 +5,20 @@ using pentasharp.Data;
 using pentasharp.Models.Entities;
 using System.Text;
 using pentasharp.ViewModel.Authenticate;
+using AutoMapper;
 
 namespace WebApplication1.Controllers
 {
     public class AuthenticateController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public AuthenticateController(AppDbContext context)
+        public AuthenticateController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+
         }
 
         public IActionResult Register()
@@ -34,18 +38,16 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    PasswordHash = HashPassword(model.Password)
-                };
+                // Use AutoMapper to map the model to the User entity
+                var user = _mapper.Map<User>(model);
+                user.PasswordHash = HashPassword(model.Password);  // Handle PasswordHash separately
 
                 _context.Users.Add(user);
                 _context.SaveChanges();
+
                 return RedirectToAction("Index", "Home");
             }
+
             return View(model);
         }
 
@@ -64,8 +66,8 @@ namespace WebApplication1.Controllers
         }
         public IActionResult UserList()
         {
-            var users = _context.Users.ToList();  
-            return View(users); 
+            var users = _context.Users.ToList();
+            return View(users);
         }
 
 
@@ -77,14 +79,8 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            var model = new EditUserViewModel
-            {
-                UserId = user.UserId,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
-
+            // Map User to EditUserViewModel
+            var model = _mapper.Map<EditUserViewModel>(user);
             return View(model);
         }
 
@@ -97,13 +93,12 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Email = model.Email;
+            // Map the updated properties from the view model to the User entity
+            _mapper.Map(model, user);
 
             if (!string.IsNullOrEmpty(model.Password))
             {
-                user.PasswordHash = HashPassword(model.Password);
+                user.PasswordHash = HashPassword(model.Password);  // Update password if provided
             }
 
             _context.Users.Update(user);
@@ -118,7 +113,7 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
-            return View(user);  
+            return View(user);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -129,8 +124,9 @@ namespace WebApplication1.Controllers
             if (user != null)
             {
                 _context.Users.Remove(user);
-                _context.SaveChanges(); 
+                _context.SaveChanges();
             }
-            return RedirectToAction("UserList"); 
+            return RedirectToAction("UserList");
+        }
     }
 }
