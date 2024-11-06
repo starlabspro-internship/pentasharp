@@ -1,0 +1,29 @@
+@model List<pentasharp.Models.Entities.User>
+
+
+    <h2>User List</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Authenticate", new { id = user.UserId })">Edit</a> |
+                    <a href="@Url.Action("Delete", "Authenticate", new { id = user.UserId })">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
