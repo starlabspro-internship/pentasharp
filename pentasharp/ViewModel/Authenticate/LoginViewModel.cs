@@ -14,7 +14,7 @@ namespace pentasharp.ViewModel.Authenticate
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        /// <summary>0
+        /// <summary>
         /// The user's password.
         /// </summary>
         [Required]

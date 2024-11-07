@@ -1,21 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [AdminOnlyFilter]
     public class BusSchedulePassengerController : Controller
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            var isAdmin = HttpContext.Session.GetString("IsAdmin") == "true";
-
-            if (!isAdmin)
-            {
-                context.Result = RedirectToAction("Index", "Home");
-            }
-
-            base.OnActionExecuting(context);
-        }
         public IActionResult ConfirmPassengers()
         {
             return View();

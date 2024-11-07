@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
 using AutoMapper;
 using pentasharp.Services;
+using pentasharp.Mappings;
 
 namespace WebApplication1
 {
@@ -13,8 +14,9 @@ namespace WebApplication1
 
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddAutoMapper(typeof(AdminProfile));
 
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -23,10 +25,12 @@ namespace WebApplication1
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); 
-                options.Cookie.HttpOnly = true;                 
-                options.Cookie.IsEssential = true;             
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
+
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -39,7 +43,7 @@ namespace WebApplication1
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-               
+
                 app.UseHsts();
             }
 
@@ -49,17 +53,6 @@ namespace WebApplication1
             app.UseRouting();
 
             app.UseSession();
-
-            //app.Use(async (context, next) =>
-            //{
-            //    var path = context.Request.Path.ToString().ToLower();
-            //    if (!context.Session.Keys.Contains("UserId") && !path.Contains("/authenticate/login") && !path.Contains("/authenticate/register"))
-            //    {
-            //        context.Response.Redirect("/Authenticate/Login");
-            //        return;
-            //    }
-            //    await next();
-            //});
 
             app.UseAuthorization();
 
