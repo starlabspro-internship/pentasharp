@@ -16,7 +16,10 @@ namespace pentasharp.Data
         public DbSet<BusSchedule> BusSchedules { get; set; }
         public DbSet<BusRouteAssignments> BusRouteAssignments { get; set; }
         public DbSet<BusReservations> BusReservations { get; set; }
-
+        public DbSet<BusCompany> BusCompanies { get; set; }
+        public DbSet<Buses> Buses { get; set; }
+        public DbSet<BusRoutes> BusRoutes { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            base.OnModelCreating(modelBuilder);

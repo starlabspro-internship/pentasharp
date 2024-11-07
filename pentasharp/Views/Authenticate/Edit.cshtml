@@ -1,0 +1,25 @@
+@model pentasharp.ViewModel.Authenticate.EditUserViewModel
+
+<h2>Edit User</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label for="FirstName">First Name</label>
+        <input type="text" id="FirstName" name="FirstName" class="form-control" value="@Model.FirstName" />
+    </div>
+    <div class="form-group">
+        <label for="LastName">Last Name</label>
+        <input type="text" id="LastName" name="LastName" class="form-control" value="@Model.LastName" />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" id="Email" name="Email" class="form-control" value="@Model.Email" />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" id="Password" name="Password" class="form-control" />
+        <small class="form-text text-muted">Leave blank if you don't want to change the password.</small>
+    </div>
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
