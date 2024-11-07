@@ -6,6 +6,7 @@ using pentasharp.Models.Entities;
 using System.Text;
 using pentasharp.ViewModel.Authenticate;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1.Controllers
 {
@@ -25,12 +26,6 @@ namespace WebApplication1.Controllers
         {
             var model = new RegisterViewModel();
             return View(model);
-        }
-
-
-        public IActionResult Login()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -66,6 +61,13 @@ namespace WebApplication1.Controllers
         }
         public IActionResult UserList()
         {
+            var isAdmin = HttpContext.Session.GetString("IsAdmin") == "true";
+
+            if (!isAdmin)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var users = _context.Users.ToList();
             return View(users);
         }
@@ -127,6 +129,40 @@ namespace WebApplication1.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("UserList");
+        }
+
+        public IActionResult Login()
+        {
+            return View(new LoginViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null || user.PasswordHash != HashPassword(model.Password))
+            {
+                ModelState.AddModelError(string.Empty, "Email or password are incorrect.");
+                return View(model);
+            }
+
+            HttpContext.Session.SetString("UserId", user.UserId.ToString());
+            HttpContext.Session.SetString("FirstName", user.FirstName);
+            HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.Response.Cookies.Delete("UserId");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

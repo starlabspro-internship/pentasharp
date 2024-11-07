@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace WebApplication1.Controllers
 {
     public class BusReservationController : Controller
     {
-
-        public IActionResult BusReservations()
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            return View();
-        }
+            var isAdmin = HttpContext.Session.GetString("IsAdmin") == "true";
 
+            if (!isAdmin)
+            {
+                context.Result = RedirectToAction("Index", "Home");
+            }
+
+            base.OnActionExecuting(context);
+        }
         public IActionResult BusReservationsManagement()
         {
             return View();
