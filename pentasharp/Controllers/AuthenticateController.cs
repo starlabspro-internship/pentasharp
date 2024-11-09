@@ -9,6 +9,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using pentasharp.Models.DTOs;
 using pentasharp.Models.Enums;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
@@ -65,15 +66,10 @@ namespace WebApplication1.Controllers
                 return builder.ToString();
             }
         }
+
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         public IActionResult UserList()
         {
-            var isAdmin = HttpContext.Session.GetString("IsAdmin") == "true";
-
-            if (!isAdmin)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             var users = _context.Users.ToList();
             return View(users);
         }
@@ -168,13 +164,13 @@ namespace WebApplication1.Controllers
 
             if (user.PasswordHash != HashPassword(model.Password))
             {
-                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.USER_NOT_FOUND, "Invalid password.");
+                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.LOGIN_FAILED, "Incorrect password.");
 
-                ModelState.AddModelError(string.Empty, "Invalid password.");
+                ModelState.AddModelError(string.Empty, "Incorrect password.");
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
-                    return Json(new StandardResponse(ApiStatusEnum.USER_NOT_FOUND, model.Email, "Invalid password."));
+                    return Json(new StandardResponse(ApiStatusEnum.LOGIN_FAILED, model.Email, "Incorrect password."));
                 }
 
                 return View(model);

@@ -4,7 +4,7 @@ using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
-    [AdminOnlyFilter]
+    [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiReservationManagementController : Controller
     {
         public IActionResult TaxiReservationsManagement()

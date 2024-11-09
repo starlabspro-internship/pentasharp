@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using pentasharp.Data;
 using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
@@ -11,29 +12,23 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly AdminUserDto _adminUserDto;
 
-        public AdminSetupService(AppDbContext context, IMapper mapper)
+        public AdminSetupService(AppDbContext context, IMapper mapper, IOptions<AdminUserDto> adminUserDto)
         {
             _context = context;
             _mapper = mapper;
-
+            _adminUserDto = adminUserDto.Value;
         }
 
         public void EnsureAdminUserExists()
         {
             if (!_context.Users.Any(u => u.IsAdmin))
             {
-                var adminDto = new AdminUserDto
-                {
-                    FirstName = "Penta",
-                    LastName = "Sharp",
-                    Email = "pentasharp@gmail.com",
-                    Password = "Test123!"
-                };
 
-                var adminUser = _mapper.Map<User>(adminDto);
+                var adminUser = _mapper.Map<User>(_adminUserDto);
 
-                adminUser.PasswordHash = HashPassword(adminDto.Password);
+                adminUser.PasswordHash = HashPassword(_adminUserDto.Password);
 
                 _context.Users.Add(adminUser);
                 _context.SaveChanges();
