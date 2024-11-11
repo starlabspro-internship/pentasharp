@@ -1,0 +1,73 @@
+﻿@using pentasharp.ViewModel.Bus
+@model EditBusViewModel
+
+@{
+    ViewData["Title"] = "Edit Bus";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Edit Bus</h3>
+                <form asp-action="EditBus" asp-controller="BusScheduleCompany" method="post">
+                    <!-- Bus ID (Hidden) -->
+                    <input type="hidden" name="BusId" value="@Model.BusId" />
+
+                    <!-- Bus Number -->
+                    <!-- Status Dropdown -->
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select id="status" name="Status" class="form-control" asp-for="Status" asp-items="Model.StatusOptions">
+                            <option value="">Select Status</option>
+                        </select>
+                    </div>
+
+                    <!-- Capacity -->
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Capacity</label>
+                        <input type="number" id="capacity" name="Capacity" class="form-control" value="@Model.Capacity" required />
+                    </div>
+
+                    <!-- Bus Company Dropdown -->
+                    <div class="mb-3">
+                        <label for="busCompanyId" class="form-label">Bus Company</label>
+                        <select id="busCompanyId" name="BusCompanyId" class="form-control" asp-for="BusCompanyId" asp-items="@(new SelectList(Model.BusCompanies, "BusCompanyId", "CompanyName", Model.BusCompanyId))">
+                            <option value="">Select Company</option>
+                        </select>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styling for the form -->
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    h3 {
+        color: #343a40;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .form-label {
+        font-weight: bold;
+    }
+</style>

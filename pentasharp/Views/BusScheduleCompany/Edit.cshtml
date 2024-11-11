@@ -1,0 +1,56 @@
+﻿@using pentasharp.ViewModel.Bus
+@model BusCompanyViewModel
+
+@{
+    ViewData["Title"] = "Edit Bus Company";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Edit Bus Company</h3>
+                <form asp-action="Edit" asp-controller="BusScheduleCompany" method="post">
+                    <input type="hidden" name="Id" value="@Model.BusCompanyId" />
+
+                    <!-- Company Name -->
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" id="companyName" name="CompanyName" class="form-control" value="@Model.CompanyName" required />
+                    </div>
+
+                    <!-- Contact Number -->
+                    <div class="mb-3">
+                        <label for="contactInfo" class="form-label">Contact Number</label>
+                        <input type="tel" id="contactInfo" name="ContactInfo" class="form-control" value="@Model.ContactInfo" required />
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    h3 {
+        color: #343a40;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+</style>
