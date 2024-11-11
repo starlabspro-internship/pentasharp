@@ -56,3 +56,4 @@ namespace pentasharp.Models.Entities
         public BusCompany BusCompany { get; set; } = null!;
     }
 }
+
