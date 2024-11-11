@@ -1,6 +1,8 @@
 @{
     ViewData["Title"] = "Login";
+
 }
+@model pentasharp.ViewModel.Authenticate.LoginViewModel
 
 <div class="container d-flex min-vh-100 align-items-center justify-content-center">
     <div class="row login-container w-100">
@@ -17,22 +19,28 @@
                 <h3>Sign in</h3>
                 <p class="text-muted">Don't have an account? <a href="./Register">Sign up</a></p>
             </div>
-            <form action="#!">
+            <form asp-action="Login" method="post">
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
-                    <label for="email">Email</label>
+                    <input asp-for="Email" class="form-control" id="email" placeholder="name@example.com" required>
+                    <label asp-for="Email">Email</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="password" placeholder="Password" required>
-                    <label for="password">Password</label>
+                    <input asp-for="Password" class="form-control" id="password" placeholder="Password" required>
+                    <label asp-for="Password">Password</label>
                 </div>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="remember_me">
                     <label class="form-check-label" for="remember_me">Keep me logged in</label>
                 </div>
                 <div class="d-grid mb-3">
-                    <button class="btn btn-primary btn-lg" type="submit">Log in now</button>
+                    <button class="btn btn-primary btn-lg" type="submit">Log in</button>
                 </div>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="text-danger mb-3">
+                        @ViewData.ModelState[string.Empty]?.Errors.FirstOrDefault()?.ErrorMessage
+                    </div>
+                }
             </form>
             <div class="text-center mt-3">
                 <a href="#!" class="text-muted">Forgot password?</a>
