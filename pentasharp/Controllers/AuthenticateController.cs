@@ -6,31 +6,33 @@ using pentasharp.Models.Entities;
 using System.Text;
 using pentasharp.ViewModel.Authenticate;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using pentasharp.Models.DTOs;
+using pentasharp.Models.Enums;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
     public class AuthenticateController : Controller
     {
+
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<AuthenticateController> _logger;
 
-        public AuthenticateController(AppDbContext context, IMapper mapper)
+        public AuthenticateController(AppDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<AuthenticateController> logger)
         {
             _context = context;
             _mapper = mapper;
-
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public IActionResult Register()
         {
             var model = new RegisterViewModel();
             return View(model);
-        }
-
-
-        public IActionResult Login()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -64,6 +66,8 @@ namespace WebApplication1.Controllers
                 return builder.ToString();
             }
         }
+
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         public IActionResult UserList()
         {
             var users = _context.Users.ToList();
@@ -127,6 +131,75 @@ namespace WebApplication1.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("UserList");
+        }
+
+        public IActionResult Login()
+        {
+            return View(new LoginViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid input.");
+                return View(model);
+            }
+
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == model.Email);
+            if (user == null)
+            {
+                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.USER_NOT_FOUND, "User not found.");
+
+                ModelState.AddModelError(string.Empty, "User not found.");
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new StandardResponse(ApiStatusEnum.USER_NOT_FOUND, model.Email, "User not found."));
+                }
+
+                return View(model);
+            }
+
+            if (user.PasswordHash != HashPassword(model.Password))
+            {
+                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.LOGIN_FAILED, "Incorrect password.");
+
+                ModelState.AddModelError(string.Empty, "Incorrect password.");
+
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new StandardResponse(ApiStatusEnum.LOGIN_FAILED, model.Email, "Incorrect password."));
+                }
+
+                return View(model);
+            }
+
+            var session = _httpContextAccessor.HttpContext.Session;
+            session.SetString("UserId", user.UserId.ToString());
+            session.SetString("FirstName", user.FirstName);
+            session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+
+            _logger.LogInformation("User {Email} logged in successfully.", model.Email);
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new StandardResponse(ApiStatusEnum.OK, model.Email, "Login successful."));
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult Logout()
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            session.Clear();
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("UserId");
+
+            _logger.LogInformation("User logged out successfully.");
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

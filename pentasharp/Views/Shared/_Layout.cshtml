@@ -1,6 +1,9 @@
 ﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var isLoggedIn = ViewContext.HttpContext.Session.GetString("UserId") != null;
+    var userName = ViewContext.HttpContext.Session.GetString("FirstName");
+    var isAdmin = ViewContext.HttpContext.Session.GetString("IsAdmin") == "true";
 }
 
 <!DOCTYPE html>
@@ -28,6 +31,7 @@
             color: #ffffff !important;
             font-size: 1rem;
             transition: color 0.3s ease;
+            text-decoration: none !important;
         }
 
             .nav-link:hover {
@@ -64,6 +68,7 @@
 
                 .dropdown-menu-notification a:hover {
                     background-color: #f8f9fa;
+                    text-decoration: none !important;
                 }
 
         .badge-custom {
@@ -109,9 +114,12 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
-                        </li>
+                            @if (isAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                            }
                         @if (currentController == "Bus" && currentAction == "BusManagement")
                         {
                         <li class="nav-item">
@@ -126,22 +134,37 @@
                         }
                     </ul>
                     <ul class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-bell fa-lg text-white"></i>
-                                <span class="badge badge-custom position-absolute top-0 start-100 translate-middle">3</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notification" aria-labelledby="notificationDropdown">
-                                <li><a class="dropdown-item" href="#">New reservation from John Doe</a></li>
-                                <li><a class="dropdown-item" href="#">Bus #12 delayed by 15 mins</a></li>
-                                <li><a class="dropdown-item" href="#">Taxi #45 ready for pickup</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-center" asp-controller="Notification" asp-action="AllNotifications">View All Notifications</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-custom ms-3" onclick="location.href='@Url.Action("Login", "Authenticate")'">Login</button>
-                        </li>
+                            @if (isLoggedIn)
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-bell fa-lg text-white"></i>
+                                        <span class="badge badge-custom position-absolute top-0 start-100 translate-middle">3</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notification" aria-labelledby="notificationDropdown">
+                                        <li><a class="dropdown-item" href="#">New reservation from John Doe</a></li>
+                                        <li><a class="dropdown-item" href="#">Bus #12 delayed by 15 mins</a></li>
+                                        <li><a class="dropdown-item" href="#">Taxi #45 ready for pickup</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-center" asp-controller="Notification" asp-action="AllNotifications">View All Notifications</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user-circle"></i> Hello, @userName
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item dropdown-item-custom" asp-controller="Authenticate" asp-action="Logout">Logout</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <button type="button" class="btn btn-custom ms-3" onclick="location.href='@Url.Action("Login", "Authenticate")'">Login</button>
+                                </li>
+                            }
                     </ul>
                 </div>
             </div>

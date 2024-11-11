@@ -45,3 +45,4 @@ namespace pentasharp.Models.Entities
         public DateTime? UpdatedAt { get; set; }  
     }
 }
+

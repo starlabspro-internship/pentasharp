@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
 using pentasharp.Mappings;
@@ -10,9 +11,14 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.Intrinsics.X86;
 
+using Microsoft.AspNetCore.Mvc.Filters;
+using WebApplication1.Filters;
+
+
 
 namespace pentasharp.Controllers
 {
+    [ServiceFilter(typeof(AdminOnlyFilter))]
     public class BusScheduleCompanyController : Controller
     {
         private readonly AppDbContext _context;
@@ -222,7 +228,7 @@ namespace pentasharp.Controllers
             {
                 return NotFound();
             }
-            
+
             _context.Buses.Remove(bus);
             _context.SaveChanges();
 
@@ -230,5 +236,7 @@ namespace pentasharp.Controllers
         }
 
     }
+
+
 }
 
