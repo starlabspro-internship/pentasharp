@@ -116,7 +116,7 @@ namespace pentasharp.Controllers
         {
             var viewModel = new AddBusViewModel
             {
-                BusCompanies = _context.BusCompanies.ToList() 
+                BusCompanies = _context.BusCompanies.ToList()
             };
             return View(viewModel);
         }
