@@ -9,13 +9,12 @@ namespace pentasharp.Mappings
         public BusCompanyProfile()
         {
             CreateMap<BusCompany, BusCompanyViewModel>()
-                .ForMember(dest => dest.ContactInfo, opt => opt.MapFrom(src => src.ContactInfo)) // Assuming ContactNumber is a field in the entity
+                .ForMember(dest => dest.ContactInfo, opt => opt.MapFrom(src => src.ContactInfo))
                 .ReverseMap();
 
-            // Mapping for creating a BusCompany from BusCompanyViewModel
             CreateMap<BusCompanyViewModel, BusCompany>()
-                .ForMember(dest => dest.BusCompanyId, opt => opt.Ignore()) // Ignore BusCompanyId during creation
-                .ForMember(dest => dest.ContactInfo, opt => opt.MapFrom(src => src.ContactInfo)); // Map ContactInfo back to ContactNumber
+                .ForMember(dest => dest.BusCompanyId, opt => opt.Ignore())
+                .ForMember(dest => dest.ContactInfo, opt => opt.MapFrom(src => src.ContactInfo));
         }
     }
 }

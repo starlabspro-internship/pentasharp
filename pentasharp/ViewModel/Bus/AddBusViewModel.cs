@@ -14,10 +14,9 @@ namespace pentasharp.ViewModel.Bus
         [Required]
         public int? Capacity { get; set; }
         [Required]
-        public int? BusCompanyId { get; set; }  // The selected bus company ID
+        public int? BusCompanyId { get; set; }
 
         public BusCompany? BusCompany { get; set; }
-        public List<BusCompany> BusCompanies { get; set; } = new List<BusCompany>();  // List of bus companies for the dropdown
-
+        public List<BusCompany> BusCompanies { get; set; } = new List<BusCompany>();
     }
 }

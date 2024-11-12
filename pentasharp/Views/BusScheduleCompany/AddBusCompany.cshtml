@@ -65,91 +65,88 @@
                 }
             </div>
         </div>
-    </div>
-    <!-- Add Bus Form -->
-    <form action="AddBus" method="post">
-    <!-- Bus Number --> 
-    <div class="mb-3">
-        <label for="busNumber" class="form-label">Bus Number</label>
-        <input type="text" id="busNumber" name="BusNumber" class="form-control" required placeholder="Enter Bus Number" />
-    </div>
+    </div> <!-- Add Bus Form -->
+    <form asp-action="AddBus" asp-controller="BusScheduleCompany" method="post">
+        <!-- Bus Number -->
+        <div class="mb-3">
+            <label for="busNumber" class="form-label">Bus Number</label>
+            <input type="text" id="busNumber" name="BusNumber" class="form-control" required placeholder="Enter Bus Number" />
+        </div>
 
-    <!-- Capacity -->
-    <div class="mb-3">
-        <label for="capacity" class="form-label">Capacity</label>
-        <input type="number" id="capacity" name="Capacity" class="form-control" required placeholder="Enter Capacity" />
-    </div>
+        <!-- Capacity -->
+        <div class="mb-3">
+            <label for="capacity" class="form-label">Capacity</label>
+            <input type="number" id="capacity" name="Capacity" class="form-control" required placeholder="Enter Capacity" />
+        </div>
 
-    <!-- Bus Company Dropdown -->
-    <div class="mb-3">
-        <label for="busCompanyId" class="form-label">Bus Company</label>
-        <select id="busCompanyId" name="BusCompanyId" class="form-control">
-            <option value="">Select Company</option>
-            @foreach (var company in Model.BusCompanies)
-            {
-                <option value="@company.BusCompanyId">@company.CompanyName</option>
-            }
-        </select>
-    </div>
+        <!-- Bus Company Dropdown -->
+        <div class="mb-3">
+            <label for="busCompanyId" class="form-label">Bus Company</label>
+            <select id="busCompanyId" name="BusCompanyId" class="form-control">
+                <option value="">Select Company</option>
+                @foreach (var company in Model.BusCompanies)
+                {
+                    <option value="@company.BusCompanyId">@company.CompanyName</option>
+                }
+            </select>
+        </div>
 
-    <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary btn-lg px-4">Save Bus</button>
-    </div>
-</form>
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-4">Save Bus</button>
+        </div>
+    </form>
 
-<!-- List of Buses --> <div class="row justify-content-center mt-4">
-    <div class="col-md-10">
-        <div class="card shadow-lg p-4 rounded-4">
-            <h3 class="fw-bold text-secondary mb-3">Existing Buses</h3>
-            @if (Model.Buses != null && Model.Buses.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Bus Number</th>
-                                <th>Company</th>
-                                <th>Capacity</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var bus in Model.Buses)
-                            {
+    <!-- List of Buses --> <div class="row justify-content-center mt-4">
+        <div class="col-md-10">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Existing Buses</h3>
+                @if (Model.Buses != null && Model.Buses.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>@bus.BusNumber</td>
-                                    <td>@bus.BusCompany.CompanyName</td>
-                                    <td>@bus.Capacity</td>
-                                    <td>@bus.Status</td>
-                                   @* <td>@bus.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td> *@ <!-- Format CreatedAt -->
-                                    <td>
-                                        <a href="@Url.Action("EditBus", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-warning btn-sm me-2">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="@Url.Action("DeleteBus", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash-alt"></i> Delete
-                                        </a>
-                                    </td>
+                                    <th>Bus Number</th>
+                                    <th>Company</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                    <th></th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-info" role="alert">
-                    No buses available.
-                </div>
-            }
+                            </thead>
+                            <tbody>
+                                @foreach (var bus in Model.Buses)
+                                {
+                                    <tr>
+                                        <td>@bus.BusNumber</td>
+                                        <td>@bus.BusCompany.CompanyName</td>
+                                        <td>@bus.Capacity</td>
+                                        <td>@bus.Status</td>
+                                        @* <td>@bus.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td> *@ <!-- Format CreatedAt -->
+                                        <td>
+                                            <a href="@Url.Action("EditBusModel", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-warning btn-sm me-2">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="@Url.Action("DeleteBus", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        No buses available.
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
-</div>
-
-
 <!-- Styling for the form -->
 <style>
     .card {

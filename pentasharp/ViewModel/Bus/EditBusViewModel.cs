@@ -5,24 +5,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace pentasharp.ViewModel.Bus
 {
-            public class EditBusViewModel
-        {
-            public int BusId { get; set; }
+    public class EditBusViewModel
+    {
+        public int BusId { get; set; }
 
-          
-            public int BusNumber { get; set; }
+        public int BusNumber { get; set; }
 
         public BusStatus Status { get; set; }
 
         public int Capacity { get; set; }
 
         public SelectList StatusOptions => new SelectList(Enum.GetValues(typeof(BusStatus)));
-        public int BusCompanyId { get; set; }  // The selected bus company ID
-
+        public int BusCompanyId { get; set; } 
 
         public DateTime UpdatedAt { get; set; }
 
         public List<BusCompany> BusCompanies { get; set; } = new List<BusCompany>();
-        
+
     }
 }

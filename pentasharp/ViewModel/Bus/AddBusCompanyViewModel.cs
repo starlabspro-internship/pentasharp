@@ -8,7 +8,7 @@ namespace pentasharp.ViewModel.Bus
         public string CompanyName { get; set; }
         public string ContactInfo { get; set; }
 
-        public List<BusCompany> BusCompanies { get; set; } // List of companies for the dropdown
+        public List<BusCompany> BusCompanies { get; set; }
         public List<Buses> Buses { get; set; }
         public AddBusViewModel AddBusViewModel { get; set; }
 
