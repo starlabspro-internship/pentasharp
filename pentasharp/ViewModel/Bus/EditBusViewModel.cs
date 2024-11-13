@@ -30,7 +30,6 @@ namespace pentasharp.ViewModel.Bus
         /// Gets the available options for bus status as a select list.
         /// </summary>
         public SelectList StatusOptions => new SelectList(Enum.GetValues(typeof(BusStatus)));
-
         /// <summary>
         /// Gets or sets the identifier for the bus company.
         /// </summary>
@@ -39,11 +38,9 @@ namespace pentasharp.ViewModel.Bus
         /// Gets or sets the date and time when the bus information was last updated.
         /// </summary>
         public DateTime UpdatedAt { get; set; }
-
         /// <summary>
         /// Gets or sets the list of bus companies associated with this bus.
         /// </summary>
         public List<BusCompany> BusCompanies { get; set; } = new List<BusCompany>();
-
     }
 }

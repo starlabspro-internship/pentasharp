@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 
 namespace pentasharp.Controllers
 {
-    [Route("api/bus-schedule")]
+    [Route("api/BusSchedule")]
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class BusScheduleCompanyController : Controller
     {
@@ -28,7 +28,7 @@ namespace pentasharp.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [HttpGet("add-bus-company")]
+        [HttpGet("AddBusCompany")]
         public IActionResult AddBusCompany()
         {
             var busCompanies = _context.BusCompanies.ToList();
@@ -42,7 +42,7 @@ namespace pentasharp.Controllers
         }
 
 
-        [HttpPost("add-bus-company")]
+        [HttpPost("AddBusCompany")]
         public IActionResult AddBusCompany(BusCompanyViewModel busCompanyViewModel)
         {
             if (ModelState.IsValid)
@@ -55,7 +55,7 @@ namespace pentasharp.Controllers
             return View(busCompanyViewModel);
         }
 
-        [HttpGet("edit/{id}")]
+        [HttpGet("Edit/{id}")]
         public IActionResult Edit(int id)
         {
             var busCompany = _context.BusCompanies.FirstOrDefault(b => b.BusCompanyId == id);
@@ -67,7 +67,7 @@ namespace pentasharp.Controllers
             return View(viewModel);
         }
 
-        [HttpPost("edit/{id}")]
+        [HttpPost("Edit/{id}")]
         public IActionResult Edit(int id, BusCompanyViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -85,7 +85,7 @@ namespace pentasharp.Controllers
         }
 
 
-        [HttpGet("delete/{id}")]
+        [HttpGet("Delete/{id}")]
         public IActionResult Delete(int id)
         {
             var busCompany = _context.BusCompanies.FirstOrDefault(b => b.BusCompanyId == id);
@@ -97,7 +97,7 @@ namespace pentasharp.Controllers
             return View("DeleteBusCompany", viewModel);
         }
 
-        [HttpPost("delete-confirmed/{id}")]
+        [HttpPost("DeleteConfirmed/{id}")]
         public IActionResult DeleteConfirmed(int id)
         {
             var busCompany = _context.BusCompanies.FirstOrDefault(b => b.BusCompanyId == id);
@@ -110,7 +110,7 @@ namespace pentasharp.Controllers
             return RedirectToAction("AddBusCompany");
         }
 
-        [HttpGet("add-bus")]
+        [HttpGet("AddBus")]
 
         public IActionResult AddBus()
         {
@@ -120,7 +120,7 @@ namespace pentasharp.Controllers
             };
             return View(viewModel);
         }
-        [HttpPost("add-bus")]
+        [HttpPost("AddBus")]
         public IActionResult AddBus(AddBusViewModel addBusViewModel)
         {
             if (ModelState.IsValid)
@@ -139,7 +139,7 @@ namespace pentasharp.Controllers
             return RedirectToAction("AddBusCompany", "BusScheduleCompany");
         }
 
-        [HttpGet("edit-bus/{id}")]
+        [HttpGet("EditBus/{id}")]
         public IActionResult EditBusModel(int id)
         {
             var bus = _context.Buses.Include(b => b.BusCompany).FirstOrDefault(b => b.BusId == id);
@@ -147,31 +147,31 @@ namespace pentasharp.Controllers
             {
                 return NotFound();
             }
-            var model = _mapper.Map<EditBusViewModel>(bus);
-            model.BusCompanies = _context.BusCompanies.ToList();
-            return View(model);
+            var busmodel = _mapper.Map<EditBusViewModel>(bus);
+            busmodel.BusCompanies = _context.BusCompanies.ToList();
+            return View(busmodel);
         }
 
-        [HttpPost("edit-bus/{id}")]
-        public IActionResult EditBusModel(EditBusViewModel model)
+        [HttpPost("EditBus/{id}")]
+        public IActionResult EditBusModel(EditBusViewModel busmodel)
         {
             if (ModelState.IsValid)
             {
-                var bus = _context.Buses.FirstOrDefault(b => b.BusId == model.BusId);
+                var bus = _context.Buses.FirstOrDefault(b => b.BusId == busmodel.BusId);
                 if (bus == null)
                 {
                     return NotFound();
                 }
-                _mapper.Map(model, bus);
+                _mapper.Map(busmodel, bus);
                 bus.UpdatedAt = DateTime.UtcNow;
                 _context.SaveChanges();
                 return RedirectToAction("AddBusCompany");
             }
-            model.BusCompanies = _context.BusCompanies.ToList();
-            return View(model);
+            busmodel.BusCompanies = _context.BusCompanies.ToList();
+            return View(busmodel);
         }
 
-        [HttpGet("delete-bus/{id}")]
+        [HttpGet("DeleteBus/{id}")]
         public IActionResult DeleteBus(int id)
         {
             var bus = _context.Buses.Include(b => b.BusCompany).FirstOrDefault(b => b.BusId == id);
@@ -183,7 +183,7 @@ namespace pentasharp.Controllers
             return View("DeleteBus", viewModel);
         }
 
-        [HttpPost("delete-bus-confirmed/{id}")]
+        [HttpPost("DeleteBusConfirmed/{id}")]
         public IActionResult DeleteBusConfirmed(int id)
         {
             var bus = _context.Buses.FirstOrDefault(b => b.BusId == id);
