@@ -1,30 +1,30 @@
+@using pentasharp.ViewModel.Bus
+@model AddBusCompanyViewModel
+
+
 @{
     ViewData["Title"] = "Manage Companies and Buses";
 }
 
 <div class="container my-5">
-
     <div class="row justify-content-center">
+        <!-- Add Bus Company Form -->
         <div class="col-md-5 mb-4">
             <div class="card shadow-lg p-4 rounded-4">
                 <h3 class="fw-bold text-secondary mb-3">Add Bus Company</h3>
-                <form asp-action="AddCompany" asp-controller="Company" method="post">
+                <form asp-action="AddBusCompany" asp-controller="BusScheduleCompany" method="post">
+                    <!-- Company Name -->
                     <div class="mb-3">
                         <label for="companyName" class="form-label">Company Name</label>
-                        <input type="text" id="companyName" name="companyName" class="form-control" required placeholder="Enter Company Name">
+                        <input type="text" id="companyName" name="CompanyName" class="form-control" required placeholder="Enter Company Name" />
                     </div>
+
+                    <!-- Contact Number -->
                     <div class="mb-3">
-                        <label for="companyAddress" class="form-label">Address</label>
-                        <input type="text" id="companyAddress" name="companyAddress" class="form-control" required placeholder="Enter Company Address">
+                        <label for="contactInfo" class="form-label">Contact Number</label>
+                        <input type="tel" id="contactInfo" name="ContactInfo" class="form-control" required placeholder="Enter Contact Number" />
                     </div>
-                    <div class="mb-3">
-                        <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input type="tel" id="contactNumber" name="contactNumber" class="form-control" required placeholder="Enter Contact Number">
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" id="email" name="email" class="form-control" required placeholder="Enter Company Email">
-                    </div>
+
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-primary btn-lg px-4">Save Company</button>
                     </div>
@@ -32,35 +32,121 @@
             </div>
         </div>
 
+        <!-- List of Bus Companies -->
         <div class="col-md-5 mb-4">
             <div class="card shadow-lg p-4 rounded-4">
-                <h3 class="fw-bold text-secondary mb-3">Add Bus</h3>
-                <form asp-action="AddBus" asp-controller="Bus" method="post">
-                    <div class="mb-3">
-                        <label for="busNumber" class="form-label">Bus Number</label>
-                        <input type="text" id="busNumber" name="busNumber" class="form-control" required placeholder="Enter Bus Number">
+                <h3 class="fw-bold text-secondary mb-3">Existing Bus Companies</h3>
+                @if (Model.BusCompanies != null && Model.BusCompanies.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var company in Model.BusCompanies)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@company.CompanyName</strong> - @company.ContactInfo
+                                </div>
+                                <div>
+                                    <!-- Edit Button -->
+                                    <a href="@Url.Action("Edit", "BusScheduleCompany", new { id = company.BusCompanyId })" class="btn btn-warning btn-sm me-2">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <!-- Delete Button -->
+                                    <a href="@Url.Action("Delete", "BusScheduleCompany", new { id = company.BusCompanyId })" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No bus companies available.</p>
+                }
+            </div>
+        </div>
+    </div> <!-- Add Bus Form -->
+    <form asp-action="AddBus" asp-controller="BusScheduleCompany" method="post">
+        <!-- Bus Number -->
+        <div class="mb-3">
+            <label for="busNumber" class="form-label">Bus Number</label>
+            <input type="text" id="busNumber" name="BusNumber" class="form-control" required placeholder="Enter Bus Number" />
+        </div>
+
+        <!-- Capacity -->
+        <div class="mb-3">
+            <label for="capacity" class="form-label">Capacity</label>
+            <input type="number" id="capacity" name="Capacity" class="form-control" required placeholder="Enter Capacity" />
+        </div>
+
+        <!-- Bus Company Dropdown -->
+        <div class="mb-3">
+            <label for="busCompanyId" class="form-label">Bus Company</label>
+            <select id="busCompanyId" name="BusCompanyId" class="form-control">
+                <option value="">Select Company</option>
+                @foreach (var company in Model.BusCompanies)
+                {
+                    <option value="@company.BusCompanyId">@company.CompanyName</option>
+                }
+            </select>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg px-4">Save Bus</button>
+        </div>
+    </form>
+
+    <!-- List of Buses --> <div class="row justify-content-center mt-4">
+        <div class="col-md-10">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Existing Buses</h3>
+                @if (Model.Buses != null && Model.Buses.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Bus Number</th>
+                                    <th>Company</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var bus in Model.Buses)
+                                {
+                                    <tr>
+                                        <td>@bus.BusNumber</td>
+                                        <td>@bus.BusCompany.CompanyName</td>
+                                        <td>@bus.Capacity</td>
+                                        <td>@bus.Status</td>
+                                        @* <td>@bus.CreatedAt.ToString("MM/dd/yyyy HH:mm")</td> *@ <!-- Format CreatedAt -->
+                                        <td>
+                                            <a href="@Url.Action("EditBusModel", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-warning btn-sm me-2">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <a href="@Url.Action("DeleteBus", "BusScheduleCompany", new { id = bus.BusId })" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="mb-3">
-                        <label for="company" class="form-label">Select Company</label>
-                        <select id="company" name="companyId" class="form-select" required>
-                            <option value="" disabled selected>Select Company</option>
-                            <option value="1">Company A</option>
-                            <option value="2">Company B</option>
-                        </select>
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        No buses available.
                     </div>
-                    <div class="mb-3">
-                        <label for="capacity" class="form-label">Capacity</label>
-                        <input type="number" id="capacity" name="capacity" class="form-control" required placeholder="Enter Bus Capacity">
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Bus</button>
-                    </div>
-                </form>
+                }
             </div>
         </div>
     </div>
 </div>
-
 <style>
     .card {
         background-color: #ffffff;
@@ -84,6 +170,24 @@
 
         .btn-primary:hover {
             background-color: #0056b3;
+        }
+
+    .btn-warning {
+        background-color: #f0ad4e;
+        border: none;
+    }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+    .btn-danger {
+        background-color: #d9534f;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
         }
 </style>
 

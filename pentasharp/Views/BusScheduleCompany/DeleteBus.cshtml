@@ -1,0 +1,27 @@
+﻿@using pentasharp.ViewModel.Bus
+@model AddBusViewModel
+
+@{
+    ViewData["Title"] = "Delete Bus";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Delete Bus</h3>
+                <p>Are you sure you want to delete this bus?</p>
+
+                <!-- Display Bus Details -->
+                <p><strong>Bus Number: @Model.BusNumber</strong></p>
+                <p>Capacity: @Model.Capacity</p>
+                <p>Company: @Model.BusCompany?.CompanyName</p>
+
+                <form asp-action="DeleteBusConfirmed" asp-route-id="@Model.BusId" method="post">
+                    <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+                    <a href="@Url.Action("AddBusCompany", "BusScheduleCompany")" class="btn btn-secondary btn-lg">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
