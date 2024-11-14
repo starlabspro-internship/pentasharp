@@ -1,81 +1,137 @@
+@using pentasharp.ViewModel.TaxiModels
+@model AddTaxiCompanyViewModel
+
 @{
-    ViewData["Title"] = "Add Taxi Company & Taxi";
+    ViewData["Title"] = "Manage Taxi Companies and Taxis";
 }
 
 <div class="container my-5">
-
     <div class="row justify-content-center">
+        <!-- Add Taxi Company Form -->
         <div class="col-md-5 mb-4">
             <div class="card shadow-lg p-4 rounded-4">
                 <h3 class="fw-bold text-secondary mb-3">Add Taxi Company</h3>
-                <form id="companyForm">
+                <form asp-action="AddTaxiCompany" asp-controller="TaxiCompanyBooking" method="post">
+                    <!-- Company Name -->
                     <div class="mb-3">
                         <label for="companyName" class="form-label">Company Name</label>
-                        <input type="text" class="form-control" id="companyName" placeholder="Enter Company Name" required>
+                        <input type="text" id="companyName" name="CompanyName" class="form-control" required placeholder="Enter Company Name" />
                     </div>
+
+                    <!-- Contact Info -->
                     <div class="mb-3">
-                        <label for="companyAddress" class="form-label">Company Address</label>
-                        <input type="text" class="form-control" id="companyAddress" placeholder="Enter Company Address" required>
+                        <label for="contactInfo" class="form-label">Contact Info</label>
+                        <input type="text" id="contactInfo" name="ContactInfo" class="form-control" required placeholder="Enter Contact Info" />
                     </div>
-                    <div class="mb-3">
-                        <label for="companyPhone" class="form-label">Contact Number</label>
-                        <input type="tel" class="form-control" id="companyPhone" placeholder="Enter Contact Number" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="companyEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="companyEmail" placeholder="Enter Company Email" required>
-                    </div>
+
                     <div class="text-center mt-4">
-                        <button type="button" class="btn btn-primary btn-lg px-4" onclick="saveCompany()">Save Company</button>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Company</button>
                     </div>
                 </form>
             </div>
         </div>
 
+        <!-- List of Taxi Companies -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Existing Taxi Companies</h3>
+                @if (Model.TaxiCompanies != null && Model.TaxiCompanies.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var company in Model.TaxiCompanies)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@company.CompanyName</strong> - @company.ContactInfo
+                                </div>
+                                <div>
+                                    <a href="@Url.Action("EditTaxiCompany", "TaxiCompanyBooking", new { id = company.TaxiCompanyId })" class="btn btn-warning btn-sm me-2">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="@Url.Action("DeleteTaxiCompany", "TaxiCompanyBooking", new { id = company.TaxiCompanyId })" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No taxi companies available.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Taxi Form and List of Taxis -->
+    <div class="row justify-content-center">
         <div class="col-md-5 mb-4">
             <div class="card shadow-lg p-4 rounded-4">
                 <h3 class="fw-bold text-secondary mb-3">Add Taxi</h3>
-                <form id="taxiForm">
+                <form asp-action="AddTaxi" asp-controller="TaxiCompanyBooking" method="post">
+                    <!-- Select Company -->
                     <div class="mb-3">
-                        <label for="companySelect" class="form-label">Select Company</label>
-                        <select id="companySelect" class="form-select" required>
+                        <label for="taxiCompanyId" class="form-label">Taxi Company</label>
+                        <select id="taxiCompanyId" name="TaxiCompanyId" class="form-control" required>
                             <option value="">Select Company</option>
-                            <option value="1">Company A</option>
-                            <option value="2">Company B</option>
+                            @foreach (var company in Model.TaxiCompanies)
+                            {
+                                <option value="@company.TaxiCompanyId">@company.CompanyName</option>
+                            }
                         </select>
                     </div>
+
                     <div class="mb-3">
                         <label for="licensePlate" class="form-label">License Plate</label>
-                        <input type="text" class="form-control" id="licensePlate" placeholder="Enter License Plate" required>
+                        <input type="text" id="licensePlate" name="LicensePlate" class="form-control" required placeholder="Enter License Plate" />
                     </div>
+
                     <div class="mb-3">
                         <label for="driverName" class="form-label">Driver Name</label>
-                        <input type="text" class="form-control" id="driverName" placeholder="Enter Driver Name" required>
+                        <input type="text" id="driverName" name="DriverName" class="form-control" required placeholder="Enter Driver Name" />
                     </div>
-                    <div class="mb-3">
-                        <label for="driverPhone" class="form-label">Driver Contact Number</label>
-                        <input type="tel" class="form-control" id="driverPhone" placeholder="Enter Driver Contact Number" required>
-                    </div>
+
                     <div class="text-center mt-4">
-                        <button type="button" class="btn btn-primary btn-lg px-4" onclick="saveTaxi()">Save Taxi</button>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">Save Taxi</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- List of Existing Taxis -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Existing Taxis</h3>
+                @if (Model.Taxis != null && Model.Taxis.Any())
+                {
+                    <ul class="list-group">
+                        @foreach (var taxi in Model.Taxis)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>@taxi.TaxiCompany.CompanyName</strong> - @taxi.LicensePlate - @taxi.DriverName
+                                </div>
+                                <div>
+                                    <a href="@Url.Action("EditTaxi", "TaxiCompanyBooking", new { id = taxi.TaxiId })" class="btn btn-warning btn-sm me-2">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="@Url.Action("DeleteTaxi", "TaxiCompanyBooking", new { id = taxi.TaxiId })" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No taxis available.</p>
+                }
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function saveCompany() {
-
-        alert("Company saved successfully!");
-    }
-
-    function saveTaxi() {
-
-        alert("Taxi saved successfully!");
-    }
-</script>
 
 <style>
     .card {
@@ -84,23 +140,35 @@
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
     }
 
-    h1 {
-        color: #007bff;
-        font-weight: 700;
-    }
-
     h3 {
         color: #343a40;
     }
 
-    .btn-outline-success {
-        color: #28a745;
-        border-color: #28a745;
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
     }
 
-        .btn-outline-success:hover {
-            background-color: #28a745;
-            color: #fff;
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-warning {
+        background-color: #f0ad4e;
+        border: none;
+    }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+    .btn-danger {
+        background-color: #d9534f;
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
         }
 </style>
 

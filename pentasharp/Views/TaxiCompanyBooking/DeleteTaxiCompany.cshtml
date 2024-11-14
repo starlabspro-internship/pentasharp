@@ -1,0 +1,26 @@
+﻿@using pentasharp.ViewModel.TaxiModels
+@model TaxiCompanyViewModel
+
+@{
+    ViewData["Title"] = "Delete Taxi Company";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Delete Taxi Company</h3>
+                <p>Are you sure you want to delete this taxi company?</p>
+
+                <!-- Display Company Details -->
+                <p><strong>@Model.CompanyName</strong></p>
+                <p>Contact: @Model.ContactInfo</p>
+
+                <form asp-action="DeleteTaxiCompanyConfirmed" asp-route-id="@Model.TaxiCompanyId" method="post">
+                    <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+                    <a href="@Url.Action("AddTaxiCompany", "TaxiCompanyBooking")" class="btn btn-secondary btn-lg">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
