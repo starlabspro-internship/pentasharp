@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 
 namespace pentasharp.Controllers
 {
-    [Route("api/BusSchedule")]
+    [Route("api/BusScheduleCompany")]
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class BusScheduleCompanyController : Controller
     {
