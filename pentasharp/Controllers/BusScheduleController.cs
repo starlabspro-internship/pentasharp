@@ -5,6 +5,7 @@ using pentasharp.Data;
 using WebApplication1.Filters;
 using pentasharp.ViewModel.BusSchedule;
 using pentasharp.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1.Controllers
 {
@@ -144,6 +145,9 @@ namespace WebApplication1.Controllers
         [HttpPost("AddSchedule")]
         public IActionResult AddSchedule([FromBody] AddScheduleViewModel model)
         {
+            if (model == null)
+                return BadRequest(new { Message = "Invalid schedule data" });
+
             var route = _context.BusRoutes.FirstOrDefault(r => r.RouteId == model.RouteId);
             if (route == null)
                 return BadRequest(new { Message = "Route not found" });
@@ -154,7 +158,98 @@ namespace WebApplication1.Controllers
             _context.BusSchedules.Add(busSchedule);
             _context.SaveChanges();
 
-            return Ok(new { Message = "Schedule added successfully" });
+            return Ok(new { Message = "Schedule added successfully", RedirectUrl = Url.Action("ManageBusSchedules") });
+        }
+
+        [HttpPost("EditSchedule/{id}")]
+        public IActionResult EditSchedule(int id, [FromBody] EditScheduleViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { Message = "Invalid input data" });
+
+            var existingSchedule = _context.BusSchedules
+                .Include(s => s.Route)
+                .Include(s => s.Bus)
+                .FirstOrDefault(s => s.ScheduleId == id);
+
+            if (existingSchedule == null)
+                return NotFound(new { Message = "Schedule not found" });
+
+            var route = _context.BusRoutes.FirstOrDefault(r => r.RouteId == model.RouteId);
+            if (route == null)
+                return BadRequest(new { Message = "Route not found" });
+
+            existingSchedule.RouteId = model.RouteId;
+            existingSchedule.BusId = model.BusId;
+            existingSchedule.DepartureTime = model.DepartureTime;
+            existingSchedule.ArrivalTime = model.DepartureTime.Add(route.EstimatedDuration);
+            existingSchedule.Price = model.Price;
+            existingSchedule.AvailableSeats = model.AvailableSeats;
+
+            _context.SaveChanges();
+
+            return Ok(new { Message = "Schedule updated successfully", RedirectUrl = Url.Action("ManageBusSchedules") });
+        }
+
+        [HttpGet("GetAllSchedules")]
+        public IActionResult GetAllSchedules()
+        {
+            var schedules = _context.BusSchedules
+                .Include(s => s.Route)
+                .Include(s => s.Bus)
+                .ThenInclude(b => b.BusCompany)
+                .Select(s => new
+                {
+                    ScheduleId = s.ScheduleId,
+                    RouteName = $"{s.Route.FromLocation} - {s.Route.ToLocation}",
+                    BusNumber = s.Bus.BusNumber,
+                    CompanyName = s.Bus.BusCompany.CompanyName,
+                    DepartureTime = s.DepartureTime,
+                    ArrivalTime = s.ArrivalTime,
+                    Price = s.Price,
+                    Status = s.Status.ToString(),
+                    AvailableSeats = s.AvailableSeats
+                })
+                .ToList();
+
+            return Ok(schedules);
+        }
+
+        [HttpGet("GetScheduleById/{id}")]
+        public IActionResult GetScheduleById(int id)
+        {
+            var schedule = _context.BusSchedules
+                .Include(s => s.Route)
+                .Include(s => s.Bus)
+                .FirstOrDefault(s => s.ScheduleId == id);
+
+            if (schedule == null) return NotFound();
+
+            return Ok(new
+            {
+                schedule.ScheduleId,
+                schedule.RouteId,
+                schedule.BusId,
+                schedule.DepartureTime,
+                schedule.ArrivalTime,
+                schedule.Price,
+                schedule.AvailableSeats
+            });
+        }
+
+        [HttpDelete("DeleteSchedule/{id}")]
+        public IActionResult DeleteSchedule(int id)
+        {
+            var schedule = _context.BusSchedules.Find(id);
+            if (schedule == null)
+            {
+                return NotFound(new { Message = "Schedule not found" });
+            }
+
+            _context.BusSchedules.Remove(schedule);
+            _context.SaveChanges();
+
+            return Ok(new { Message = "Schedule deleted successfully" });
         }
     }
 }

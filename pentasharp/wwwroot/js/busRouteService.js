@@ -21,7 +21,6 @@ async function loadRoutes() {
         routes.forEach(route => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="text-center">${route.routeId}</td>
                 <td>${route.fromLocation}</td>
                 <td>${route.toLocation}</td>
                 <td class="text-center">${formatDuration(route.estimatedDuration)}</td>

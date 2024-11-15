@@ -139,6 +139,23 @@ namespace pentasharp.Controllers
             return RedirectToAction("AddBusCompany", "BusScheduleCompany");
         }
 
+        [HttpGet("GetAllBuses")]
+        public IActionResult GetAllBuses()
+        {
+            var buses = _context.Buses
+                .Include(b => b.BusCompany)
+                .Select(b => new
+                {
+                    BusId = b.BusId,
+                    BusNumber = b.BusNumber,
+                    Capacity = b.Capacity,
+                    CompanyName = b.BusCompany.CompanyName
+                })
+                .ToList();
+
+            return Ok(buses);
+        }
+
         [HttpGet("EditBus/{id}")]
         public IActionResult EditBusModel(int id)
         {
