@@ -1,0 +1,197 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="container my-5">
+    <div id="introSection" class="text-center mb-4">
+        <h1 class="display-3 fw-bold text-primary">Bus Schedule</h1>
+    </div>
+
+    <div id="searchFormContainer" class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form class="form-inline justify-content-center bg-light p-4 rounded shadow-sm" id="searchForm">
+                <div class="form-row-layout">
+                    <div class="form-group mb-3">
+                        <input type="text" class="form-control form-control-md px-3 py-2" id="departure" name="departure" placeholder="From" required style="min-width: 200px;">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="text" class="form-control form-control-md px-3 py-2" id="arrival" name="arrival" placeholder="To" required style="min-width: 200px;">
+                    </div>
+                    <div class="form-group mb-3">
+                        <input type="date" class="form-control form-control-md px-3 py-2" id="date" name="date" required style="min-width: 150px;">
+                    </div>
+                    <div class="form-group mb-3">
+                        <button type="button" class="btn btn-primary btn-md rounded-pill px-4 py-2" id="searchBtn">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="resultView" class="container">
+        <h3 class="text-center">Bus Schedule Results</h3>
+        <div id="busScheduleContainer"></div>
+    </div>
+
+    <button id="scrollToTopBtn" class="btn btn-secondary rounded-circle" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px;">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
+
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="bookingModalLabel">Confirm Your Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>From:</strong> <span id="modalDeparture"></span></p>
+                <p><strong>To:</strong> <span id="modalArrival"></span></p>
+                <p><strong>Available Seats:</strong> <span id="modalSeats"></span></p>
+                <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="passengerNameInput" value="Gani Lala" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmBookingBtn">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            document.getElementById('searchForm').classList.add('form-row-layout');
+            document.getElementById('searchForm').classList.remove('form-column-layout');
+            document.getElementById('resultView').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('resultView').style.opacity = 1;
+            }, 0);
+
+            const schedules = [
+                {
+                    departure: "19:00",
+                    arrival: "23:00",
+                    from: "Tirana",
+                    to: "Pristina",
+                    busName: "Sharri",
+                    price: "€15",
+                    status: "Scheduled",
+                    availableSeats: 5
+                },
+                {
+                    departure: "08:00",
+                    arrival: "12:00",
+                    from: "Tirana",
+                    to: "Pristina",
+                    busName: "Dardania",
+                    price: "€15",
+                    status: "Scheduled",
+                    availableSeats: 2
+                }
+            ];
+
+            const busScheduleContainer = document.getElementById('busScheduleContainer');
+            busScheduleContainer.innerHTML = '';
+
+            schedules.forEach(schedule => {
+                const scheduleCard = `
+                                <div class="schedule-card">
+                                    <div class="row align-items-center">
+                                        <div class="col-5 d-flex align-items-start">
+                                            <div class="me-3 text-center">
+                                                <p class="mb-1 text-danger fw-bold">${schedule.departure}</p>
+                                                <span class="text-muted small">${schedule.from}</span>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-center mx-3">
+                                                <span class="text-danger"><i class="fas fa-circle"></i></span>
+                                                <div style="width: 2px; height: 40px; background-color: #dcdcdc;"></div>
+                                                <span class="text-secondary"><i class="fas fa-map-marker-alt"></i></span>
+                                            </div>
+                                            <div class="ms-3 text-center">
+                                                <p class="mb-1 text-dark fw-bold">${schedule.arrival}</p>
+                                                <span class="text-muted small">${schedule.to}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-7 d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-bus-alt text-secondary me-2"></i>
+                                                <span class="fw-bold text-dark">${schedule.busName}</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="text-danger fw-bold fs-5">${schedule.price}</span>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-primary rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#bookingModal" onclick="openBookingModal('${schedule.from}', '${schedule.to}', '${schedule.availableSeats}', '${schedule.status}')">Book Now</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                busScheduleContainer.insertAdjacentHTML('beforeend', scheduleCard);
+            });
+
+            if (busScheduleContainer.children.length > 2) {
+                document.getElementById('scrollToTopBtn').style.display = 'block';
+            }
+        });
+
+        function openBookingModal(departure, arrival, availableSeats, status) {
+            document.getElementById('modalDeparture').textContent = departure;
+            document.getElementById('modalArrival').textContent = arrival;
+            document.getElementById('modalSeats').textContent = availableSeats;
+            document.getElementById('modalStatus').textContent = status;
+            document.getElementById('passengerNameInput').value = "Gani Lala";
+        }
+
+        document.getElementById("confirmBookingBtn").addEventListener("click", function () {
+            alert("Your booking is confirmed!");
+        });
+    </script>
+}
+
+<style>
+    .form-row-layout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+        .form-row-layout .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-row-layout .btn {
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+    .form-column-layout {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #resultView {
+        display: none;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+
+    #busScheduleContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .schedule-card {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>

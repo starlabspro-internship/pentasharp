@@ -1,0 +1,84 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Taxi Booking Management";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Manage Current Taxi Bookings</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-4">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Passenger</th>
+                                    <th>Pickup Location</th>
+                                    <th>Dropoff Location</th>
+                                    <th>Pickup Time</th>
+                                    <th>Status</th>
+                                    <th>Driver</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="passengerList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editBookingModal" tabindex="-1" aria-labelledby="editBookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title fw-bold" id="editBookingModalLabel">Edit Booking</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBookingForm">
+                        <div class="mb-2">
+                            <label class="form-label small">Passenger</label>
+                            <input type="text" id="editPassengerName" class="form-control form-control-sm" readonly />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Pickup Location</label>
+                            <input type="text" id="editPickupLocation" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Dropoff Location</label>
+                            <input type="text" id="editDropoffLocation" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Pickup Time</label>
+                            <input type="time" id="editPickupTime" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Status</label>
+                            <select id="editStatus" class="form-select form-select-sm">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Canceled">Canceled</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Assign Driver</label>
+                            <select id="editDriver" class="form-select form-select-sm"></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="saveBookingChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/taxiDashboard/taxiBookings.js"></script>

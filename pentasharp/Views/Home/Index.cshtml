@@ -3,106 +3,443 @@
     ViewData["Title"] = "Transport Services";
 }
 
-<div class="container my-5">
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary">Welcome to PentaSharp</h1>
-        <p class="lead text-muted fs-5">Your reliable partner for seamless transport scheduling.</p>
+<div class="carousel-header">
+    <div id="carouselId" class="carousel slide" data-bs-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-bs-target="#carouselId"
+                data-bs-slide-to="0"
+                class="active"></li>
+            <li data-bs-target="#carouselId" data-bs-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+            <div class="carousel-item active">
+                <img class="img-fluid" src="img/driver.jpg" alt="Image" />
+                <div class="carousel-caption">
+                    <div class="text-center p-4" style="max-width: 900px">
+                        <h1 class="display-1 text-capitalize text-white mb-3 mb-md-4 wow fadeInUp"
+                            data-wow-delay="0.3s">
+                            Taxi
+                        </h1>
+                        <p class="text-white mb-4 mb-md-5 fs-5 wow fadeInUp"
+                           data-wow-delay="0.5s">
+                            Pentasharp Taxis: Experience Five-Star Comfort - Always Sharp
+                            on Time<br />Your Reliable Ride!
+                        </p>
+                        <a class="btn btn-primary border-secondary rounded-pill text-white py-3 px-5 wow fadeInUp"
+                           data-wow-delay="0.7s"
+                           href="#">More Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="img/koreangirl.jpg" class="img-fluid" alt="Image" />
+                <div class="carousel-caption">
+                    <div class="text-center p-4" style="max-width: 900px">
+                        <h1 class="display-1 text-capitalize text-white mb-3 mb-md-4 wow fadeInUp"
+                            data-wow-delay="0.3s">
+                            Bus
+                        </h1>
+                        <p class="text-white mb-4 mb-md-5 fs-5 wow fadeInUp"
+                           data-wow-delay="0.5s">
+                            Pentasharp Buses: On Schedule, On Route, On Point — Every
+                            Ride, Every Time<br />Your Reliable Ride!
+                        </p>
+                        <a class="btn btn-primary border-secondary rounded-pill text-white py-3 px-5 wow fadeInUp"
+                           data-wow-delay="0.7s"
+                           href="#">More Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev"
+                type="button"
+                data-bs-target="#carouselId"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bg-secondary wow fadeInLeft"
+                  data-wow-delay="0.2s"
+                  aria-hidden="false"></span>
+            <span class="visually-hidden-focusable">Previous</span>
+        </button>
+        <button class="carousel-control-next"
+                type="button"
+                data-bs-target="#carouselId"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon bg-secondary wow fadeInRight"
+                  data-wow-delay="0.2s"
+                  aria-hidden="false"></span>
+            <span class="visually-hidden-focusable">Next</span>
+        </button>
     </div>
-    <div class="row justify-content-center g-4">
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-lg rounded-5 overflow-hidden h-100">
-                <div class="card-body d-flex flex-column justify-content-center bg-white p-4 text-center">
-                    <i class="fas fa-bus fa-3x text-primary mb-3"></i>
-                    <h5 class="card-title fw-bold text-dark fs-4 mb-2">Bus Schedules</h5>
-                    <p class="card-text text-muted fs-6">Explore detailed bus schedules to plan your travel with ease.</p>
-                    <a href="@Url.Action("BusSchedule", "Bus")" class="btn btn-primary btn-md rounded-pill mt-3 px-4 py-2 shadow-sm">View Bus Schedules</a>
+</div>
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-xl-5 wow fadeInLeft" data-wow-delay="0.1s">
+                <div class="bg-light rounded">
+                    <img src="img/transport.png"
+                         class="img-fluid w-100"
+                         style="margin-bottom: -7px"
+                         alt="Image" />
+                </div>
+            </div>
+            <div class="col-xl-7 wow fadeInRight" data-wow-delay="0.3s">
+                <h5 class="sub-title pe-3">About the company</h5>
+                <h1 class="display-5 mb-4">
+                    We’re a Trusted Transportation Services Provider.
+                </h1>
+                <p class="mb-4">
+                    Our company is dedicated to offering reliable and user-friendly
+                    solutions for all your transportation needs, including bus
+                    schedules, reservations, and taxi services. Whether you're
+                    planning a journey in advance or need immediate transportation, we
+                    provide an efficient and seamless experience.
+                </p>
+                <div class="row gy-4 align-items-center">
+                    <div class="col-12 col-sm-6 d-flex align-items-center">
+                        <i class="fas fa-map-marked-alt fa-3x text-secondary"></i>
+                        <h5 class="ms-4">Best Transport Resources</h5>
+                    </div>
+                    <div class="col-12 col-sm-6 d-flex align-items-center">
+                        <i class="fas fa-passport fa-3x text-secondary"></i>
+                        <h5 class="ms-4">Return Ticket Availabile</h5>
+                    </div>
+                    <div class="col-4 col-md-3">
+                        <div class="bg-light text-center rounded p-3">
+                            <div class="mb-2">
+                                <i class="fas fa-ticket-alt fa-4x text-primary"></i>
+                            </div>
+                            <h1 class="display-5 fw-bold mb-2">34</h1>
+                            <p class="text-muted mb-0">Years of Experience</p>
+                        </div>
+                    </div>
+                    <div class="col-8 col-md-9">
+                        <div class="mb-5">
+                            <p class="text-primary h6 mb-3">
+                                <i class="fa fa-check-circle text-secondary me-2"></i> Offer
+                                100 % Genuine Assistance
+                            </p>
+                            <p class="text-primary h6 mb-3">
+                                <i class="fa fa-check-circle text-secondary me-2"></i> It’s
+                                Faster & Reliable Execution
+                            </p>
+                            <p class="text-primary h6 mb-3">
+                                <i class="fa fa-check-circle text-secondary me-2"></i>
+                                Accurate & Expert Advice
+                            </p>
+                        </div>
+                        <div class="d-flex flex-wrap">
+                            <div id="phone-tada"
+                                 class="d-flex align-items-center justify-content-center me-4">
+                                <a href=""
+                                   class="position-relative wow tada"
+                                   data-wow-delay=".9s">
+                                    <i class="fa fa-phone-alt text-primary fa-3x"></i>
+                                    <div class="position-absolute" style="top: 0; left: 25px">
+                                        <span>
+                                            <i class="fa fa-comment-dots text-secondary"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center">
+                                <span class="text-primary">Have any questions?</span>
+                                <span class="text-secondary fw-bold fs-5"
+                                      style="letter-spacing: 2px">Free: +0123 456 7890</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-lg rounded-5 overflow-hidden h-100">
-                <div class="card-body d-flex flex-column justify-content-center bg-white p-4 text-center">
-                    <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
-                    <h5 class="card-title fw-bold text-dark fs-4 mb-2">Bus Reservations</h5>
-                    <p class="card-text text-muted fs-6">Reserve seats easily on your preferred bus routes.</p>
-                    <a href="@Url.Action("BusReservations", "Bus")" class="btn btn-success btn-md rounded-pill mt-3 px-4 py-2 shadow-sm">Reserve a Bus</a>
+    </div>
+</div>
+<div class="container-fluid counter-facts py-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.1s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-passport"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Taxi Categories</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">31</span>
+                            <h4 class="text-secondary mb-0"
+                                style="font-weight: 600; font-size: 25px">
+                                +
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.3s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Team Members</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">377</span>
+                            <h4 class="text-secondary mb-0"
+                                style="font-weight: 600; font-size: 25px">
+                                +
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.5s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>User Accounts</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">4.9</span>
+                            <h4 class="text-secondary mb-0"
+                                style="font-weight: 600; font-size: 25px">
+                                K
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.7s">
+                <div class="counter">
+                    <div class="counter-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="counter-content">
+                        <h3>Success Rates</h3>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <span class="counter-value" data-toggle="counter-up">98</span>
+                            <h4 class="text-secondary mb-0"
+                                style="font-weight: 600; font-size: 25px">
+                                %
+                            </h4>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-lg rounded-5 overflow-hidden h-100">
-                <div class="card-body d-flex flex-column justify-content-center bg-white p-4 text-center">
-                    <i class="fas fa-taxi fa-3x text-warning mb-3"></i>
-                    <h5 class="card-title fw-bold text-dark fs-4 mb-2">Taxi Bookings</h5>
-                    <p class="card-text text-muted fs-6">Book a taxi quickly and conveniently for any destination.</p>
-                    <a href="@Url.Action("TaxiBookings", "Taxi")" class="btn btn-warning btn-md rounded-pill mt-3 px-4 py-2 shadow-sm">Book a Taxi</a>
+    </div>
+</div>
+<div class="container-fluid features overflow-hidden py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5 wow fadeInUp"
+             data-wow-delay="0.1s">
+            <div class="sub-style">
+                <h5 class="sub-title text-primary px-3">Why Choose Us</h5>
+            </div>
+            <h1 class="display-5 mb-4">
+                Offer Tailor Made Services That Our Client Requires
+            </h1>
+            <p class="mb-0">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
+                deleniti amet at atque sequi quibusdam cumque itaque repudiandae
+                temporibus, eius nam mollitia voluptas maxime veniam necessitatibus
+                saepe in ab? Repellat!
+            </p>
+        </div>
+        <div class="row g-4 justify-content-center text-center">
+            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.1s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-calendar-alt fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Bus Schedules</h5>
+                        <p class="mb-3">
+                            Explore detailed bus schedules to plan your travel with ease.
+                        </p>
+                        <a href="./BusSchedule.html"
+                           class="btn btn-secondary rounded-pill"
+                           href="#">
+                            View the schedule<i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.3s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-bus fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Bus Ticket Reservations</h5>
+                        <p class="mb-3">
+                            Reserve seats easily on your preferred bus routes.
+                        </p>
+                        <a href="./ReserveBus.html"
+                           class="btn btn-secondary rounded-pill"
+                           href="#">
+                            Reserve seats<i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.5s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-taxi fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Taxi Bookings</h5>
+                        <p class="mb-3">
+                            Book a taxi quickly and conveniently for any destination.
+                        </p>
+                        <a href="./TaxiBooking.html"
+                           class="btn btn-secondary rounded-pill"
+                           href="#">
+                            Book a taxi<i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
+                 data-wow-delay="0.7s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-clipboard-check fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Taxi Reservations</h5>
+                        <p class="mb-3">
+                            Make advance reservations for taxis at your convenience.
+                        </p>
+                        <a href="./TaxiReservation.html"
+                           class="btn btn-secondary rounded-pill"
+                           href="#">
+                            Reserve a taxi<i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <a class="btn btn-primary border-secondary rounded-pill py-3 px-5 wow fadeInUp"
+                   data-wow-delay="0.1s"
+                   href="#">More Features</a>
+            </div>
         </div>
-
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 shadow-lg rounded-5 overflow-hidden h-100">
-                <div class="card-body d-flex flex-column justify-content-center bg-white p-4 text-center">
-                    <i class="fas fa-clipboard-list fa-3x text-info mb-3"></i>
-                    <h5 class="card-title fw-bold text-dark fs-4 mb-2">Taxi Reservations</h5>
-                    <p class="card-text text-muted fs-6">Make advance reservations for taxis at your convenience.</p>
-                    <a href="@Url.Action("TaxiReservations", "Taxi")" class="btn btn-info btn-md rounded-pill mt-3 px-4 py-2 shadow-sm">Reserve a Taxi</a>
+    </div>
+</div>
+<!-- Features End -->
+<!-- Testimonial Start -->
+<div class="container-fluid testimonial overflow-hidden pb-5">
+    <div class="container py-5">
+        <div class="section-title text-center mb-5 wow fadeInUp"
+             data-wow-delay="0.1s">
+            <div class="sub-style">
+                <h5 class="sub-title text-primary px-3">OUR CLIENTS RIVIEWS</h5>
+            </div>
+            <h1 class="display-5 mb-4">What Our Clients Say</h1>
+            <p class="mb-0">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
+                deleniti amet at atque sequi quibusdam cumque itaque repudiandae
+                temporibus, eius nam mollitia voluptas maxime veniam necessitatibus
+                saepe in ab? Repellat!
+            </p>
+        </div>
+        <div class="owl-carousel testimonial-carousel wow zoomInDown"
+             data-wow-delay="0.2s">
+            <div class="testimonial-item">
+                <div class="testimonial-content p-4 mb-5">
+                    <p class="fs-5 mb-0">
+                        I can easily check the bus schedules through Pentasharp’s
+                        user-friendly interface. Whether I’m planning a future trip or
+                        need to know when my bus will arrive, it’s all right at my
+                        fingertips!
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="rounded-circle me-4"
+                         style="width: 100px; height: 100px">
+                        <img class="img-fluid rounded-circle"
+                             src="img/testimonial-1.jpg"
+                             alt="img" />
+                    </div>
+                    <div class="my-auto">
+                        <h5>Person Name</h5>
+                        <p class="mb-0">Frequent Traveler</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-item">
+                <div class="testimonial-content p-4 mb-5">
+                    <p class="fs-5 mb-0">
+                        As a taxi service provider, Pentasharp has streamlined our
+                        booking process. Real-time updates, easy cancellations, and a
+                        user-friendly interface have improved our customer satisfaction
+                        and efficiency.
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="rounded-circle me-4"
+                         style="width: 100px; height: 100px">
+                        <img class="img-fluid rounded-circle"
+                             src="img/testimonial-2.jpg"
+                             alt="img" />
+                    </div>
+                    <div class="my-auto">
+                        <h5>Person Name</h5>
+                        <p class="mb-0">Taxi Service Operator</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-item">
+                <div class="testimonial-content p-4 mb-5">
+                    <p class="fs-5 mb-0">
+                        Booking a taxi through Pentasharp is a breeze. The app’s
+                        seamless interface allows me to reserve a ride instantly, and I
+                        always know when the taxi will arrive. It’s perfect for busy
+                        days when I need to plan my travel.
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="rounded-circle me-4"
+                         style="width: 100px; height: 100px">
+                        <img class="img-fluid rounded-circle"
+                             src="img/testimonial-3.jpg"
+                             alt="img" />
+                    </div>
+                    <div class="my-auto">
+                        <h5>Person Name</h5>
+                        <p class="mb-0">Regular commuter</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    body {
-        background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
-        color: #343a40;
-    }
-
-    h1 {
-        font-weight: 700;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .card {
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        border-radius: 15px;
-        overflow: hidden;
-    }
-
-    .card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
-
-    .btn {
-        font-size: 1rem;
-        font-weight: 500;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        padding: 0.5rem 1.5rem;
-        border-radius: 30px;
-    }
-
-    .btn:hover {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .text-center i {
-        font-size: 3.5rem;
-        transition: transform 0.3s ease;
-    }
-
-    .card:hover i {
-        transform: scale(1.2);
-    }
-</style>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

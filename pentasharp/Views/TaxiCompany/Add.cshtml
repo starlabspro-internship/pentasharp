@@ -1,0 +1,101 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Manage Taxi Companies";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <label for="taxiSelect" class="form-label">Manage:</label>
+                <select id="taxiSelect" class="form-select w-80 d-inline-block">
+                    <option value="companies" selected>Companies</option>
+                    <option value="taxis">Taxis</option>
+                </select>
+            </div>
+            <button id="addTaxiEntityButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaxiModal">
+                Add Taxi Company
+            </button>
+        </div>
+
+        <div class="col-12" id="taxiCompaniesSection">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Taxi Companies</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Contact Info</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Example Taxi Company</td>
+                                <td>123456789</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editTaxiCompanyModal">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaxiCompanyModal">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 d-none" id="taxisSection">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Taxis</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>License Plate</th>
+                                <th>Company</th>
+                                <th>Driver Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AB-1234</td>
+                                <td>Example Taxi Company</td>
+                                <td>John Doe</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editTaxiModal">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTaxiModal">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addTaxiModal" tabindex="-1" aria-labelledby="addTaxiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaxiModalLabel">Add Taxi Entity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaxiForm"></form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/taxiCompany/addCompany.js"></script>

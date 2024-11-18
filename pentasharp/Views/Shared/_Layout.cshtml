@@ -1,196 +1,156 @@
 ﻿@{
-    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
-    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
     var isLoggedIn = ViewContext.HttpContext.Session.GetString("UserId") != null;
     var userName = ViewContext.HttpContext.Session.GetString("FirstName");
     var isAdmin = ViewContext.HttpContext.Session.GetString("IsAdmin") == "true";
+
+    var hideNavbarAndFooter = ViewContext.RouteData.Values["action"]?.ToString().Equals("Login", StringComparison.OrdinalIgnoreCase) == true ||
+                              ViewContext.RouteData.Values["action"]?.ToString().Equals("Register", StringComparison.OrdinalIgnoreCase) == true;
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PentaSharp</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <style>
-        .navbar-custom {
-            background-color: #007bff;
-            padding: 1rem;
-        }
-
-        .navbar-brand {
-            color: #ffffff !important;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-
-        .nav-link {
-            color: #ffffff !important;
-            font-size: 1rem;
-            transition: color 0.3s ease;
-            text-decoration: none !important;
-        }
-
-            .nav-link:hover {
-                color: #f8f9fa !important;
-                text-decoration: underline;
-            }
-
-        .btn-custom {
-            background-color: #ffffff;
-            color: #007bff;
-            font-weight: bold;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-            .btn-custom:hover {
-                background-color: #f1f1f1;
-                color: #0056b3;
-            }
-
-        .dropdown-menu-notification {
-            width: 300px;
-            padding: 0;
-            border: none;
-            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-            .dropdown-menu-notification a {
-                color: #343a40;
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-
-                .dropdown-menu-notification a:hover {
-                    background-color: #f8f9fa;
-                    text-decoration: none !important;
-                }
-
-        .badge-custom {
-            background-color: #dc3545;
-            color: #ffffff;
-            font-weight: bold;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(220, 53, 69, 0.3);
-        }
-
-        .footer-custom {
-            background-color: #f8f9fa;
-            color: #6c757d;
-            padding: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-            .footer-custom a {
-                color: #007bff;
-                text-decoration: none;
-            }
-
-                .footer-custom a:hover {
-                    color: #0056b3;
-                }
-    </style>
+    <title>@ViewData["Title"] - Pentasharp-StarlabsInternship</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/lib/animate/animate.min.css" rel="stylesheet" />
+    <link href="~/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
 </head>
 <body>
-    @if (!(currentController == "Authenticate" && (currentAction == "Login" || currentAction == "Register")))
+    @if (!hideNavbarAndFooter)
     {
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PentaSharp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                            @if (isAdmin)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-area="" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
-                                </li>
-                            }
-                        @if (currentController == "Bus" && currentAction == "BusManagement")
-                        {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Bus" asp-action="CreateBusCompany">Create Bus Company</a>
-                        </li>
-                        }
-                        @if (currentController == "Taxi" && currentAction == "TaxiManagement")
-                        {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Taxi" asp-action="CreateTaxiCompany">Create Taxi Company</a>
-                        </li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav">
-                            @if (isLoggedIn)
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-bell fa-lg text-white"></i>
-                                        <span class="badge badge-custom position-absolute top-0 start-100 translate-middle">3</span>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notification" aria-labelledby="notificationDropdown">
-                                        <li><a class="dropdown-item" href="#">New reservation from John Doe</a></li>
-                                        <li><a class="dropdown-item" href="#">Bus #12 delayed by 15 mins</a></li>
-                                        <li><a class="dropdown-item" href="#">Taxi #45 ready for pickup</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-center" asp-controller="Notification" asp-action="AllNotifications">View All Notifications</a></li>
-                                    </ul>
-                                </li>
-
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-user-circle"></i> Hello, @userName
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom" aria-labelledby="userDropdown">
-                                        <li><a class="dropdown-item dropdown-item-custom" asp-controller="Authenticate" asp-action="Logout">Logout</a></li>
-                                    </ul>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <button type="button" class="btn btn-custom ms-3" onclick="location.href='@Url.Action("Login", "Authenticate")'">Login</button>
-                                </li>
-                            }
-                    </ul>
+    <div class="container-fluid bg-primary px-5 d-none d-lg-block">
+        <div class="row gx-0 align-items-center">
+            <div class="col-lg-5 text-center text-lg-start mb-lg-0">
+                <div class="d-flex">
+                    <a href="#" class="text-muted me-4"><i class="fas fa-envelope text-secondary me-2"></i>Pentasharp@gmail.com</a>
+                    <a href="#" class="text-muted me-0"><i class="fas fa-phone-alt text-secondary me-2"></i>+01234567890</a>
                 </div>
             </div>
-        </nav>
-    </header>
-    }
-
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <div class="col-lg-3 row-cols-1 text-center mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center" style="height: 45px">
+                    <a class="btn btn-sm btn-outline-light btn-square rounded-circle me-2" href="#"><i class="fab fa-twitter fw-normal text-secondary"></i></a>
+                    <a class="btn btn-sm btn-outline-light btn-square rounded-circle me-2" href="#"><i class="fab fa-facebook-f fw-normal text-secondary"></i></a>
+                    <a class="btn btn-sm btn-outline-light btn-square rounded-circle me-2" href="#"><i class="fab fa-linkedin-in fw-normal text-secondary"></i></a>
+                    <a class="btn btn-sm btn-outline-light btn-square rounded-circle me-2" href="#"><i class="fab fa-instagram fw-normal text-secondary"></i></a>
+                    <a class="btn btn-sm btn-outline-light btn-square" href="#"><i class="fab fa-youtube fw-normal text-secondary"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center text-lg-end">
+                <div class="d-inline-flex align-items-center" style="height: 45px">
+                    <a href="#" class="text-muted me-2">Help</a><small> / </small>
+                    <a href="#" class="text-muted mx-2">Support</a><small> / </small>
+                    <a href="#" class="text-muted ms-2">Contact</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    @if (!(currentController == "Authenticate" && (currentAction == "Login" || currentAction == "Register")))
-    {
-    <footer class="footer-custom border-top text-center mt-5">
-        <div class="container">
-            <span>&copy; 2024 PentaSharp | </span>
-            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
-        </div>
-    </footer>
+    <div class="container-fluid nav-bar p-0">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white px-4 px-lg-5 py-3 py-lg-0">
+            <a asp-controller="Home" asp-action="Index" class="navbar-brand p-0">
+                <h1 class="display-5 text-secondary m-0">
+                    <img src="~/img/brand-logo.png" alt="Logo" /> PentaSharp
+                </h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                    <a asp-controller="Home" asp-action="Index" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">Home</a>
+                    <a asp-controller="Home" asp-action="Services" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Service" ? "active" : "")">Service</a>
+                    @if (isAdmin)
+                        {
+                    <a asp-controller="Dashboard" asp-action="Dashboard" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
+                        }
+                    <a asp-controller="Home" asp-action="Contact" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Contact" ? "active" : "")">Contact</a>
+                </div>
+                @if (isLoggedIn)
+                    {
+                <a asp-controller="Authenticate" asp-action="Logout" class="btn btn-primary border-secondary rounded-pill py-2 px-4 px-lg-3 mb-3 mb-md-3 mb-lg-0">Logout</a>
+                    }
+                    else
+                    {
+                <a asp-controller="Authenticate" asp-action="Login" class="btn btn-primary border-secondary rounded-pill py-2 px-4 px-lg-3 mb-3 mb-md-3 mb-lg-0">Login</a>
+                    }
+            </div>
+        </nav>
+    </div>
     }
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <div style="width: 100%; padding: 0; margin: 0;">
+        @RenderBody()
+    </div>
+
+    @if (!hideNavbarAndFooter)
+    {
+    <div class="container-fluid footer py-5">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-secondary mb-4">Contact Info</h4>
+                        <a href="#"><i class="fa fa-map-marker-alt me-2"></i> Ukshin Hoti, Pejton, Prishtinë, Kosovë</a>
+                        <a href="#"><i class="fas fa-envelope me-2"></i> pentasharp@example.com</a>
+                        <a href="#"><i class="fas fa-phone me-2"></i> +012 345 67890</a>
+                        <a href="#" class="mb-3"><i class="fas fa-print me-2"></i> +012 345 67890</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-secondary mb-4">Opening Time</h4>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-0">Mon - Friday:</h6>
+                            <p class="text-white mb-0">24/24</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-0">Sat - Sunday:</h6>
+                            <p class="text-white mb-0">24/24</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item d-flex flex-column">
+                        <h4 class="text-secondary mb-4">Our Services</h4>
+                        <a href="~/Home/BusSchedule"><i class="fas fa-angle-right me-2"></i> Bus Schedules</a>
+                        <a href="~/Home/ReserveBus"><i class="fas fa-angle-right me-2"></i> Bus Ticket</a>
+                        <a href="~/Home/TaxiBooking"><i class="fas fa-angle-right me-2"></i> Taxi Booking</a>
+                        <a href="~/Home/TaxiReservation"><i class="fas fa-angle-right me-2"></i> Taxi Reservation</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-3">
+                    <div class="footer-item">
+                        <h4 class="text-secondary mb-4">Pentasharp 5#</h4>
+                        <p class="text-white mb-3">Your Reliable Ride!</p>
+                        <div class="position-relative mx-auto rounded-pill">
+                            <input class="form-control border-0 rounded-pill w-100 py-3 ps-4 pe-5" type="text" placeholder="Enter your email" />
+                            <button type="button" class="btn btn-primary rounded-pill position-absolute top-0 end-0 py-2 mt-2 me-2">SignUp</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <a href="#" class="btn btn-primary btn-lg-square back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/wow/wow.min.js"></script>
+    <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/lib/counterup/counterup.min.js"></script>
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/js/main.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

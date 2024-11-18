@@ -1,0 +1,101 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Manage Bus Companies";
+}
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
+            <div>
+                <label for="entitySelect" class="form-label">Manage:</label>
+                <select id="entitySelect" class="form-select w-80 d-inline-block">
+                    <option value="companies" selected>Companies</option>
+                    <option value="buses">Buses</option>
+                </select>
+            </div>
+            <button id="addEntityButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                Add Company
+            </button>
+        </div>
+
+        <div class="col-12" id="companiesSection">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Companies</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Contact Info</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Example Company</td>
+                                <td>123456789</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editCompanyModal">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 d-none" id="busesSection">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Buses</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Bus Number</th>
+                                <th>Company</th>
+                                <th>Capacity</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bus 101</td>
+                                <td>Example Company</td>
+                                <td>50</td>
+                                <td>
+                                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#editBusModal">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBusModal">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Entity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEntityForm"></form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/busCompany/addCompany.js"></script>

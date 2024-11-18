@@ -1,0 +1,150 @@
+﻿@{
+    Layout = "_Layout";
+}
+<div class="container my-5">
+    <h1 class="text-center mb-4 fw-bold text-primary">Taxi Bookings</h1>
+
+    <div id="SearchFormContainer" class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <form class="bg-light p-4 rounded shadow-sm" onsubmit="HandleSearch(event)">
+                <div class="row mb-3">
+                    <div class="col-md-6 form-group">
+                        <label for="PickupLocation" class="form-label">Pickup Location</label>
+                        <input type="text" class="form-control" id="PickupLocation" placeholder="Enter Pickup Location" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="DropoffLocation" class="form-label">Dropoff Location</label>
+                        <input type="text" class="form-control" id="DropoffLocation" placeholder="Enter Dropoff Location" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 form-group">
+                        <label for="BookingTime" class="form-label">Pickup Time</label>
+                        <input type="time" class="form-control" id="BookingTime" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="PassengerCount" class="form-label">Number of Passengers</label>
+                        <input type="number" class="form-control" id="PassengerCount" placeholder="Enter Passenger Count" min="1" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary btn-md rounded-pill px-4 py-2">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="ResultsContainer" class="container"></div>
+</div>
+
+<div class="modal fade" id="BookingModal" tabindex="-1" aria-labelledby="BookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BookingModalLabel">Confirm Your Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Pickup Location:</strong> <span id="ModalPickupLocation"></span></p>
+                <p><strong>Dropoff Location:</strong> <span id="ModalDropoffLocation"></span></p>
+                <p><strong>Pickup Time:</strong> <span id="ModalPickupTime"></span></p>
+                <p><strong>Number of Passengers:</strong> <span id="ModalPassengerCount"></span></p>
+                <div class="mb-3">
+                    <label for="ModalPassengerName" class="form-label">Passenger Name</label>
+                    <input type="text" class="form-control" id="ModalPassengerName" readonly>
+                </div>
+                <div id="AwaitingConfirmation" class="my-3 text-danger fw-bold" style="display: none;">
+                    Booking submitted. Awaiting confirmation from management.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="SubmitBooking()">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const LoggedInUserName = "Gani Lala";
+
+    function HandleSearch(event) {
+        event.preventDefault();
+        const PickupLocation = document.getElementById('PickupLocation').value;
+        const DropoffLocation = document.getElementById('DropoffLocation').value;
+        const BookingTime = document.getElementById('BookingTime').value;
+        const PassengerCount = document.getElementById('PassengerCount').value;
+
+        const ResultsContainer = document.getElementById('ResultsContainer');
+        ResultsContainer.innerHTML = '';
+
+        for (let i = 0; i < 2; i++) {
+            const ResultCard = `
+                <div class="container my-3" style="max-width: 600px;">
+                    <div class="card shadow-sm border-0 p-4 rounded-4">
+                        <div class="row align-items-center">
+                            <div class="col-4 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-taxi fa-3x text-warning"></i>
+                            </div>
+                            <div class="col-5">
+                                <h5 class="fw-bold">Economy Taxi</h5>
+                                <p class="text-muted">Reliable and comfortable</p>
+                                <p><i class="fas fa-user-friends me-2"></i> Up to 3 passengers</p>
+                            </div>
+                            <div class="col-3 text-end">
+                                <button class="btn btn-dark rounded-pill" onclick="OpenBookingModal('${PickupLocation}', '${DropoffLocation}', '${BookingTime}', '${PassengerCount}')">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            ResultsContainer.insertAdjacentHTML('beforeend', ResultCard);
+        }
+    }
+
+    function OpenBookingModal(PickupLocation, DropoffLocation, BookingTime, PassengerCount) {
+        document.getElementById('ModalPickupLocation').textContent = PickupLocation;
+        document.getElementById('ModalDropoffLocation').textContent = DropoffLocation;
+        document.getElementById('ModalPickupTime').textContent = BookingTime;
+        document.getElementById('ModalPassengerCount').textContent = PassengerCount;
+        document.getElementById('ModalPassengerName').value = LoggedInUserName;
+        document.getElementById('AwaitingConfirmation').style.display = 'none';
+        new bootstrap.Modal(document.getElementById('BookingModal')).show();
+    }
+
+    function SubmitBooking() {
+        document.getElementById('AwaitingConfirmation').style.display = 'block';
+    }
+</script>
+
+<style>
+    body {
+        background-color: #f4f7fa;
+        font-family: Arial, sans-serif;
+        color: #343a40;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        color: #007bff;
+        font-weight: 700;
+    }
+
+    .card {
+        border-radius: 10px;
+        transition: box-shadow 0.3s;
+    }
+
+        .card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-dark {
+        background-color: #343a40;
+        border-color: #343a40;
+    }
+
+        .btn-dark:hover {
+            background-color: #1d1e22;
+        }
+</style>

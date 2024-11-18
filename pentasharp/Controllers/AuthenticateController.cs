@@ -74,6 +74,11 @@ namespace WebApplication1.Controllers
             return View(users);
         }
 
+        public IActionResult Users()
+        {
+            return View();
+        }
+
 
         public IActionResult Edit(int id)
         {
