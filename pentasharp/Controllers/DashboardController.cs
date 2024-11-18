@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using WebApplication1.Models;
 using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
@@ -7,6 +8,7 @@ namespace WebApplication1.Controllers
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class DashboardController : Controller
     {
+
         public IActionResult Dashboard()
         {
             return View();

@@ -1,0 +1,64 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Bus Reservation Dashboard";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center fw-bold text-primary mb-4">Bus Reservation Dashboard</h1>
+    <div class="mb-4">
+        <label for="actionSelect" class="form-label fw-bold">Select an Action</label>
+        <select id="actionSelect" class="form-select">
+            <option>Select an Action</option>
+            <option selected>Confirm Bus Reservation</option>
+            <option>View Passengers by Route</option>
+        </select>
+    </div>
+
+    <div id="confirmReservationSection">
+        <div class="list-group">
+            <div class="list-group-item d-flex align-items-center justify-content-between shadow-sm p-3 mb-2 rounded" style="background-color: #fdfdfe;">
+                <div class="schedule-details">
+                    <h6 class="mb-1 fw-bold text-dark">Route: Placeholder Route</h6>
+                    <small class="text-muted">Bus Number: <b>Placeholder</b> | Schedule ID: <b>Placeholder</b></small><br />
+                    <small class="text-muted">Departure: <b>Placeholder</b> | Arrival: <b>Placeholder</b> | Seats: <b>Placeholder</b></small><br />
+                    <small class="text-muted">Price: <b>Placeholder</b> | Status: <span class="badge bg-warning text-dark">Placeholder</span></small>
+                </div>
+                <div class="action-buttons d-flex flex-column align-items-center">
+                    <button class="btn btn-success btn-sm mb-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-check me-2"></i> Confirm
+                    </button>
+                    <button class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                        <i class="fas fa-times me-2"></i> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewPassengersSection" style="display: none;">
+        <div class="mb-3">
+            <label for="routeSelect" class="form-label fw-bold">Select a Bus Route</label>
+            <select id="routeSelect" class="form-select">
+                <option>Select a Route...</option>
+            </select>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Passenger Name</th>
+                        <th scope="col">Seats</th>
+                        <th scope="col">Departure Date</th>
+                        <th scope="col">Departure Time</th>
+                    </tr>
+                </thead>
+                <tbody id="passengerListContainer"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/busSchedule/busReservationManagement.js"></script>
+}

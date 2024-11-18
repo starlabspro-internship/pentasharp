@@ -3,165 +3,113 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="container d-flex min-vh-100 align-items-center justify-content-center">
-    <div class="row register-container w-100">
-        <div class="col-md-6 welcome-section d-flex flex-column justify-content-center align-items-center text-center">
-            <h1 class="mb-3 welcome-heading">Welcome to PentaSharp</h1>
-            <p class="welcome-text mb-4">Your reliable transport scheduling partner</p>
-            <a href="@Url.Action("Index", "Home")" class="btn-welcome-home">
-                <i class="fas fa-home me-2"></i>Go to Home
-            </a>
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card shadow-lg p-3 rounded-4" style="max-width: 500px; width: 100%; background-color: #ffffff;">
+        <div class="text-center mb-3">
+            <img src="~/img/brand-logo.png" alt="PentaSharp" style="max-width: 120px; margin-bottom: 15px;">
+            <h4 class="fw-bold text-primary">Create Your Account</h4>
+            <p class="text-muted">Sign up to access exclusive features</p>
         </div>
-
-        <div class="col-12 col-md-6 form-section">
-            <div class="text-center mb-4">
-                <h3>Sign Up</h3>
-                <p class="text-muted">Already have an account? <a href="@Url.Action("Login", "Authenticate")">Log in</a></p>
+        <form asp-action="Register" method="post">
+            <div class="form-floating mb-2">
+                <input asp-for="FirstName" class="form-control" placeholder="First Name" required>
+                <label asp-for="FirstName">First Name</label>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-            <form asp-action="Register" asp-controller="Authenticate" method="post">
-                <div class="form-floating mb-3">
-                    <input asp-for="FirstName" class="form-control" placeholder="First Name" required>
-                    <label asp-for="FirstName">First Name</label>
-                    <span asp-validation-for="FirstName" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="LastName" class="form-control" placeholder="Last Name" required>
-                    <label asp-for="LastName">Last Name</label>
-                    <span asp-validation-for="LastName" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Email" class="form-control" placeholder="Email" required>
-                    <label asp-for="Email">Email</label>
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="Password" class="form-control" placeholder="Password" type="password" required>
-                    <label asp-for="Password">Password</label>
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-floating mb-3">
-                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" required>
-                    <label asp-for="ConfirmPassword">Confirm Password</label>
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="terms" required>
-                    <label class="form-check-label" for="terms">
-                        I agree to the <a href="#!" class="text-decoration-none">terms and conditions</a>
-                    </label>
-                </div>
-                <div class="d-grid mb-3">
-                    <button class="btn btn-primary btn-lg" type="submit">Register</button>
-                </div>
-            </form>
-            <div class="text-center mt-3">
-                <a href="#!" class="text-muted">Forgot password?</a>
+            <div class="form-floating mb-2">
+                <input asp-for="LastName" class="form-control" placeholder="Last Name" required>
+                <label asp-for="LastName">Last Name</label>
+                <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
+            <div class="form-floating mb-2">
+                <input asp-for="Email" class="form-control" placeholder="Email" required>
+                <label asp-for="Email">Email</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-2">
+                <input asp-for="Password" class="form-control" placeholder="Password" type="password" required>
+                <label asp-for="Password">Password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-2">
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" required>
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="terms" required>
+                <label class="form-check-label" for="terms">
+                    I agree to the <a href="#!" class="text-decoration-none">terms and conditions</a>
+                </label>
+            </div>
+            <div class="d-grid mb-2">
+                <button class="btn btn-primary btn-sm" type="submit">Register</button>
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+            <div class="text-danger mb-2 text-center">
+                @ViewData.ModelState[string.Empty]?.Errors.FirstOrDefault()?.ErrorMessage
+            </div>
+            }
+        </form>
+        <div class="text-center mt-2">
+            <p class="text-muted mb-0">Already have an account? <a href="@Url.Action("Login", "Authenticate")" class="text-primary">Log In</a></p>
         </div>
     </div>
 </div>
 
 <style>
     body {
-        overflow: hidden;
-        background-color: #f0f2f5;
-        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        font-family: "Poppins", sans-serif;
     }
 
-    .register-container {
-        max-width: 900px;
-        background: #ffffff;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        overflow: hidden;
+    .card {
+        border: none;
     }
 
-    .welcome-section {
-        background: #007bff;
-        color: #fff;
-        padding: 50px;
-        text-align: center;
+    h4 {
+        font-size: 1.5rem;
+        color: #4a4a4a;
     }
 
-    .welcome-heading {
-        font-size: 2.2rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 0.9rem;
     }
-
-    .welcome-text {
-        font-size: 1rem;
-        max-width: 80%;
-        line-height: 1.5;
-    }
-
-    .btn-welcome-home {
-        display: inline-flex;
-        align-items: center;
-        color: #007bff;
-        background-color: #fff;
-        font-weight: bold;
-        text-decoration: none;
-        padding: 0.5rem 1.5rem;
-        border: 2px solid #fff;
-        border-radius: 30px;
-        transition: all 0.3s ease;
-        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.2);
-    }
-
-        .btn-welcome-home i {
-            font-size: 1rem;
-        }
-
-        .btn-welcome-home:hover {
-            background-color: #0056b3;
-            color: #fff;
-            border-color: #0056b3;
-            box-shadow: 0px 6px 12px rgba(0, 91, 187, 0.3);
-        }
-
-    .form-section {
-        padding: 50px;
-    }
-
-        .form-section h3 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #333;
-        }
 
     .form-floating label {
+        padding-left: 10px;
         color: #6c757d;
+        font-size: 0.85rem;
     }
 
     .btn-primary {
-        background-color: #007bff;
+        background-color: #ff0077;
         border: none;
-        font-weight: 600;
-        padding: 0.75rem;
-        transition: background-color 0.3s ease;
+        font-weight: bold;
+        padding: 8px 15px;
+        border-radius: 20px;
+        transition: all 0.3s ease-in-out;
+        font-size: 0.9rem;
     }
 
         .btn-primary:hover {
-            background-color: #0056b3;
+            background-color: #cc0066;
         }
 
-    .form-check-label {
-        color: #6c757d;
+    a {
+        text-decoration: none;
     }
 
-    .form-section .text-muted {
-        color: #6c757d;
-    }
-
-    .form-section a {
-        color: #007bff;
-        transition: color 0.3s;
-    }
-
-        .form-section a:hover {
-            color: #0056b3;
+        a.text-primary:hover {
+            text-decoration: underline;
         }
+
+    img {
+        border-radius: 50%;
+    }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

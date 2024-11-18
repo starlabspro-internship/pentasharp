@@ -1,0 +1,65 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Driver Dashboard";
+}
+
+<div class="container my-5">
+    <h2 class="text-center fw-bold text-primary mb-4">Driver Dashboard</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white fw-bold">Available Bookings</div>
+                <div class="card-body">
+                    <div id="availableBookings">
+                        <div class="booking-item mb-3">
+                            <p><strong>Passenger:</strong> Mark Wilson</p>
+                            <p><strong>Pickup:</strong> Fifth Avenue</p>
+                            <p><strong>Dropoff:</strong> Central Park</p>
+                            <p><strong>Scheduled Time:</strong> 08:30 AM</p>
+                            <button class="btn btn-success w-100" onclick="claimBooking('Mark Wilson', 'Fifth Avenue', 'Central Park', '08:30 AM')">Claim Booking</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white fw-bold">Current Trip</div>
+                <div class="card-body" id="currentTripDetails">
+                    <p><strong>Passenger:</strong> <span id="currentPassenger">No trip claimed</span></p>
+                    <p><strong>Pickup:</strong> <span id="currentPickup">--</span></p>
+                    <p><strong>Dropoff:</strong> <span id="currentDropoff">--</span></p>
+                    <p><strong>Status:</strong> <span id="currentStatus" class="badge bg-warning">Pending</span></p>
+                    <p><strong>Fare:</strong> €<span id="assignedFare">0.00</span></p>
+                    <div id="taxiMeter" class="mt-3 text-danger fw-bold" style="display: none">
+                        <i class="fas fa-clock"></i> Taxi Meter: <span id="meterTime">00:00:00</span>
+                    </div>
+                    <button id="startTripButton" class="btn btn-success mt-3" style="display: none" onclick="startTrip()">Start Trip</button>
+                    <button id="endTripButton" class="btn btn-danger mt-3" style="display: none" onclick="endTrip()">End Trip</button>
+                    <div id="fareDisplay" class="mt-3 fw-bold text-primary" style="display: none">
+                        Total Fare: €<span id="fareAmount">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark fw-bold">Available Reservations</div>
+                <div class="card-body">
+                    <div id="availableReservations">
+                        <div class="reservation-item mb-3">
+                            <p><strong>Passenger:</strong> Jane Smith</p>
+                            <p><strong>Pickup:</strong> Madison Square</p>
+                            <p><strong>Dropoff:</strong> Empire State Building</p>
+                            <p><strong>Reservation Time:</strong> Tomorrow at 10:00 AM</p>
+                            <p><strong>Base Fare:</strong> €15.00</p>
+                            <button class="btn btn-primary w-100" onclick="acceptReservation('Jane Smith', 'Madison Square', 'Empire State Building', '10:00 AM', 15.00)">Accept Reservation</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/driverDashboard.js"></script>

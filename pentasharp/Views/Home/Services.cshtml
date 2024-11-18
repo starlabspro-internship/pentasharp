@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid bg-primary text-light py-3">
+    <div class="container text-center">
+        <p class="lead text-light mb-0">Explore schedules, reserve seats, or book a ride for your next journey with just a few clicks.</p>
+    </div>
+</div>
+<div class="container-fluid features overflow-hidden py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center text-center">
+            <div class="col-md-6 col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-calendar-alt fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Bus Schedules</h5>
+                        <p class="mb-3">Explore detailed bus schedules to plan your travel with ease.</p>
+                        <a asp-controller="Bus" asp-action="BusSchedules" class="btn btn-secondary rounded-pill">View the schedule<i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-taxi fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Taxi Bookings</h5>
+                        <p class="mb-3">Book a taxi quickly and conveniently for any destination.</p>
+                        <a asp-controller="Taxi" asp-action="TaxiBooking" class="btn btn-secondary rounded-pill">Book a taxi<i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="feature-item text-center p-4">
+                    <div class="feature-icon p-3 mb-4">
+                        <i class="fas fa-clipboard-check fa-4x text-primary"></i>
+                    </div>
+                    <div class="feature-content d-flex flex-column">
+                        <h5 class="mb-3">Taxi Reservations</h5>
+                        <p class="mb-3">Make advance reservations for taxis at your convenience.</p>
+                        <a asp-controller="Taxi" asp-action="TaxiReservation" class="btn btn-secondary rounded-pill">Reserve a taxi<i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-light py-5">
+    <div class="container text-center">
+        <h2 class="display-4 mb-4 text-dark">Discover Our Services</h2>
+        <p class="lead text-muted mb-4">We offer a variety of travel services that help make your journey smooth and enjoyable. Whether you're planning your next bus ride or booking a taxi, we have you covered with reliable and easy-to-use options.</p>
+        <a asp-controller="Home" asp-action="About" class="btn btn-primary btn-lg rounded-pill">Learn More About Us</a>
+    </div>
+</div>
+<div class="container-fluid bg-primary text-white py-5">
+    <div class="container text-center">
+        <h3 class="display-4 mb-4">Why Choose Us?</h3>
+        <p class="lead mb-5">With our user-friendly platform and a range of services tailored to your needs, planning and booking your travel has never been easier. We're committed to providing you with the best experience every step of the way.</p>
+        <div class="row justify-content-center">
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <h5 class="h5 mb-3">Customer-Centric</h5>
+                <p>We prioritize your needs to ensure your journey is seamless and comfortable.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-cogs fa-3x mb-3"></i>
+                <h5 class="h5 mb-3">Convenient and Easy</h5>
+                <p>Book and manage your travels with just a few clicks from any device.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-thumbs-up fa-3x mb-3"></i>
+                <h5 class="h5 mb-3">Reliable Services</h5>
+                <p>We work with trusted providers to offer you the best options for your travel needs.</p>
+            </div>
+        </div>
+    </div>
+</div>

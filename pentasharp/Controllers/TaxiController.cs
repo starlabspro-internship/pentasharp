@@ -1,16 +1,23 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using WebApplication1.Models;
+using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiController : Controller
     {
-        public IActionResult TaxiBookings()
+
+        public IActionResult TaxiBooking()
         {
             return View();
         }
-        public IActionResult TaxiReservations()
+
+        public IActionResult TaxiReservation()
         {
             return View();
         }
+
     }
-}
+} 
