@@ -1,6 +1,10 @@
 # Ignore build files and binaries
-bin/
-obj/
+/bin/
+/obj/
+/Debug/
+/Release/
+/bin/
+/obj/
+# Ignore binaries and compiled files
 *.dll
 *.pdb
-*.exe
