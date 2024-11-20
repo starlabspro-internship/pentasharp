@@ -59,8 +59,8 @@
                         <span class="nav-link-text ms-1">Add Company & Taxi</span>
                     </a>
                 </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")">
-                    <a class="nav-link" asp-controller="Authenticate" asp-action="Users">
+                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "UserList" ? "active" : "")">
+                    <a class="nav-link" asp-controller="Authenticate" asp-action="UserList">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="fas fa-users text-primary"></i>
                         </div>
