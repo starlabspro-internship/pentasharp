@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.ViewModel.TaxiModels
 {
@@ -41,5 +42,11 @@ namespace pentasharp.ViewModel.TaxiModels
         /// Gets or sets the list of available taxi companies.
         /// </summary>
         public List<TaxiCompany> TaxiCompanies { get; set; } = new List<TaxiCompany>();
+
+        /// <summary>
+        /// Gets or sets the status of the taxi using TaxiStatus enum.
+        /// </summary>
+        [Required]
+        public TaxiStatus Status { get; set; } = TaxiStatus.Available;
     }
 }
