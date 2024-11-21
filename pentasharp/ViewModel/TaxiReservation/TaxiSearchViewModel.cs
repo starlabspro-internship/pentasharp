@@ -7,5 +7,7 @@
         public DateTime ReservationDate { get; set; }
         public TimeSpan ReservationTime { get; set; }
         public int PassengerCount { get; set; }
+
+
     }
 }

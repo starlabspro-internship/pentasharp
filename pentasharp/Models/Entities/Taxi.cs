@@ -25,6 +25,8 @@ namespace pentasharp.Models.Entities
 
         [Required]
         public TaxiStatus Status { get; set; } = TaxiStatus.Available;
+        public int? PassengerCount { get; set; }
+
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

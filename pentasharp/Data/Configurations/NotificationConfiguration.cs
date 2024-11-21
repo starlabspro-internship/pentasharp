@@ -10,6 +10,7 @@ namespace pentasharp.Data.Configurations
         {
             ConfigureKeys(builder);
             ConfigureProperties(builder);
+            ConfigureRelationships(builder);
         }
 
         private void ConfigureKeys(EntityTypeBuilder<Notifications> builder)
@@ -31,5 +32,12 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
         }
 
+        private void ConfigureRelationships(EntityTypeBuilder<Notifications> builder)
+        {
+            builder.HasOne(n => n.User)  // Assuming 'User' is the related entity
+                .WithMany(u => u.Notifications)  // Assuming 'Notifications' collection exists in 'User' entity
+                .HasForeignKey(n => n.UserId)  // Assuming 'UserId' is the foreign key
+                .OnDelete(DeleteBehavior.Restrict);  // Prevent cascade delete to avoid cycles or conflicts
+        }
     }
 }

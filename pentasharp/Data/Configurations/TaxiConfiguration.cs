@@ -40,7 +40,8 @@ namespace pentasharp.Data.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(t => t.UpdatedAt);
+            builder.Property(t => t.UpdatedAt)
+                .IsRequired(false);  // Nullable, can be updated later
         }
 
         private void ConfigureIndexes(EntityTypeBuilder<Taxi> builder)
@@ -57,15 +58,18 @@ namespace pentasharp.Data.Configurations
 
         private void ConfigureRelationships(EntityTypeBuilder<Taxi> builder)
         {
+            // Relationship between Taxi and TaxiCompany (one-to-many)
             builder.HasOne(t => t.TaxiCompany)
-        .WithMany(tc => tc.Taxis)
-        .HasForeignKey(t => t.TaxiCompanyId)
-        .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(tc => tc.Taxis)
+                .HasForeignKey(t => t.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Cascade);  // Consider if cascading delete is desired
 
+            // Relationship between Taxi and TaxiReservations (one-to-many)
             builder.HasMany(t => t.TaxiReservations)
                 .WithOne(tr => tr.Taxi)
                 .HasForeignKey(tr => tr.TaxiId);
 
+            // Relationship between Taxi and TaxiBookings (one-to-many)
             builder.HasMany(t => t.TaxiBookings)
                 .WithOne(tb => tb.Taxi)
                 .HasForeignKey(tb => tb.TaxiId);

@@ -12,6 +12,7 @@ namespace pentasharp.Data.Configurations
             ConfigureProperties(builder);
             ConfigureIndexes(builder);
             ConfigureDefaults(builder);
+            ConfigureRelationships(builder);
         }
 
         private void ConfigureKeys(EntityTypeBuilder<TaxiCompany> builder)
@@ -49,6 +50,16 @@ namespace pentasharp.Data.Configurations
         {
             builder.Property(tc => tc.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+        }
+
+        // Configure relationships between TaxiCompany and TaxiReservations
+        private void ConfigureRelationships(EntityTypeBuilder<TaxiCompany> builder)
+        {
+            // One-to-many relationship between TaxiCompany and TaxiReservations
+            builder.HasMany(tc => tc.TaxiReservations)
+                .WithOne(tr => tr.TaxiCompany) // Assuming TaxiReservations has a TaxiCompany navigation property
+                .HasForeignKey(tr => tr.TaxiCompanyId) // Assuming TaxiReservations has a TaxiCompanyId foreign key
+                .OnDelete(DeleteBehavior.Cascade);  // Ensure deleting a company deletes related reservations
         }
     }
 }
