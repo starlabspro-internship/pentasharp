@@ -160,5 +160,39 @@ namespace WebApplication1.Controllers
 
             return Ok(new { success = true, message = "Schedule deleted successfully." });
         }
+
+        [HttpGet("SearchSchedules")]
+        public IActionResult SearchSchedules(string from, string to, DateTime date)
+        {
+            var schedules = _context.BusSchedules
+                .Include(s => s.Route)
+                .Include(s => s.Bus)
+                .Where(s => s.Route.FromLocation.Contains(from)
+                            && s.Route.ToLocation.Contains(to)
+                            && s.DepartureTime.Date == date.Date)
+                .Select(s => new
+                {
+                    s.ScheduleId,
+                    s.Route.FromLocation,
+                    s.Route.ToLocation,
+                    s.DepartureTime,
+                    s.ArrivalTime,
+                    s.Bus.BusNumber,
+                    s.Price,
+                    s.AvailableSeats,
+                    Status = s.Status.ToString()
+                })
+                .ToList();
+
+            return Ok(schedules);
+        }
+
+        [Route("BusReservationManagement")]
+        public IActionResult BusReservationManagement()
+        {
+            return View();
+        }
+
+
     }
 }
