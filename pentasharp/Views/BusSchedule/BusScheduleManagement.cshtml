@@ -49,7 +49,6 @@
                     <table class="table table-striped table-bordered table-hover shadow-sm">
                         <thead>
                             <tr>
-                                <th>#</th>
                                 <th>Route</th>
                                 <th>Bus ID</th>
                                 <th>Departure Time</th>
@@ -98,7 +97,7 @@
                     </div>
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="submit" class="btn btn-success btn-sm">Save</button>
-                        <button type="button" class="btn btn-danger btn-sm" id="deleteRouteButton" style="display: none;">Delete</button>
+                        <button type="button" class="btn btn-danger btn-sm" id="deleteRouteButton">Delete</button>
                     </div>
                 </form>
             </div>
@@ -116,11 +115,15 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="RouteId" class="form-label">Route</label>
-                            <select id="RouteId" name="RouteId" class="form-select"></select>
+                            <select id="RouteId" name="RouteId" class="form-select">
+                                <option disabled selected>Loading routes...</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="BusId" class="form-label">Bus</label>
-                            <select id="BusId" name="BusId" class="form-select"></select>
+                            <select id="BusId" name="BusId" class="form-select">
+                                <option disabled selected>Loading buses...</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="DepartureTime" class="form-label">Departure Time</label>
@@ -137,7 +140,7 @@
                     </div>
                     <div class="modal-footer d-flex justify-content-between">
                         <button type="submit" class="btn btn-success btn-sm">Save</button>
-                        <button type="button" class="btn btn-danger btn-sm" id="deleteScheduleButton" style="display: none;">Delete</button>
+                        <button type="button" class="btn btn-danger btn-sm" id="deleteScheduleButton">Delete</button>
                     </div>
                 </form>
             </div>

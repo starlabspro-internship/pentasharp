@@ -13,6 +13,7 @@ using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
+    [Route("Authenticate")]
     public class AuthenticateController : Controller
     {
 
@@ -29,13 +30,14 @@ namespace WebApplication1.Controllers
             _logger = logger;
         }
 
+        [HttpGet("Register")]
         public IActionResult Register()
         {
             var model = new RegisterViewModel();
             return View(model);
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public IActionResult Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -67,6 +69,7 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [HttpGet("UserList")]
         [ServiceFilter(typeof(AdminOnlyFilter))]
         public IActionResult UserList()
         {
@@ -79,7 +82,7 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-
+        [HttpGet("Edit/{id}")]
         public IActionResult Edit(int id)
         {
             var user = _context.Users.Find(id);
@@ -93,7 +96,7 @@ namespace WebApplication1.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpPost("EditUser")]
         public IActionResult Edit(EditUserViewModel model)
         {
             var user = _context.Users.Find(model.UserId);
@@ -115,6 +118,8 @@ namespace WebApplication1.Controllers
 
             return RedirectToAction("UserList");
         }
+
+        [HttpGet("Delete/{id}")]
         public IActionResult Delete(int id)
         {
             var user = _context.Users.Find(id);
@@ -125,7 +130,7 @@ namespace WebApplication1.Controllers
             return View(user);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
@@ -138,12 +143,13 @@ namespace WebApplication1.Controllers
             return RedirectToAction("UserList");
         }
 
+        [HttpGet("Login")]
         public IActionResult Login()
         {
             return View(new LoginViewModel());
         }
 
-        [HttpPost]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -196,6 +202,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet("Logout")]
         public IActionResult Logout()
         {
             var session = _httpContextAccessor.HttpContext.Session;
@@ -205,6 +212,29 @@ namespace WebApplication1.Controllers
             _logger.LogInformation("User logged out successfully.");
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("GetCurrentUser")]
+        public IActionResult GetCurrentUser()
+        {
+            var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var user = _context.Users.Find(int.Parse(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new
+            {
+                user.UserId,
+                user.FirstName,
+                user.LastName
+            });
         }
     }
 }
