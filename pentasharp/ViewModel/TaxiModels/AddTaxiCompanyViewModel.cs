@@ -26,7 +26,7 @@ namespace pentasharp.ViewModel.TaxiModels
         /// <summary>
         /// Gets or sets the list of taxis associated with the company.
         /// </summary>
-        public List<Taxi> Taxis { get; set; }
+        public List<pentasharp.Models.Entities.Taxi> Taxis { get; set; } // Përdorimi i emrit të plotë me hapësirën e emrit
 
         /// <summary>
         /// Gets or sets the ViewModel for adding a new taxi.
