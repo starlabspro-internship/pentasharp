@@ -75,30 +75,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 `).join("");
 
                 attachScheduleEventListeners();
-            })
-            .catch(error => {
-                console.error("Error fetching schedules, routes, or buses:", error.message);
             });
     }
 
     function fetchBuses() {
         return fetch("/api/BusCompany/GetBuses")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch buses");
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                if (data.length > 0) {
-                    populateBusDropdown(data);
-                } else {
-                    busDropdown.innerHTML = `<option disabled>No buses available</option>`;
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching buses:", error.message);
-                busDropdown.innerHTML = `<option disabled>Failed to load buses</option>`;
+                populateBusDropdown(data);
             });
     }
 
@@ -183,6 +167,18 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    function displayErrors(errorMessage, modal) {
+        const errorContainer = modal.querySelector(".modal-body");
+        errorContainer.insertAdjacentHTML(
+            "beforeend",
+            `<div class="alert alert-danger mt-3">${errorMessage}</div>`
+        );
+        setTimeout(() => {
+            const alert = errorContainer.querySelector(".alert");
+            if (alert) alert.remove();
+        }, 5000);
+    }
+
     deleteRouteButton.addEventListener("click", function () {
         if (!currentEditRouteId) return;
         fetch(`/api/BusSchedule/DeleteRoute/${currentEditRouteId}`, { method: "DELETE" })
@@ -192,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     routeModal.hide();
                     fetchRoutes();
                 } else {
-                    alert(data.message);
+                    displayErrors(data.message, document.getElementById("routeModal"));
                 }
             });
     });
@@ -206,7 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     scheduleModal.hide();
                     fetchSchedules();
                 } else {
-                    alert(data.message);
+                    displayErrors(data.message, document.getElementById("scheduleModal"));
                 }
             });
     });
@@ -235,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     fetchRoutes();
                     fetchSchedules();
                 } else {
-                    alert(data.message);
+                    displayErrors(data.message, document.getElementById("routeModal"));
                 }
             });
     });
@@ -258,26 +254,15 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text);
-                    });
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     scheduleModal.hide();
                     fetchSchedules();
                     fetchRoutes();
                 } else {
-                    alert(data.message);
+                    displayErrors(data.message, document.getElementById("scheduleModal"));
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error.message);
-                alert("An error occurred: " + error.message);
             });
     });
 

@@ -6,7 +6,7 @@
 
 <p><strong>@Model.FirstName @Model.LastName</strong></p>
 
-<form asp-action="Delete" asp-route-id="@Model.UserId" method="post">
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.UserId" method="post">
     <button type="submit" class="btn btn-danger">Delete</button>
     <a href="@Url.Action("UserList", "Authenticate")" class="btn btn-secondary">Cancel</a>
 </form>
