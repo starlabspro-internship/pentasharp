@@ -220,20 +220,33 @@ namespace WebApplication1.Controllers
             var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized();
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "User is not authenticated."
+                });
             }
 
             var user = _context.Users.Find(int.Parse(userId));
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    success = false,
+                    message = "User not found."
+                });
             }
 
-            return Json(new
+            return Ok(new
             {
-                user.UserId,
-                user.FirstName,
-                user.LastName
+                success = true,
+                message = "User retrieved successfully.",
+                data = new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                }
             });
         }
     }

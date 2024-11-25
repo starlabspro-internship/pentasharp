@@ -119,11 +119,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) {
                     throw new Error('Failed to fetch current user.');
                 }
+                console.log("data", response);
                 return response.json();
             })
             .then(data => {
-                passengerNameInput.value = `${data.firstName} ${data.lastName}`;
-                userId = data.userId;
+                console.log("data", data.data)
+                passengerNameInput.value = `${data.data.firstName} ${data.data.lastName}`;
+                userId = data.data.userId;
             })
             .catch(error => {
                 console.error("Error fetching user:", error);
