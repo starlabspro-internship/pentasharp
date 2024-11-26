@@ -220,34 +220,34 @@ namespace WebApplication1.Controllers
             var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized(new
-                {
-                    success = false,
-                    message = "User is not authenticated."
-                });
+                return Unauthorized(new StandardResponse(
+                    ApiStatusEnum.UNAUTHORIZED,
+                    Guid.NewGuid().ToString(),
+                    "User is not authorized to access this resource."
+                ));
             }
 
             var user = _context.Users.Find(int.Parse(userId));
             if (user == null)
             {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "User not found."
-                });
+                return NotFound(new StandardResponse(
+                    ApiStatusEnum.USER_NOT_FOUND,
+                    Guid.NewGuid().ToString(),
+                    "User not found."
+                ));
             }
 
-            return Ok(new
-            {
-                success = true,
-                message = "User retrieved successfully.",
-                data = new
+            return Ok(new StandardResponse(
+                ApiStatusEnum.OK,
+                Guid.NewGuid().ToString(),
+                "Success",
+                new
                 {
                     user.UserId,
                     user.FirstName,
                     user.LastName
                 }
-            });
+            ));
         }
     }
 }

@@ -23,16 +23,22 @@ namespace pentasharp.Models.DTOs
         public string Message { get; set; }
 
         /// <summary>
+        /// The data associated with the response, containing details or results of the operation.
+        /// </summary>
+        public object Data { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StandardResponse"/> class with specified status, UUID, and message.
         /// </summary>
         /// <param name="status">The status of the API response.</param>
         /// <param name="uuid">The unique identifier for the response.</param>
         /// <param name="message">The message associated with the response.</param>
-        public StandardResponse(ApiStatusEnum status, string uuid, string message)
+        public StandardResponse(ApiStatusEnum status, string uuid, string message, object data = null)
         {
             Status = status;
             UUID = uuid;
             Message = message;
+            Data = data;
         }
     }
 }

@@ -186,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     routeModal.hide();
+                    fetchSchedules();
                     fetchRoutes();
                 } else {
                     displayErrors(data.message, document.getElementById("routeModal"));
@@ -201,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     scheduleModal.hide();
                     fetchSchedules();
+                    fetchRoutes();
                 } else {
                     displayErrors(data.message, document.getElementById("scheduleModal"));
                 }

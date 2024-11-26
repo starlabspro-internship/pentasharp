@@ -9,6 +9,7 @@ using pentasharp.ViewModel.BusReservation;
 using WebApplication1.Filters;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper.QueryableExtensions;
+using pentasharp.Models.Utilities;
 
 namespace WebApplication1.Controllers
 {
@@ -37,11 +38,11 @@ namespace WebApplication1.Controllers
 
             if (isInvalidData)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Invalid data provided."
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    ResponseMessages.InvalidData,
+                    null 
+                ));
             }
 
             var routeExists = _context.BusRoutes.Any(r =>
@@ -50,11 +51,11 @@ namespace WebApplication1.Controllers
 
             if (routeExists)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Route already exists."
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.Conflict,
+                    "Route already exists.",
+                    null
+                ));
             }
 
             var route = _mapper.Map<BusRoutes>(model);
@@ -64,11 +65,17 @@ namespace WebApplication1.Controllers
             _context.BusRoutes.Add(route);
             _context.SaveChanges();
 
-            return Ok(new
-            {
-                success = true,
-                message = "Route added successfully."
-            });
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                ResponseMessages.Success,
+                new
+                {
+                    route.RouteId,
+                    route.FromLocation,
+                    route.ToLocation,
+                    route.EstimatedDuration
+                }
+            ));
         }
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
@@ -84,14 +91,15 @@ namespace WebApplication1.Controllers
         [HttpPut("EditRoute/{id}")]
         public IActionResult EditRoute(int id, [FromBody] AddRouteViewModel model, int hours, int minutes)
         {
-            var route = _context.BusRoutes.SingleOrDefault(r => r.RouteId == id);
+
+            var route = _context.BusRoutes.Find(id);
             if (route == null)
             {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "Route not found."
-                });
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    ResponseMessages.NotFound,
+                    null
+                ));
             }
 
             var isDuplicateRoute = _context.BusRoutes
@@ -101,11 +109,11 @@ namespace WebApplication1.Controllers
 
             if (isDuplicateRoute)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "A route with the same details already exists."
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    "A route with the same details already exists.",
+                    null
+                ));
             }
 
             route.FromLocation = model.FromLocation;
@@ -114,11 +122,17 @@ namespace WebApplication1.Controllers
 
             _context.SaveChanges();
 
-            return Ok(new
-            {
-                success = true,
-                message = "Route updated successfully."
-            });
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                ResponseMessages.Success,
+                new
+                {
+                    route.RouteId,
+                    route.FromLocation,
+                    route.ToLocation,
+                    route.EstimatedDuration
+                }
+            ));
         }
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
@@ -126,85 +140,84 @@ namespace WebApplication1.Controllers
         public IActionResult DeleteRoute(int id)
         {
             var route = _context.BusRoutes.SingleOrDefault(r => r.RouteId == id);
-              if (route == null)
+            if (route == null)
             {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "Route not found."
-                });
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    ResponseMessages.NotFound,
+                    null
+                ));
             }
 
             _context.BusRoutes.Remove(route);
             _context.SaveChanges();
 
-            return Ok(new { success = true, message = "Route deleted successfully." });
+            return Ok(ResponseFactory.CreateResponse<object>(
+                ResponseCodes.Success,
+                "Route deleted successfully.",
+                null
+            ));
         }
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpPost("AddSchedule")]
         public IActionResult AddSchedule([FromBody] AddScheduleViewModel model)
         {
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Invalid data provided.",
-                    data = (object)null
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    ResponseMessages.InvalidData,
+                    null
+                ));
             }
 
             var route = _context.BusRoutes.SingleOrDefault(r => r.RouteId == model.RouteId);
             if (route == null)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Route not found.",
-                    data = (object)null
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "Route not found.",
+                    null
+                ));
             }
 
             var bus = _context.Buses.SingleOrDefault(b => b.BusId == model.BusId);
             if (bus == null)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Bus not found.",
-                    data = (object)null
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "Bus not found.",
+                    null
+                ));
             }
 
             var duplicateSchedule = _context.BusSchedules
                 .SingleOrDefault(s => s.BusId == model.BusId && s.DepartureTime == model.DepartureTime);
             if (duplicateSchedule != null)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "A schedule for the same bus at the same time already exists.",
-                    data = (object)null
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.Conflict,
+                    "A schedule for the same bus at the same time already exists.",
+                    null
+                ));
             }
 
             model.ArrivalTime = model.DepartureTime.Add(route.EstimatedDuration);
             model.AvailableSeats = bus.Capacity;
 
             var schedule = _mapper.Map<BusSchedule>(model);
-
             _context.BusSchedules.Add(schedule);
             _context.SaveChanges();
 
             var responseModel = _mapper.Map<AddScheduleViewModel>(schedule);
 
-            return Ok(new
-            {
-                success = true,
-                message = "Schedule added successfully.",
-                data = responseModel
-            });
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                "Schedule added successfully.",
+                responseModel
+            ));
         }
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
@@ -232,27 +245,29 @@ namespace WebApplication1.Controllers
         [HttpPut("EditSchedule/{id}")]
         public IActionResult EditSchedule(int id, [FromBody] AddScheduleViewModel model)
         {
-            var schedule = _context.BusSchedules.SingleOrDefault(s => s.ScheduleId == id);
+
+            var schedule = _context.BusSchedules.Find(id);
             if (schedule == null)
             {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "Schedule not found."
-                });
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "Schedule not found.",
+                    null
+                ));
             }
 
             var isDuplicateSchedule = _context.BusSchedules
                 .Any(s => s.ScheduleId != id &&
                           s.BusId == model.BusId &&
                           s.DepartureTime == model.DepartureTime);
+
             if (isDuplicateSchedule)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "A schedule for the same bus at the same time already exists."
-                });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    "A schedule for the same bus at the same time already exists.",
+                    null
+                ));
             }
 
             schedule.RouteId = model.RouteId;
@@ -264,19 +279,29 @@ namespace WebApplication1.Controllers
             try
             {
                 _context.SaveChanges();
-                return Ok(new
-                {
-                    success = true,
-                    message = "Schedule updated successfully."
-                });
+
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    "Schedule updated successfully.",
+                    new
+                    {
+                        schedule.ScheduleId,
+                        schedule.RouteId,
+                        schedule.BusId,
+                        schedule.DepartureTime,
+                        schedule.ArrivalTime,
+                        schedule.Price,
+                        schedule.AvailableSeats
+                    }
+                ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = ex.Message
-                });
+                return StatusCode(500, ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InternalServerError,
+                    ex.Message,
+                    null
+                ));
             }
         }
 
@@ -284,32 +309,47 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteSchedule/{id}")]
         public IActionResult DeleteSchedule(int id)
         {
-            var schedule = _context.BusSchedules.SingleOrDefault(s => s.ScheduleId == id);
+
+            var schedule = _context.BusSchedules.Find(id);
             if (schedule == null)
             {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "Schedule not found."
-                });
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "Schedule not found.",
+                    null
+                ));
             }
 
             _context.BusSchedules.Remove(schedule);
             _context.SaveChanges();
 
-            return Ok(new { success = true, message = "Schedule deleted successfully." });
+            return Ok(ResponseFactory.CreateResponse<object>(
+                ResponseCodes.Success,
+                "Schedule deleted successfully.",
+                null
+            ));
         }
 
         [AllowAnonymous]
         [HttpGet("SearchSchedules")]
         public IActionResult SearchSchedules(string from, string to, DateTime date)
         {
+
             var schedules = _context.BusSchedules
                 .Where(s => s.Route.FromLocation.Contains(from)
                             && s.Route.ToLocation.Contains(to)
                             && s.DepartureTime.Date == date.Date)
                 .ProjectTo<SearchScheduleViewModel>(_mapper.ConfigurationProvider)
                 .ToList();
+
+            if (!schedules.Any())
+            {
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "No schedules found matching the search criteria.",
+                    null
+                ));
+            }
 
             return Ok(schedules);
         }
@@ -327,7 +367,11 @@ namespace WebApplication1.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { success = false, message = "Invalid data." });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    "Invalid data.",
+                    null
+                ));
             }
 
             try
@@ -344,35 +388,48 @@ namespace WebApplication1.Controllers
 
                 if (schedule == null)
                 {
-                    return BadRequest(new { success = false, message = "The schedule does not exist." });
+                    return NotFound(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.NotFound,
+                        "The schedule does not exist.",
+                        null
+                    ));
                 }
 
                 if (schedule.Status != BusScheduleStatus.Scheduled)
                 {
-                    return BadRequest(new { success = false, message = "The schedule is not active for reservations." });
+                    return BadRequest(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.InvalidData,
+                        "The schedule is not active for reservations.",
+                        null
+                    ));
                 }
 
                 if (schedule.AvailableSeats < model.NumberOfSeats)
                 {
-                    return BadRequest(new { success = false, message = "Not enough seats available for the selected schedule." });
+                    return BadRequest(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.InvalidData,
+                        "Not enough seats available for the selected schedule.",
+                        null
+                    ));
                 }
 
                 var reservation = _mapper.Map<BusReservations>(model);
-
                 _context.BusReservations.Add(reservation);
-
                 _context.SaveChanges();
 
-                return Ok(new { success = true, message = "Reservation added successfully." });
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    "Reservation added successfully.",
+                    new { reservation.ReservationId }
+                ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "An error occurred while adding the reservation.",
-                    details = ex.Message
-                });
+                return StatusCode(500, ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InternalServerError,
+                    "An error occurred while adding the reservation.",
+                    new { details = ex.Message }
+                ));
             }
         }
 
@@ -384,25 +441,34 @@ namespace WebApplication1.Controllers
                 .Where(r => r.Schedule != null && r.Schedule.Route != null && r.Schedule.Bus != null)
                 .Select(r => new
                 {
-                    r.ReservationId,
-                    r.ReservationDate,
-                    r.NumberOfSeats,
-                    r.TotalAmount,
-                    r.PaymentStatus,
-                    r.Status,
+                    ReservationId = r.ReservationId,
+                    ReservationDate = r.ReservationDate,
+                    NumberOfSeats = r.NumberOfSeats,
+                    TotalAmount = r.TotalAmount,
+                    PaymentStatus = r.PaymentStatus,
+                    Status = r.Status,
                     Schedule = new
                     {
-                        r.Schedule.ScheduleId,
-                        r.Schedule.DepartureTime,
-                        r.Schedule.ArrivalTime,
-                        r.Schedule.Price,
-                        r.Schedule.AvailableSeats,
+                        ScheduleId = r.Schedule.ScheduleId,
+                        DepartureTime = r.Schedule.DepartureTime,
+                        ArrivalTime = r.Schedule.ArrivalTime,
+                        Price = r.Schedule.Price,
+                        AvailableSeats = r.Schedule.AvailableSeats,
                         BusNumber = r.Schedule.Bus.BusNumber,
                         FromLocation = r.Schedule.Route.FromLocation,
                         ToLocation = r.Schedule.Route.ToLocation
                     }
                 })
                 .ToList();
+
+            if (!reservations.Any())
+            {
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    "No reservations found.",
+                    null
+                ));
+            }
 
             return Ok(reservations);
         }
@@ -413,32 +479,47 @@ namespace WebApplication1.Controllers
         {
             if (model == null || model.ReservationId <= 0)
             {
-                return BadRequest(new { success = false, message = "Invalid request. Reservation ID is required." });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    "Invalid request. Reservation ID is required.",
+                    null
+                ));
             }
 
             try
             {
                 var reservation = _context.BusReservations
                     .Where(r => r.ReservationId == model.ReservationId)
-                    .Select(r => r)
                     .FirstOrDefault();
 
                 if (reservation == null)
                 {
-                    return NotFound(new { success = false, message = "Reservation not found." });
+                    return NotFound(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.NotFound,
+                        "Reservation not found.",
+                        null
+                    ));
                 }
 
                 if (reservation.Status == BusReservationStatus.Confirmed)
                 {
-                    return BadRequest(new { success = false, message = "Reservation is already confirmed." });
+                    return BadRequest(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.InvalidData,
+                        "Reservation is already confirmed.",
+                        null
+                    ));
                 }
 
-                var scheduleToUpdate = _context.BusSchedules.SingleOrDefault(s => s.ScheduleId == reservation.ScheduleId);
+                var scheduleToUpdate = _context.BusSchedules.Find(reservation.ScheduleId);
                 if (scheduleToUpdate != null)
                 {
                     if (scheduleToUpdate.AvailableSeats < reservation.NumberOfSeats)
                     {
-                        return BadRequest(new { success = false, message = "Not enough available seats to confirm this reservation." });
+                        return BadRequest(ResponseFactory.CreateResponse<object>(
+                            ResponseCodes.InvalidData,
+                            "Not enough available seats to confirm this reservation.",
+                            null
+                        ));
                     }
 
                     scheduleToUpdate.AvailableSeats -= reservation.NumberOfSeats;
@@ -448,16 +529,24 @@ namespace WebApplication1.Controllers
                 reservation.UpdatedAt = DateTime.UtcNow;
                 _context.SaveChanges();
 
-                return Ok(new { success = true, message = "Reservation confirmed successfully." });
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    "Reservation confirmed successfully.",
+                    new
+                    {
+                        reservation.ReservationId,
+                        reservation.Status,
+                        reservation.UpdatedAt
+                    }
+                ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "An error occurred while confirming the reservation.",
-                    details = ex.Message
-                });
+                return StatusCode(500, ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InternalServerError,
+                    "An error occurred while confirming the reservation.",
+                    new { details = ex.Message }
+                ));
             }
         }
 
@@ -467,22 +556,29 @@ namespace WebApplication1.Controllers
         {
             if (model == null || model.ReservationId <= 0)
             {
-                return BadRequest(new { success = false, message = "Invalid request. Reservation ID is required." });
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    "Invalid request. Reservation ID is required.",
+                    null
+                ));
             }
 
             try
             {
                 var reservation = _context.BusReservations
                     .Where(r => r.ReservationId == model.ReservationId)
-                    .Select(r => r)
                     .FirstOrDefault();
 
                 if (reservation == null)
                 {
-                    return NotFound(new { success = false, message = "Reservation not found." });
+                    return NotFound(ResponseFactory.CreateResponse<object>(
+                        ResponseCodes.NotFound,
+                        "Reservation not found.",
+                        null
+                    ));
                 }
 
-                var scheduleToUpdate = _context.BusSchedules.SingleOrDefault(s => s.ScheduleId == reservation.ScheduleId);
+                var scheduleToUpdate = _context.BusSchedules.Find(reservation.ScheduleId);
                 if (scheduleToUpdate != null)
                 {
                     scheduleToUpdate.AvailableSeats += reservation.NumberOfSeats;
@@ -492,16 +588,24 @@ namespace WebApplication1.Controllers
                 reservation.UpdatedAt = DateTime.UtcNow;
                 _context.SaveChanges();
 
-                return Ok(new { success = true, message = "Reservation canceled successfully." });
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    "Reservation canceled successfully.",
+                    new
+                    {
+                        reservation.ReservationId,
+                        reservation.Status,
+                        reservation.UpdatedAt
+                    }
+                ));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    success = false,
-                    message = "An error occurred while canceling the reservation.",
-                    details = ex.Message
-                });
+                return StatusCode(500, ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InternalServerError,
+                    "An error occurred while canceling the reservation.",
+                    new { details = ex.Message }
+                ));
             }
         }
     }
