@@ -49,10 +49,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompanies")]
         public IActionResult GetCompanies()
         {
-            var companies = _context.TaxiCompanies
-                             .Where(c => !c.IsDeleted)
-                             .Include(c => c.Taxis) 
-                             .ToList();
+            var companies = _context.TaxiCompanies.Include(c => c.Taxis).ToList();
             var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
             return Ok(viewModel);
         }
@@ -119,7 +116,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetTaxis")]
         public IActionResult GetTaxis()
         {
-            var taxis = _context.Taxis.Where(t => !t.IsDeleted).Include(t => t.TaxiCompany).ToList();
+            var taxis = _context.Taxis.Include(t => t.TaxiCompany).ToList();
             var viewModel = taxis.Select(t => new TaxiViewModel
             {
                 TaxiId = t.TaxiId,

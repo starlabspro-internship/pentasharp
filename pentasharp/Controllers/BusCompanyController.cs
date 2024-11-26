@@ -24,7 +24,7 @@ namespace WebApplication1.Controllers
         [HttpGet("Bus")]
         public IActionResult Add()
         {
-            var companies = _context.BusCompanies.Where(c => !c.IsDeleted).ToList();
+            var companies = _context.BusCompanies.ToList();
 
             var viewModel = new ManageBusCompanyViewModel
             {
@@ -49,7 +49,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompanies")]
         public IActionResult GetCompanies()
         {
-            var companies = _context.BusCompanies.Where(c => !c.IsDeleted).Include(c => c.Buses).ToList();
+            var companies = _context.BusCompanies.Include(c => c.Buses).ToList();
             var viewModel = _mapper.Map<List<BusCompanyViewModel>>(companies);
             return Ok(viewModel);
         }
@@ -115,7 +115,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBuses")]
         public IActionResult GetBuses()
         {
-            var buses = _context.Buses.Where(b => !b.IsDeleted).Include(b => b.BusCompany).ToList();
+            var buses = _context.Buses.Include(b => b.BusCompany).ToList();
             var viewModel = buses.Select(b => new BusViewModel
             {
                 BusId = b.BusId,

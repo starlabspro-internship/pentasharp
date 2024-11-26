@@ -33,6 +33,24 @@ namespace pentasharp.Data
            modelBuilder.ApplyConfiguration(new BusReservationsConfiguration());
             modelBuilder.ApplyConfiguration(new TaxiBookingConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+
+            ApplyGlobalQueryFilters(modelBuilder);
         }
+
+        private void ApplyGlobalQueryFilters(ModelBuilder modelBuilder)
+        {
+            // Add global query filter for Users
+            modelBuilder.Entity<User>()
+                .HasQueryFilter(u => !u.IsDeleted);
+
+            // Add other global query filters as needed
+          
+            modelBuilder.Entity<BusCompany>()
+           .HasQueryFilter(b => !b.IsDeleted);
+
+            modelBuilder.Entity<TaxiCompany>()
+               .HasQueryFilter(tc => !tc.IsDeleted);
+        }
+    
     }
 }

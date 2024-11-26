@@ -74,7 +74,7 @@ namespace WebApplication1.Controllers
         public IActionResult UserList()
         {
         
-            var users = _context.Users.Where(u => !u.IsDeleted).ToList();
+            var users = _context.Users.ToList();
 
             return View(users);
         }
