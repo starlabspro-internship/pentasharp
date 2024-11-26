@@ -23,5 +23,6 @@ namespace pentasharp.Models.Entities
 		public DateTime? UpdatedAt { get; set; }
 
 		public ICollection<Taxi> Taxis { get; set; } = new List<Taxi>();
-	}
+        public bool IsDeleted { get; set; }
+    }
 }

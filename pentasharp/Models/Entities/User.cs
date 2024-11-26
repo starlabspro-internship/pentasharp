@@ -39,5 +39,7 @@ namespace pentasharp.Models.Entities
         public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
         public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
 
+        public bool IsDeleted { get; set; }
+
     }
 }

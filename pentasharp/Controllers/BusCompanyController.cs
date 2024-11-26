@@ -24,7 +24,8 @@ namespace WebApplication1.Controllers
         [HttpGet("Bus")]
         public IActionResult Add()
         {
-            var companies = _context.BusCompanies.ToList();
+            var companies = _context.BusCompanies.Where(c => !c.IsDeleted).ToList();
+
             var viewModel = new ManageBusCompanyViewModel
             {
                 BusCompanies = _mapper.Map<List<BusCompanyViewModel>>(companies),
@@ -48,7 +49,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompanies")]
         public IActionResult GetCompanies()
         {
-            var companies = _context.BusCompanies.Include(c => c.Buses).ToList();
+            var companies = _context.BusCompanies.Where(c => !c.IsDeleted).Include(c => c.Buses).ToList();
             var viewModel = _mapper.Map<List<BusCompanyViewModel>>(companies);
             return Ok(viewModel);
         }
@@ -67,13 +68,36 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteCompany/{id}")]
         public IActionResult DeleteCompany(int id)
         {
-            var company = _context.BusCompanies.Include(c => c.Buses).FirstOrDefault(c => c.BusCompanyId == id);
-            if (company == null) return NotFound(new { success = false, message = "Company not found." });
+            // Find the company and include its related buses
+            var company = _context.BusCompanies.Include(c => c.Buses)
+                                               .FirstOrDefault(c => c.BusCompanyId == id);
 
-            _context.BusCompanies.Remove(company);
+            if (company == null)
+            {
+                return NotFound(new { success = false, message = "Company not found." });
+            }
+
+            // Mark the company as deleted (soft delete)
+            company.IsDeleted = true;
+            company.UpdatedAt = DateTime.UtcNow;
+
+            // Mark each bus related to the company as deleted (soft delete)
+            foreach (var bus in company.Buses)
+            {
+                bus.IsDeleted = true;
+                bus.UpdatedAt = DateTime.UtcNow;
+            }
+
+            // Update the company and the buses in the context
+            _context.BusCompanies.Update(company);  // Mark company as modified
+            _context.Buses.UpdateRange(company.Buses); // Mark all buses as modified
+
+            // Save changes to the database
             _context.SaveChanges();
-            return Ok(new { success = true, message = "Company deleted successfully." });
+
+            return Ok(new { success = true, message = "Company and its buses soft deleted successfully." });
         }
+
 
         [HttpPost("AddBus")]
         public IActionResult AddBus([FromBody] AddBusViewModel model)
@@ -91,7 +115,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBuses")]
         public IActionResult GetBuses()
         {
-            var buses = _context.Buses.Include(b => b.BusCompany).ToList();
+            var buses = _context.Buses.Where(b => !b.IsDeleted).Include(b => b.BusCompany).ToList();
             var viewModel = buses.Select(b => new BusViewModel
             {
                 BusId = b.BusId,

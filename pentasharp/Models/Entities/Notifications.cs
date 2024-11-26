@@ -22,8 +22,8 @@ namespace pentasharp.Models.Entities
         public int UserId { get; set; }
 
         [Required]
-        [ForeignKey("TaxiBooking")]
-        public int BookingId { get; set; }
+        [InverseProperty("TaxiBooking")]
+        public int? BookingId { get; set; }
 
         public User User { get; set; } = null!;
         public TaxiBookings TaxiBooking { get; set; } = null!;

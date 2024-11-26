@@ -19,7 +19,8 @@ namespace pentasharp.Data
         public DbSet<BusCompany> BusCompanies { get; set; }
         public DbSet<Buses> Buses { get; set; }
         public DbSet<BusRoutes> BusRoutes { get; set; }
-        
+        public DbSet<TaxiBookings> TaxiBookings { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
            base.OnModelCreating(modelBuilder);
@@ -30,6 +31,8 @@ namespace pentasharp.Data
            modelBuilder.ApplyConfiguration(new BusScheduleConfiguration());
            modelBuilder.ApplyConfiguration(new BusRouteAssignmentsConfiguration());
            modelBuilder.ApplyConfiguration(new BusReservationsConfiguration());
+            modelBuilder.ApplyConfiguration(new TaxiBookingConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
         }
     }
 }

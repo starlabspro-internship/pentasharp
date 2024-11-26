@@ -49,7 +49,10 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompanies")]
         public IActionResult GetCompanies()
         {
-            var companies = _context.TaxiCompanies.Include(c => c.Taxis).ToList();
+            var companies = _context.TaxiCompanies
+                             .Where(c => !c.IsDeleted)
+                             .Include(c => c.Taxis) 
+                             .ToList();
             var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
             return Ok(viewModel);
         }
@@ -71,16 +74,34 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteCompany/{id}")]
         public IActionResult DeleteCompany(int id)
         {
-            var company = _context.TaxiCompanies.Include(c => c.Taxis).FirstOrDefault(c => c.TaxiCompanyId == id);
+            var company = _context.TaxiCompanies
+                                  .Include(c => c.Taxis) 
+                                  .FirstOrDefault(c => c.TaxiCompanyId == id);
+
             if (company == null)
             {
                 return NotFound(new { success = false, message = "Company not found." });
             }
 
-            _context.TaxiCompanies.Remove(company);
+          
+            company.IsDeleted = true;
+            company.UpdatedAt = DateTime.UtcNow;
+
+       
+            foreach (var taxi in company.Taxis)
+            {
+                taxi.IsDeleted = true;
+                taxi.UpdatedAt = DateTime.UtcNow;
+            }
+
+  
+            _context.TaxiCompanies.Update(company);
+            _context.Taxis.UpdateRange(company.Taxis);
             _context.SaveChanges();
-            return Ok(new { success = true, message = "Company deleted successfully." });
+
+            return Ok(new { success = true, message = "Company and its taxis deleted successfully (soft delete)." });
         }
+
 
         [HttpPost("AddTaxi")]
         public IActionResult AddTaxi([FromBody] AddTaxiViewModel model)
@@ -98,7 +119,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetTaxis")]
         public IActionResult GetTaxis()
         {
-            var taxis = _context.Taxis.Include(t => t.TaxiCompany).ToList();
+            var taxis = _context.Taxis.Where(t => !t.IsDeleted).Include(t => t.TaxiCompany).ToList();
             var viewModel = taxis.Select(t => new TaxiViewModel
             {
                 TaxiId = t.TaxiId,

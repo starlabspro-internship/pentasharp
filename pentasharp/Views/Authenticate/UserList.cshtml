@@ -33,7 +33,14 @@
                     <a href="@Url.Action("Delete", "Authenticate", new { id = user.UserId })">
                         <button class="btn btn-danger btn-sm">Delete    </button>
                     </a>
-                
+                 @if (user.IsDeleted)
+                    {
+                        <form asp-action="Restore" asp-route-id="@user.UserId" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to restore this user?');">
+                            <button type="submit" class="btn btn-success btn-sm">Restore</button>
+                        </form>
+
+
+                    }
                 </td>
             </tr>
         }

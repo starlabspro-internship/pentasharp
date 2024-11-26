@@ -40,5 +40,7 @@ namespace pentasharp.Models.Entities
         /// Gets or sets the collection of buses associated with this bus company.
         /// </summary>
         public ICollection<Buses> Buses { get; set; } = new List<Buses>();
+
+        public bool IsDeleted { get; set; }
     }
 }
