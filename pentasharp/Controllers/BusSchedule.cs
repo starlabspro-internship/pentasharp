@@ -354,6 +354,78 @@ namespace WebApplication1.Controllers
             return Ok(schedules);
         }
 
+        [AllowAnonymous]
+        [HttpGet("GetFromLocationSuggestions")]
+        public IActionResult GetFromLocationSuggestions(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest(ResponseFactory.CreateResponse<string[]>(
+                    ResponseCodes.InvalidData,
+                    ResponseMessages.InvalidData,
+                    null
+                ));
+            }
+
+            var suggestions = _context.BusRoutes
+                .Where(r => r.FromLocation.StartsWith(query))
+                .Select(r => r.FromLocation)
+                .Distinct()
+                .Take(10)
+                .ToList();
+
+            if (!suggestions.Any())
+            {
+                return NotFound(ResponseFactory.CreateResponse<string[]>(
+                    ResponseCodes.NotFound,
+                    ResponseMessages.NotFound,
+                    suggestions.ToArray()
+                ));
+            }
+
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                ResponseMessages.Success,
+                suggestions.ToArray()
+            ));
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetToLocationSuggestions")]
+        public IActionResult GetToLocationSuggestions(string fromLocation, string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || string.IsNullOrWhiteSpace(fromLocation))
+            {
+                return BadRequest(ResponseFactory.CreateResponse<string[]>(
+                    ResponseCodes.InvalidData,
+                    ResponseMessages.InvalidData,
+                    null
+                ));
+            }
+
+            var suggestions = _context.BusRoutes
+                .Where(r => r.FromLocation == fromLocation && r.ToLocation.StartsWith(query))
+                .Select(r => r.ToLocation)
+                .Distinct()
+                .Take(10)
+                .ToList();
+
+            if (!suggestions.Any())
+            {
+                return NotFound(ResponseFactory.CreateResponse<string[]>(
+                    ResponseCodes.NotFound,
+                    ResponseMessages.NotFound,
+                    suggestions.ToArray()
+                ));
+            }
+
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                ResponseMessages.Success,
+                suggestions.ToArray()
+            ));
+        }
+
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [Route("BusReservationManagement")]
         public IActionResult BusReservationManagement()
