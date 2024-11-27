@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using pentasharp.Models.Enums;
 namespace pentasharp.Models.Entities
 {
@@ -9,7 +10,11 @@ namespace pentasharp.Models.Entities
         public int ReservationId { get; set; }
 
         [Required]
-        public int TaxiId { get; set; }  // Foreign key to Taxi
+        public int? TaxiId { get; set; } = null;
+
+        [Required]
+        [ForeignKey("TaxiCompany")]
+        public int TaxiCompanyId { get; set; }
 
         [Required]
         public int UserId { get; set; }  // Foreign key to User
@@ -30,7 +35,7 @@ namespace pentasharp.Models.Entities
         public DateTime? TripEndTime { get; set; }
 
         [Required]
-        public decimal Fare { get; set; }
+        public decimal? Fare { get; set; }
 
         [Required]
         public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
@@ -38,9 +43,14 @@ namespace pentasharp.Models.Entities
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [Required]
+        public int PassengerCount { get; set; }
+
         public DateTime? UpdatedAt { get; set; }
 
         public Taxi Taxi { get; set; } = null!; // Navigation property to Taxi
+
+        public TaxiCompany TaxiCompany { get; set; } = null!;
         public User User { get; set; } = null!; // Navigation property to User
     }
 }
