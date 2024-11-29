@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const searchBtn = document.getElementById('searchBtn');
+    const departureInput = document.getElementById("departure");
+    const arrivalInput = document.getElementById("arrival");
     const busScheduleContainer = document.getElementById('busScheduleContainer');
     const resultView = document.getElementById('resultView');
     const numberOfSeatsInput = document.getElementById('numberOfSeats');
@@ -11,13 +13,112 @@ document.addEventListener("DOMContentLoaded", function () {
     let selectedScheduleId = null;
     let userId = null;
 
+    const departureDropdown = document.createElement("ul");
+    const arrivalDropdown = document.createElement("ul");
+
+    departureDropdown.className = "dropdown-menu";
+    arrivalDropdown.className = "dropdown-menu";
+
+    departureInput.parentNode.style.position = "relative";
+    arrivalInput.parentNode.style.position = "relative";
+
+    departureInput.parentNode.appendChild(departureDropdown);
+    arrivalInput.parentNode.appendChild(arrivalDropdown);
+
+    const debounce = (func, delay) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    };
+
+    const fetchSuggestions = (url, input, dropdown, type) => {
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`${type} not found.`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                dropdown.innerHTML = "";
+                if (!data.success || !data.data || data.data.length === 0) {
+                    dropdown.innerHTML = `<li class="dropdown-item text-danger">No ${type} matches found</li>`;
+                    dropdown.classList.add("show");
+                    return;
+                }
+                data.data.forEach(item => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = item;
+                    listItem.className = "dropdown-item";
+                    listItem.addEventListener("click", () => {
+                        input.value = item;
+                        dropdown.classList.remove("show");
+                    });
+                    dropdown.appendChild(listItem);
+                });
+                dropdown.classList.add("show");
+            })
+            .catch(() => {
+                dropdown.innerHTML = `<li class="dropdown-item text-danger">${type} not found</li>`;
+                dropdown.classList.add("show");
+            });
+    };
+
+    departureInput.addEventListener(
+        "input",
+        debounce(() => {
+            const query = departureInput.value.trim();
+            if (query.length < 2) {
+                departureDropdown.classList.remove("show");
+                return;
+            }
+            fetchSuggestions(`/api/BusSchedule/GetFromLocationSuggestions?query=${query}`, departureInput, departureDropdown, "departure location");
+        }, 300)
+    );
+
+    arrivalInput.addEventListener(
+        "input",
+        debounce(() => {
+            const query = arrivalInput.value.trim();
+            const fromLocation = departureInput.value.trim();
+            if (query.length < 2 || !fromLocation) {
+                arrivalDropdown.classList.remove("show");
+                return;
+            }
+            fetchSuggestions(
+                `/api/BusSchedule/GetToLocationSuggestions?fromLocation=${fromLocation}&query=${query}`,
+                arrivalInput,
+                arrivalDropdown,
+                "arrival location"
+            );
+        }, 300)
+    );
+
+    document.addEventListener("click", (event) => {
+        if (!departureInput.contains(event.target)) {
+            departureDropdown.classList.remove("show");
+        }
+        if (!arrivalInput.contains(event.target)) {
+            arrivalDropdown.classList.remove("show");
+        }
+    });
+
     searchBtn.addEventListener('click', function () {
-        const from = document.getElementById('departure').value.trim();
-        const to = document.getElementById('arrival').value.trim();
+        const from = departureInput.value.trim();
+        const to = arrivalInput.value.trim();
         const date = document.getElementById('date').value;
 
         if (!from || !to || !date) {
             busScheduleContainer.innerHTML = '<p class="text-center text-danger">Please fill in all fields to search schedules.</p>';
+            resultView.style.display = 'block';
+            resultView.style.opacity = 1;
+            return;
+        }
+
+        if (isNaN(new Date(date).getTime())) {
+            busScheduleContainer.innerHTML = '<p class="text-center text-danger">Invalid date format. Please provide a valid date.</p>';
             resultView.style.display = 'block';
             resultView.style.opacity = 1;
             return;
@@ -34,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 busScheduleContainer.innerHTML = '';
 
                 if (!schedules || schedules.length === 0) {
-                    busScheduleContainer.innerHTML = '<p class="text-center">No schedules found for the selected criteria.</p>';
+                    busScheduleContainer.innerHTML = `<p class="text-center">No schedules found for the route <b>${from}</b> to <b>${to}</b> on <b>${new Date(date).toLocaleDateString()}</b>.</p>`;
                     resultView.style.display = 'block';
                     resultView.style.opacity = 1;
                     return;
@@ -87,8 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }, 0);
             })
             .catch(error => {
-                console.error("Error fetching schedules:", error);
-                busScheduleContainer.innerHTML = '<p class="text-center text-danger">An error occurred while fetching schedules. Please try again.</p>';
+                busScheduleContainer.innerHTML = '<p class="text-center text-danger">No schedules available for your request.</p>';
                 resultView.style.display = 'block';
                 resultView.style.opacity = 1;
             });
@@ -115,18 +215,12 @@ document.addEventListener("DOMContentLoaded", function () {
         reservationDateInput.value = now.toISOString();
 
         fetch('/Authenticate/GetCurrentUser')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch current user.');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                passengerNameInput.value = `${data.firstName} ${data.lastName}`;
-                userId = data.userId;
+                passengerNameInput.value = `${data.data.firstName} ${data.data.lastName}`;
+                userId = data.data.userId;
             })
-            .catch(error => {
-                console.error("Error fetching user:", error);
+            .catch(() => {
                 passengerNameInput.value = "Guest";
             });
     };
@@ -161,12 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to add reservation.");
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(result => {
                 if (result.success) {
                     document.getElementById("bookingModal").classList.remove("show");
@@ -175,8 +264,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("Failed to add reservation. Please try again.");
                 }
             })
-            .catch(error => {
-                console.error("Error adding reservation:", error);
+            .catch(() => {
                 alert("An error occurred while adding the reservation.");
             });
     });
