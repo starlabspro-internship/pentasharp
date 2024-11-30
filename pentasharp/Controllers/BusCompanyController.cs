@@ -68,31 +68,27 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteCompany/{id}")]
         public IActionResult DeleteCompany(int id)
         {
-            // Find the company and include its related buses
             var company = _context.BusCompanies.Include(c => c.Buses)
-                                               .FirstOrDefault(c => c.BusCompanyId == id);
+                                                    .FirstOrDefault(c => c.BusCompanyId == id);
 
             if (company == null)
             {
                 return NotFound(new { success = false, message = "Company not found." });
             }
 
-            // Mark the company as deleted (soft delete)
             company.IsDeleted = true;
             company.UpdatedAt = DateTime.UtcNow;
 
-            // Mark each bus related to the company as deleted (soft delete)
+
             foreach (var bus in company.Buses)
             {
                 bus.IsDeleted = true;
                 bus.UpdatedAt = DateTime.UtcNow;
             }
 
-            // Update the company and the buses in the context
-            _context.BusCompanies.Update(company);  // Mark company as modified
-            _context.Buses.UpdateRange(company.Buses); // Mark all buses as modified
+            _context.BusCompanies.Update(company);
+            _context.Buses.UpdateRange(company.Buses);
 
-            // Save changes to the database
             _context.SaveChanges();
 
             return Ok(new { success = true, message = "Company and its buses soft deleted successfully." });

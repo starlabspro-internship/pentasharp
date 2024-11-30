@@ -80,18 +80,15 @@ namespace WebApplication1.Controllers
                 return NotFound(new { success = false, message = "Company not found." });
             }
 
-          
             company.IsDeleted = true;
             company.UpdatedAt = DateTime.UtcNow;
 
-       
             foreach (var taxi in company.Taxis)
             {
                 taxi.IsDeleted = true;
                 taxi.UpdatedAt = DateTime.UtcNow;
             }
 
-  
             _context.TaxiCompanies.Update(company);
             _context.Taxis.UpdateRange(company.Taxis);
             _context.SaveChanges();

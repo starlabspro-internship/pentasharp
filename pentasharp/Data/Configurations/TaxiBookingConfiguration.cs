@@ -60,8 +60,8 @@ namespace pentasharp.Data.Configurations
         {
             builder.HasMany(tb => tb.Notifications)
                 .WithOne(n => n.TaxiBooking)
-                .HasForeignKey(n => n.BookingId)  // This is correct as it is nullable in Notifications
-                .IsRequired(false);  // This makes the relationship optional
+                .HasForeignKey(n => n.BookingId)
+                .IsRequired(false); 
         }
     }
 }
