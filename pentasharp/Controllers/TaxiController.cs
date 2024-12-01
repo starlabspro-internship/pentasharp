@@ -5,19 +5,15 @@ using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
-    [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiController : Controller
     {
-
         public IActionResult TaxiBooking()
         {
             return View();
         }
-
         public IActionResult TaxiReservation()
         {
             return View();
         }
-
     }
 } 

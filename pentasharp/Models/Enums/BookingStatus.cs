@@ -6,6 +6,7 @@ namespace pentasharp.Models.Enums
     {
         Pending,
         Completed,
+        Confirmed,
         Canceled
     }
 }
