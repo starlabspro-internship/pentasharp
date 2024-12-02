@@ -40,5 +40,10 @@ namespace pentasharp.ViewModel.TaxiModels
         /// Gets or sets the list of taxi companies associated with this taxi.
         /// </summary>
         public List<TaxiCompany> TaxiCompanies { get; set; } = new List<TaxiCompany>();
+
+        /// <summary>
+        /// Gets or sets the status of the taxi using TaxiStatus enum.
+        /// </summary>
+        public string Status { get; set; }
     }
 }

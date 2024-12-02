@@ -15,8 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fetchEntities = (url, renderFunction) => {
         fetch(url)
-            .then((response) => response.json())
-            .then((data) => renderFunction(data));
+            .then((response) => {
+                if (!response.ok) throw new Error(`Error fetching data from ${url}`);
+                return response.json();
+            })
+            .then((data) => renderFunction(data))
+            .catch((error) => console.error("Fetch error:", error));
     };
 
     const renderCompanies = (companies) => {
@@ -37,10 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
         taxisTableBody.innerHTML = taxis.map((taxi) => `
             <tr>
                 <td>${taxi.licensePlate}</td>
-                <td>${taxi.driverName}</td>
                 <td>${taxi.companyName}</td>
+                <td>${taxi.driverName}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm edit-taxi" data-id="${taxi.taxiId}" data-license="${taxi.licensePlate}" data-driver="${taxi.driverName}" data-company-id="${taxi.taxiCompanyId}">Edit</button>
+                <span class="badge ${getStatusBadgeClass(taxi.status)}">${taxi.status}</span>
+            </td>
+                <td>
+                    <button class="btn btn-warning btn-sm edit-taxi" data-id="${taxi.taxiId}" data-license="${taxi.licensePlate}" data-driver="${taxi.driverName}" data-company-id="${taxi.taxiCompanyId}" data-status="${taxi.status}">Edit</button>
                     <button class="btn btn-danger btn-sm delete-taxi" data-id="${taxi.taxiId}">Delete</button>
                 </td>
             </tr>
@@ -48,20 +55,49 @@ document.addEventListener("DOMContentLoaded", () => {
         attachListeners();
     };
 
-    const saveEntity = (url, method, data, refreshFunction) => {
+    const getStatusBadgeClass = (status) => {
+        switch (status) {
+            case 'Available':
+                return 'bg-success';
+            case 'Busy':
+                return 'bg-warning';
+            case 'Start':
+                return 'bg-info';
+            case 'End':
+                return 'bg-secondary';
+            default:
+                return 'bg-light text-dark';
+        }
+    };
+
+    const saveEntity = (url, method, data) => {
         fetch(url, {
             method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
-        }).then(() => {
-            entityModal.hide();
-            refreshAll();
-        });
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((error) => {
+                        throw new Error(error.message || "Failed to save entity");
+                    });
+                }
+                return response.json();
+            })
+            .then(() => {
+                entityModal.hide();
+                refreshAll();
+            })
+            .catch((error) => {
+                console.error("Error saving entity:", error);
+            });
     };
 
     const deleteEntity = () => {
-        deleteCallback();
-        deleteModal.hide();
+        if (deleteCallback) {
+            deleteCallback();
+            deleteModal.hide();
+        }
     };
 
     const refreshAll = () => {
@@ -101,13 +137,25 @@ document.addEventListener("DOMContentLoaded", () => {
                             <input type="text" class="form-control mb-3" id="licensePlate" value="${button.dataset.license}" />
                             <input type="text" class="form-control mb-3" id="driverName" value="${button.dataset.driver}" />
                             <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
+                            <select class="form-select mb-3" id="statusSelect"></select>
                             <button type="submit" class="btn btn-primary">Save</button>`;
+
+                        fetch("/api/TaxiCompany/GetTaxiStatuses")
+                            .then((response) => response.json())
+                            .then((statuses) => {
+                                const statusSelect = document.getElementById("statusSelect");
+                                statusSelect.innerHTML = statuses.map((status) => `
+                                    <option value="${status.name}" ${status.name === button.dataset.status ? "selected" : ""}>${status.name}</option>
+                                `).join("");
+                            });
+
                         entityForm.onsubmit = (e) => {
                             e.preventDefault();
                             saveEntity(`/api/TaxiCompany/EditTaxi/${button.dataset.id}`, "PUT", {
                                 licensePlate: document.getElementById("licensePlate").value,
                                 driverName: document.getElementById("driverName").value,
                                 taxiCompanyId: document.getElementById("taxiCompanySelect").value,
+                                status: document.getElementById("statusSelect").value,
                             });
                         };
                         entityModal.show();
@@ -147,7 +195,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
                         <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
                         <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
+                        <select class="form-select mb-3" id="statusSelect"></select>
                         <button type="submit" class="btn btn-primary">Save</button>`;
+
+                    fetch("/api/TaxiCompany/GetTaxiStatuses")
+                        .then((response) => response.json())
+                        .then((statuses) => {
+                            const statusSelect = document.getElementById("statusSelect");
+                            statusSelect.innerHTML = statuses.map((status) => `
+                                <option value="${status.name}">${status.name}</option>
+                            `).join("");
+                        });
                 });
         }
         entityForm.onsubmit = (e) => {
@@ -158,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 licensePlate: document.getElementById("licensePlate")?.value,
                 driverName: document.getElementById("driverName")?.value,
                 taxiCompanyId: document.getElementById("taxiCompanySelect")?.value,
+                status: document.getElementById("statusSelect")?.value,
             });
         };
         entityModal.show();

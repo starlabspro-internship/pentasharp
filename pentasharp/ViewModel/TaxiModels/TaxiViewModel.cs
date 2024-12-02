@@ -10,6 +10,6 @@ namespace pentasharp.ViewModel.Taxi
         public string DriverName { get; set; }
         public int TaxiCompanyId { get; set; }
         public string CompanyName { get; set; }
-        public TaxiStatus Status { get; set; } 
+        public string Status { get; set; }
     }
 }

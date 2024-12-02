@@ -4,9 +4,9 @@ namespace pentasharp.Models.Enums
 {
     public enum TaxiStatus
     {
-        Available,
-        Busy,
-        Start,
-        End
+        Available = 0,
+        Busy = 1,
+        Start = 2,
+        End = 3
     }
 }

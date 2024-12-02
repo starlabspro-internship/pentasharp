@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
 using pentasharp.Models.Entities;
 using pentasharp.ViewModel.Taxi;
-using pentasharp.ViewModel.TaxiModels; 
+using pentasharp.ViewModel.TaxiModels;
 using WebApplication1.Filters;
+using pentasharp.Models.Enums;
 
 namespace WebApplication1.Controllers
 {
@@ -20,6 +21,17 @@ namespace WebApplication1.Controllers
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        [HttpGet("GetTaxiStatuses")]
+        public IActionResult GetTaxiStatuses()
+        {
+            var statuses = Enum.GetValues(typeof(TaxiStatus))
+                               .Cast<TaxiStatus>()
+                               .Select(s => new { Name = s.ToString(), Value = (int)s })
+                               .ToList();
+
+            return Ok(statuses);
         }
 
         [HttpGet("Taxi")]
@@ -87,7 +99,20 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (!Enum.TryParse<TaxiStatus>(model.Status, true, out var status))
+                {
+                    return BadRequest(new { success = false, message = "Invalid status value." });
+                }
+
+                var existingTaxi = _context.Taxis.FirstOrDefault(t => t.LicensePlate == model.LicensePlate);
+                if (existingTaxi != null)
+                {
+                    return BadRequest(new { success = false, message = "Taxi with the same License Plate already exists." });
+                }
+
                 var taxi = _mapper.Map<Taxi>(model);
+                taxi.Status = status;
+
                 _context.Taxis.Add(taxi);
                 _context.SaveChanges();
                 return Ok(new { success = true, message = "Taxi added successfully." });
@@ -104,8 +129,10 @@ namespace WebApplication1.Controllers
                 TaxiId = t.TaxiId,
                 LicensePlate = t.LicensePlate,
                 DriverName = t.DriverName,
+                Status = t.Status.ToString(),
                 CompanyName = t.TaxiCompany.CompanyName
             }).ToList();
+
             return Ok(viewModel);
         }
 
@@ -118,7 +145,14 @@ namespace WebApplication1.Controllers
                 return NotFound(new { success = false, message = "Taxi not found." });
             }
 
+            if (!Enum.TryParse<TaxiStatus>(model.Status, true, out var status))
+            {
+                return BadRequest(new { success = false, message = "Invalid status value." });
+            }
+
             _mapper.Map(model, taxi);
+            taxi.Status = status;
+
             _context.SaveChanges();
             return Ok(new { success = true, message = "Taxi updated successfully." });
         }

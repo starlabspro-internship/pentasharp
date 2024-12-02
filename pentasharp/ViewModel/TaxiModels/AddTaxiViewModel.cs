@@ -47,6 +47,6 @@ namespace pentasharp.ViewModel.TaxiModels
         /// Gets or sets the status of the taxi using TaxiStatus enum.
         /// </summary>
         [Required]
-        public TaxiStatus Status { get; set; } = TaxiStatus.Available;
+        public string Status { get; set; }
     }
 }
