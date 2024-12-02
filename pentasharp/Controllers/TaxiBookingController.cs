@@ -132,6 +132,7 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { success = false, message = "Invalid status value." });
 
             booking.TaxiId = model.TaxiId;
+            booking.UpdatedAt = model.UpdateAt;
 
             await _context.SaveChangesAsync();
 

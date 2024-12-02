@@ -40,10 +40,10 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.TripStartTime)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
 
             builder.Property(tb => tb.TripEndTime)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
 
             builder.Property(tb => tb.Fare)
                 .HasPrecision(10, 2)
@@ -65,7 +65,7 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
         }
 
         private void ConfigureRelationships(EntityTypeBuilder<TaxiBookings> builder)

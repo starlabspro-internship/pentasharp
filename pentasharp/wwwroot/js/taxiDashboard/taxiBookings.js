@@ -113,7 +113,8 @@ function saveBookingChanges() {
         dropoffLocation,
         bookingTime,
         status,
-        taxiId: taxiId === "null" ? null : parseInt(taxiId, 10)
+        taxiId: taxiId === "null" ? null : parseInt(taxiId, 10),
+        updatedAt: new Date().toISOString() 
     };
 
     console.log("Payload to server:", JSON.stringify(updatedBooking));

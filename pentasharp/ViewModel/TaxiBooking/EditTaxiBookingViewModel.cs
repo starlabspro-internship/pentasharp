@@ -45,7 +45,7 @@ namespace pentasharp.ViewModel.TaxiBooking
         /// <summary>
         /// The timestamp indicating when the booking was last updated.
         /// Defaults to the current date and time.
-        /// </summary>
-        public DateTime UpdateAd { get; set; } = DateTime.Now;
+        /// </summary>  
+        public DateTime UpdateAt { get; set; } = DateTime.Now;
     }
 }
