@@ -55,7 +55,7 @@ namespace pentasharp.Models.Entities
         /// Gets or sets the date and time when the bus information was last updated, if applicable.
         /// </summary>
         public DateTime? UpdatedAt { get; set; }
-
+        public bool IsDeleted { get; set; }
 
     }
 }

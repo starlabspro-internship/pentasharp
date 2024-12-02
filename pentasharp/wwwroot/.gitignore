@@ -8,3 +8,5 @@
 # Ignore binaries and compiled files
 *.dll
 *.pdb
+bin/
+obj/

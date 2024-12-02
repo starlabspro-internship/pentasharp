@@ -73,7 +73,9 @@ namespace WebApplication1.Controllers
         [ServiceFilter(typeof(AdminOnlyFilter))]
         public IActionResult UserList()
         {
+        
             var users = _context.Users.ToList();
+
             return View(users);
         }
 
@@ -129,7 +131,6 @@ namespace WebApplication1.Controllers
             }
             return View(user);
         }
-
         [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -137,7 +138,20 @@ namespace WebApplication1.Controllers
             var user = _context.Users.Find(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                user.IsDeleted = true;
+                _context.Users.Update(user);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("UserList");
+        }
+        [HttpPost("Restore/{id}")]
+        public IActionResult Restore(int id)
+        {
+            var user = _context.Users.Find(id);
+            if (user != null && user.IsDeleted)
+            {
+                user.IsDeleted = false;
+                _context.Users.Update(user);
                 _context.SaveChanges();
             }
             return RedirectToAction("UserList");

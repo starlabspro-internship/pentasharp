@@ -60,8 +60,8 @@ namespace pentasharp.Data.Configurations
         {
             builder.HasMany(tb => tb.Notifications)
                 .WithOne(n => n.TaxiBooking)
-                .HasForeignKey(n => n.BookingId);
+                .HasForeignKey(n => n.BookingId)
+                .IsRequired(false); 
         }
-
     }
 }

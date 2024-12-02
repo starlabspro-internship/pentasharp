@@ -71,16 +71,31 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteCompany/{id}")]
         public IActionResult DeleteCompany(int id)
         {
-            var company = _context.TaxiCompanies.Include(c => c.Taxis).FirstOrDefault(c => c.TaxiCompanyId == id);
+            var company = _context.TaxiCompanies
+                                  .Include(c => c.Taxis) 
+                                  .FirstOrDefault(c => c.TaxiCompanyId == id);
+
             if (company == null)
             {
                 return NotFound(new { success = false, message = "Company not found." });
             }
 
-            _context.TaxiCompanies.Remove(company);
+            company.IsDeleted = true;
+            company.UpdatedAt = DateTime.UtcNow;
+
+            foreach (var taxi in company.Taxis)
+            {
+                taxi.IsDeleted = true;
+                taxi.UpdatedAt = DateTime.UtcNow;
+            }
+
+            _context.TaxiCompanies.Update(company);
+            _context.Taxis.UpdateRange(company.Taxis);
             _context.SaveChanges();
-            return Ok(new { success = true, message = "Company deleted successfully." });
+
+            return Ok(new { success = true, message = "Company and its taxis deleted successfully (soft delete)." });
         }
+
 
         [HttpPost("AddTaxi")]
         public IActionResult AddTaxi([FromBody] AddTaxiViewModel model)
