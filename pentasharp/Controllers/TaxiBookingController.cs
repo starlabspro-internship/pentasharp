@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
@@ -7,13 +8,13 @@ using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.Utilities;
 using pentasharp.ViewModel.Taxi;
+using pentasharp.ViewModel.TaxiBooking;
 using pentasharp.ViewModel.TaxiModels;
 using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
     [Route("api/TaxiBooking")]
-    [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiBookingController : Controller
     {
         private readonly AppDbContext _context;
@@ -25,6 +26,7 @@ namespace WebApplication1.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         [HttpPost("SearchAvailableTaxis")]
         public IActionResult GetCompanies()
         {
@@ -33,6 +35,7 @@ namespace WebApplication1.Controllers
             return Ok(new { success = true, companies = viewModel });
         }
 
+        [ServiceFilter(typeof(LoginRequiredFilter))]
         [HttpPost("CreateBooking")]
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingViewModel model)
         {
@@ -47,6 +50,7 @@ namespace WebApplication1.Controllers
             return Ok(new { success = true, message = "Booking created successfully" });
         }
 
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetBookings")]
         public async Task<IActionResult> GetBookings()
         {
@@ -67,6 +71,7 @@ namespace WebApplication1.Controllers
             });
         }
 
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetBooking")]
         public async Task<IActionResult> GetBookingById(int id)
         {
@@ -107,6 +112,7 @@ namespace WebApplication1.Controllers
             });
         }
 
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpPut("UpdateBooking")]
         public async Task<IActionResult> UpdateBooking([FromBody] EditTaxiBookingViewModel model)
         {
