@@ -62,15 +62,17 @@ function populateReservations(reservations) {
         return;
     }
 
-    reservations.forEach(reservation => {
+    reservations.reverse().forEach(reservation => {
         const badgeClass = reservation.status === 0 ? 'bg-warning' : reservation.status === 1 ? 'bg-success' : 'bg-danger';
+        const passengerCount = Math.round(reservation.totalAmount / reservation.schedule.price);
         const reservationElement = `
             <div class="list-group-item d-flex align-items-center justify-content-between shadow-sm p-3 mb-2 rounded" style="background-color: #fdfdfe;">
                 <div class="schedule-details">
                     <h6 class="mb-1 fw-bold text-dark">Route: ${reservation.schedule.fromLocation} - ${reservation.schedule.toLocation}</h6>
                     <small class="text-muted">Bus Number: <b>${reservation.schedule.busNumber}</b> | Schedule ID: <b>${reservation.schedule.scheduleId}</b></small><br />
                     <small class="text-muted">Departure: <b>${new Date(reservation.schedule.departureTime).toLocaleString()}</b> | Arrival: <b>${new Date(reservation.schedule.arrivalTime).toLocaleString()}</b></small><br />
-                    <small class="text-muted">Price: <b>${reservation.schedule.price}</b> | Status: <span class="badge ${badgeClass} text-white">${mapStatus(reservation.status)}</span></small>
+                    <small class="text-muted">Price per Passenger: <b>${reservation.schedule.price}</b> | Status: <span class="badge ${badgeClass} text-white">${mapStatus(reservation.status)}</span></small><br />
+                    <small class="text-muted">Passenger Count: <b>${passengerCount}</b> | Total Amount: <b>${reservation.totalAmount}</b></small>
                 </div>
                 <div class="action-buttons d-flex flex-column align-items-center">
                     <button class="btn btn-success btn-sm mb-2 d-flex align-items-center justify-content-center" onclick="confirmReservation(${reservation.reservationId})">
@@ -91,7 +93,7 @@ function confirmReservation(reservationId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ReservationId: reservationId }), 
+        body: JSON.stringify({ ReservationId: reservationId }),
     })
         .then(response => {
             if (!response.ok) {
@@ -103,7 +105,7 @@ function confirmReservation(reservationId) {
             if (data.success) {
                 fetchReservations();
             } else {
-                console.log("err")
+                console.error('Error confirming reservation');
             }
         })
         .catch(error => {
@@ -117,7 +119,7 @@ function cancelReservation(reservationId) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ReservationId: reservationId }), 
+        body: JSON.stringify({ ReservationId: reservationId }),
     })
         .then(response => {
             if (!response.ok) {
@@ -129,7 +131,7 @@ function cancelReservation(reservationId) {
             if (data.success) {
                 fetchReservations();
             } else {
-                console.log("err")
+                console.error('Error canceling reservation');
             }
         })
         .catch(error => {

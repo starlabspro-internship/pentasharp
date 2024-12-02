@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const busDropdown = document.getElementById("BusId");
     const deleteRouteButton = document.getElementById("deleteRouteButton");
     const deleteScheduleButton = document.getElementById("deleteScheduleButton");
+    const availableSeatsInput = document.getElementById("AvailableSeats");
     let currentEditRouteId = null;
     let currentEditScheduleId = null;
 
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function fetchRoutes() {
-        fetch("/api/BusSchedule/GetRoutes")
+        return fetch("/api/BusSchedule/GetRoutes")
             .then(response => response.json())
             .then(data => {
                 getRoutesTable.innerHTML = data.map(route => `
@@ -43,39 +44,37 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fetchSchedules() {
-        Promise.all([
+        return Promise.all([
             fetch("/api/BusSchedule/GetSchedules").then(response => response.json()),
             fetch("/api/BusSchedule/GetRoutes").then(response => response.json()),
             fetch("/api/BusCompany/GetBuses").then(response => response.json())
-        ])
-            .then(([schedules, routes, buses]) => {
-                const routeMap = routes.reduce((map, route) => {
-                    map[route.routeId] = `${route.fromLocation} - ${route.toLocation}`;
-                    return map;
-                }, {});
+        ]).then(([schedules, routes, buses]) => {
+            const routeMap = routes.reduce((map, route) => {
+                map[route.routeId] = `${route.fromLocation} - ${route.toLocation}`;
+                return map;
+            }, {});
 
-                const busMap = buses.reduce((map, bus) => {
-                    map[bus.busId] = `${bus.busNumber} - ${bus.companyName}`;
-                    return map;
-                }, {});
+            const busMap = buses.reduce((map, bus) => {
+                map[bus.busId] = `${bus.busNumber} - ${bus.companyName}`;
+                return map;
+            }, {});
 
-                getSchedulesTable.innerHTML = schedules.map(schedule => `
-                    <tr>
-                        <td>${routeMap[schedule.routeId] || "Unknown Route"}</td>
-                        <td>${busMap[schedule.busId] || "Unknown Bus"}</td>
-                        <td>${new Date(schedule.departureTime).toLocaleString()}</td>
-                        <td>${new Date(schedule.arrivalTime).toLocaleString()}</td>
-                        <td>${schedule.price}</td>
-                        <td>${schedule.availableSeats}</td>
-                        <td>${schedule.status === 0 ? "Scheduled" : schedule.status}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm edit-schedule" data-id="${schedule.scheduleId}">Edit</button>
-                        </td>
-                    </tr>
-                `).join("");
-
-                attachScheduleEventListeners();
-            });
+            getSchedulesTable.innerHTML = schedules.map(schedule => `
+                <tr>
+                    <td>${routeMap[schedule.routeId] || "Unknown Route"}</td>
+                    <td>${busMap[schedule.busId] || "Unknown Bus"}</td>
+                    <td>${new Date(schedule.departureTime).toLocaleString()}</td>
+                    <td>${new Date(schedule.arrivalTime).toLocaleString()}</td>
+                    <td>${schedule.price}</td>
+                    <td>${schedule.availableSeats}</td>
+                    <td>${schedule.status === 0 ? "Scheduled" : schedule.status}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm edit-schedule" data-id="${schedule.scheduleId}">Edit</button>
+                    </td>
+                </tr>
+            `).join("");
+            attachScheduleEventListeners();
+        });
     }
 
     function fetchBuses() {
@@ -87,16 +86,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function populateRouteDropdown(routes) {
-        routeDropdown.innerHTML = routes.map(route => `
+        routeDropdown.innerHTML = `<option value="" disabled selected>Select a route</option>` + routes.map(route => `
             <option value="${route.routeId}">${route.fromLocation} - ${route.toLocation}</option>
         `).join("");
     }
 
     function populateBusDropdown(buses) {
-        busDropdown.innerHTML = buses.map(bus => `
-            <option value="${bus.busId}">${bus.busNumber} (${bus.companyName})</option>
+        busDropdown.innerHTML = `<option value="" disabled selected>Select a bus</option>` + buses.map(bus => `
+            <option value="${bus.busId}" data-capacity="${bus.capacity}">${bus.busNumber} (${bus.companyName})</option>
         `).join("");
     }
+
+    busDropdown.addEventListener("change", function () {
+        const selectedBus = this.options[this.selectedIndex];
+        const capacity = selectedBus.getAttribute("data-capacity");
+        if (capacity) {
+            availableSeatsInput.value = capacity;
+        }
+    });
 
     function attachRouteEventListeners() {
         document.querySelectorAll(".edit-route").forEach(button => {
@@ -125,8 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentEditScheduleId = null;
         document.getElementById("scheduleForm").reset();
         deleteScheduleButton.style.display = "none";
-        fetchRoutes();
-        fetchBuses().then(() => scheduleModal.show());
+        fetchRoutes().then(() => fetchBuses().then(() => scheduleModal.show()));
     });
 
     function openEditRoute(routeId) {
@@ -167,18 +173,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function displayErrors(errorMessage, modal) {
-        const errorContainer = modal.querySelector(".modal-body");
-        errorContainer.insertAdjacentHTML(
-            "beforeend",
-            `<div class="alert alert-danger mt-3">${errorMessage}</div>`
-        );
-        setTimeout(() => {
-            const alert = errorContainer.querySelector(".alert");
-            if (alert) alert.remove();
-        }, 5000);
-    }
-
     deleteRouteButton.addEventListener("click", function () {
         if (!currentEditRouteId) return;
         fetch(`/api/BusSchedule/DeleteRoute/${currentEditRouteId}`, { method: "DELETE" })
@@ -187,8 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     routeModal.hide();
                     fetchRoutes();
-                } else {
-                    displayErrors(data.message, document.getElementById("routeModal"));
+                    fetchSchedules();
                 }
             });
     });
@@ -201,8 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     scheduleModal.hide();
                     fetchSchedules();
-                } else {
-                    displayErrors(data.message, document.getElementById("scheduleModal"));
+                    fetchRoutes();
                 }
             });
     });
@@ -223,15 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
             method: currentEditRouteId ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
-        })
-            .then(response => response.json())
+        }).then(response => response.json())
             .then(data => {
                 if (data.success) {
                     routeModal.hide();
                     fetchRoutes();
-                    fetchSchedules();
-                } else {
-                    displayErrors(data.message, document.getElementById("routeModal"));
                 }
             });
     });
@@ -253,15 +241,11 @@ document.addEventListener("DOMContentLoaded", function () {
             method: currentEditScheduleId ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
-        })
-            .then(response => response.json())
+        }).then(response => response.json())
             .then(data => {
                 if (data.success) {
                     scheduleModal.hide();
                     fetchSchedules();
-                    fetchRoutes();
-                } else {
-                    displayErrors(data.message, document.getElementById("scheduleModal"));
                 }
             });
     });
