@@ -25,6 +25,7 @@ namespace WebApplication1.Controllers
         public IActionResult Add()
         {
             var companies = _context.BusCompanies.ToList();
+
             var viewModel = new ManageBusCompanyViewModel
             {
                 BusCompanies = _mapper.Map<List<BusCompanyViewModel>>(companies),
@@ -67,13 +68,32 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteCompany/{id}")]
         public IActionResult DeleteCompany(int id)
         {
-            var company = _context.BusCompanies.Include(c => c.Buses).FirstOrDefault(c => c.BusCompanyId == id);
-            if (company == null) return NotFound(new { success = false, message = "Company not found." });
+            var company = _context.BusCompanies.Include(c => c.Buses)
+                                                    .FirstOrDefault(c => c.BusCompanyId == id);
 
-            _context.BusCompanies.Remove(company);
+            if (company == null)
+            {
+                return NotFound(new { success = false, message = "Company not found." });
+            }
+
+            company.IsDeleted = true;
+            company.UpdatedAt = DateTime.UtcNow;
+
+
+            foreach (var bus in company.Buses)
+            {
+                bus.IsDeleted = true;
+                bus.UpdatedAt = DateTime.UtcNow;
+            }
+
+            _context.BusCompanies.Update(company);
+            _context.Buses.UpdateRange(company.Buses);
+
             _context.SaveChanges();
-            return Ok(new { success = true, message = "Company deleted successfully." });
+
+            return Ok(new { success = true, message = "Company and its buses soft deleted successfully." });
         }
+
 
         [HttpPost("AddBus")]
         public IActionResult AddBus([FromBody] AddBusViewModel model)

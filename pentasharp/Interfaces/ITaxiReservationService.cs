@@ -3,7 +3,7 @@ using pentasharp.Models.DTOs;
 using pentasharp.ViewModel.TaxiModels;
 using pentasharp.ViewModel.TaxiReservation;
 
-namespace pentasharp.Services
+namespace pentasharp.Interfaces
 {
     public interface ITaxiReservationService
     {

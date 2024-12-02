@@ -73,7 +73,9 @@ namespace WebApplication1.Controllers
         [ServiceFilter(typeof(AdminOnlyFilter))]
         public IActionResult UserList()
         {
+        
             var users = _context.Users.ToList();
+
             return View(users);
         }
 
@@ -129,7 +131,6 @@ namespace WebApplication1.Controllers
             }
             return View(user);
         }
-
         [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
@@ -137,7 +138,20 @@ namespace WebApplication1.Controllers
             var user = _context.Users.Find(id);
             if (user != null)
             {
-                _context.Users.Remove(user);
+                user.IsDeleted = true;
+                _context.Users.Update(user);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("UserList");
+        }
+        [HttpPost("Restore/{id}")]
+        public IActionResult Restore(int id)
+        {
+            var user = _context.Users.Find(id);
+            if (user != null && user.IsDeleted)
+            {
+                user.IsDeleted = false;
+                _context.Users.Update(user);
                 _context.SaveChanges();
             }
             return RedirectToAction("UserList");
@@ -220,21 +234,34 @@ namespace WebApplication1.Controllers
             var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
             if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized();
+                return Unauthorized(new StandardResponse(
+                    ApiStatusEnum.UNAUTHORIZED,
+                    Guid.NewGuid().ToString(),
+                    "User is not authorized to access this resource."
+                ));
             }
 
             var user = _context.Users.Find(int.Parse(userId));
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new StandardResponse(
+                    ApiStatusEnum.USER_NOT_FOUND,
+                    Guid.NewGuid().ToString(),
+                    "User not found."
+                ));
             }
 
-            return Json(new
-            {
-                user.UserId,
-                user.FirstName,
-                user.LastName
-            });
+            return Ok(new StandardResponse(
+                ApiStatusEnum.OK,
+                Guid.NewGuid().ToString(),
+                "Success",
+                new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                }
+            ));
         }
     }
 }

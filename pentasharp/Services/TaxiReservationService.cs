@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
+using pentasharp.Interfaces;
 using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;

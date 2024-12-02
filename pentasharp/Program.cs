@@ -5,6 +5,7 @@ using pentasharp.Services;
 using pentasharp.Mappings;
 using pentasharp.Models.DTOs;
 using WebApplication1.Filters;
+using pentasharp.Interfaces;
 
 namespace WebApplication1
 {
