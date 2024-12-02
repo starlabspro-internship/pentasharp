@@ -25,7 +25,7 @@ namespace pentasharp.Data.Configurations
                 .ValueGeneratedOnAdd();
 
             builder.Property(tb => tb.TaxiCompanyId)
-               .IsRequired();
+                .IsRequired();
 
             builder.Property(tb => tb.PickupLocation)
                 .IsRequired()
@@ -40,11 +40,9 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.TripStartTime)
-                .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.TripEndTime)
-                .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.Fare)
@@ -55,7 +53,7 @@ namespace pentasharp.Data.Configurations
                 .IsRequired();
 
             builder.Property(tb => tb.TaxiId)
-                .IsRequired();
+                .IsRequired(false); 
 
             builder.Property(tb => tb.Status)
                 .IsRequired();
@@ -74,7 +72,8 @@ namespace pentasharp.Data.Configurations
         {
             builder.HasMany(tb => tb.Notifications)
                 .WithOne(n => n.TaxiBooking)
-                .HasForeignKey(n => n.BookingId);
+                .HasForeignKey(n => n.BookingId)
+                .IsRequired(false);
         }
     }
 }

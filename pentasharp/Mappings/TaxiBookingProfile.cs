@@ -2,7 +2,6 @@
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.ViewModel.TaxiBooking;
-using pentasharp.ViewModel.TaxiModels;
 
 namespace pentasharp.Mapping
 {

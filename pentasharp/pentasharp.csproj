@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ViewModel\NewFolder\**" />
-    <Content Remove="ViewModel\NewFolder\**" />
-    <EmbeddedResource Remove="ViewModel\NewFolder\**" />
-    <None Remove="ViewModel\NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="wwwroot\js\taxiDashboard\rgmn0gvy.rts~" />
   </ItemGroup>
 
