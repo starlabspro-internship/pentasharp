@@ -21,6 +21,8 @@ namespace WebApplication1
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddAutoMapper(typeof(AdminProfile));
+            builder.Services.AddAutoMapper(typeof(TaxiReservationProfile));
+            builder.Services.AddScoped<ITaxiReservationService, TaxiReservationService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

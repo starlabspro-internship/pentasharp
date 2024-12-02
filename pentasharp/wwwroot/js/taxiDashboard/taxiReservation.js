@@ -29,7 +29,7 @@ function populateReservationTable(reservations) {
             <td>${reservation.dropoffLocation}</td>
             <td>${reservation.reservationDate} ${reservation.reservationTime}</td>
             <td><span class="badge ${getStatusClass(reservation.status)}">${reservation.status}</span></td>
-            <td>${reservation.driver || 'N/A'}</td>
+            <td>${reservation.driver || 'Unassigned'}</td>
             <td>
                 <button class="btn btn-sm btn-outline-info" onclick="openEditReservationModal(${index})">Edit</button>
             </td>
@@ -186,6 +186,6 @@ function closeModal(modalId) {
     const modal = new bootstrap.Modal(document.getElementById(modalId));
     modal.hide();
 }
-}
+
 
 document.addEventListener('DOMContentLoaded', fetchReservations);
