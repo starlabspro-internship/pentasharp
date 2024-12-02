@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((response) => {
                 if (!response.ok) {
                     return response.json().then((error) => {
-                        throw new Error(error.message || "Failed to save entity");
+                        throw new Error(error.message || "An error occurred");
                     });
                 }
                 return response.json();
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 refreshAll();
             })
             .catch((error) => {
-                console.error("Error saving entity:", error);
+                displayErrorMessage(error.message); 
             });
     };
 
@@ -98,6 +98,15 @@ document.addEventListener("DOMContentLoaded", () => {
             deleteCallback();
             deleteModal.hide();
         }
+    };
+
+    const displayErrorMessage = (message) => {
+        const alertBox = document.getElementById("alertBox"); 
+        alertBox.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
     };
 
     const refreshAll = () => {
@@ -134,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             `<option value="${company.taxiCompanyId}" ${company.taxiCompanyId == button.dataset.companyId ? "selected" : ""}>${company.companyName}</option>`
                         ).join("");
                         entityForm.innerHTML = `
+                            <div id="alertBox" class="mt-3"></div>
                             <input type="text" class="form-control mb-3" id="licensePlate" value="${button.dataset.license}" />
                             <input type="text" class="form-control mb-3" id="driverName" value="${button.dataset.driver}" />
                             <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
@@ -192,6 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         `<option value="${company.taxiCompanyId}">${company.companyName}</option>`
                     ).join("");
                     entityForm.innerHTML = `
+                        <div id="alertBox" class="mt-3"></div>
                         <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
                         <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
                         <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />

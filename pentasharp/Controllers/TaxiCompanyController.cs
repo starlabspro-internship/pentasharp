@@ -76,6 +76,7 @@ namespace WebApplication1.Controllers
             }
 
             _mapper.Map(model, company);
+            company.UpdatedAt = DateTime.UtcNow;
             _context.SaveChanges();
             return Ok(new { success = true, message = "Company updated successfully." });
         }
@@ -150,8 +151,15 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { success = false, message = "Invalid status value." });
             }
 
+            var existingTaxi = _context.Taxis.FirstOrDefault(t => t.LicensePlate == model.LicensePlate && t.TaxiId != id);
+            if (existingTaxi != null)
+            {
+                return BadRequest(new { success = false, message = "Taxi with the same License Plate already exists." });
+            }
+
             _mapper.Map(model, taxi);
             taxi.Status = status;
+            taxi.UpdatedAt = DateTime.UtcNow;
 
             _context.SaveChanges();
             return Ok(new { success = true, message = "Taxi updated successfully." });
