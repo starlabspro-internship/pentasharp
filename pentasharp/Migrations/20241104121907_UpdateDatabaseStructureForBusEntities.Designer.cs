@@ -12,13 +12,8 @@ using pentasharp.Data;
 namespace pentasharp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-    [Migration("20241127013430_ss")]
-    partial class ss
-========
-    [Migration("20241126015514_InitialCreate")]
-    partial class InitialCreate
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
+    [Migration("20241104121907_UpdateDatabaseStructureForBusEntities")]
+    partial class UpdateDatabaseStructureForBusEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,33 +24,6 @@ namespace pentasharp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
-                {
-                    b.Property<int>("BusCompanyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusCompanyId"));
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("BusCompanyId");
-
-                    b.ToTable("BusCompanies");
-                });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>
                 {
@@ -143,25 +111,6 @@ namespace pentasharp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RouteId"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeSpan>("EstimatedDuration")
-                        .HasColumnType("time");
-
-                    b.Property<string>("FromLocation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("ToLocation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("RouteId");
 
                     b.ToTable("BusRoutes");
@@ -222,71 +171,9 @@ namespace pentasharp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusId"));
 
-                    b.Property<int>("BusCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BusNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("BusId");
 
-                    b.HasIndex("BusCompanyId");
-
                     b.ToTable("Buses");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.Notifications", b =>
-                {
-                    b.Property<int>("NotificationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
-
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.Property<int>("BookingId")
-========
-                    b.Property<int?>("BookingId")
-                        .IsRequired()
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("SentAt")
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                        .HasColumnType("datetime2");
-========
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("NotificationId");
-
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
@@ -329,93 +216,6 @@ namespace pentasharp.Migrations
                     b.HasIndex("TaxiCompanyId");
 
                     b.ToTable("Taxis");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.TaxiBookings", b =>
-                {
-                    b.Property<int>("BookingId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
-
-                    b.Property<DateTime>("BookingTime")
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DropoffLocation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-========
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("DropoffLocation")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
-
-                    b.Property<string>("Fare")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PickupLocation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaxiId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("TripEndTime")
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TripStartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-========
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("TripStartTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("BookingId");
-
-                    b.HasIndex("TaxiId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TaxiBookings");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiCompany", b =>
@@ -470,21 +270,10 @@ namespace pentasharp.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.Property<decimal?>("Fare")
-                        .IsRequired()
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<int>("PassengerCount")
-                        .HasColumnType("int");
-
-========
                     b.Property<decimal>("Fare")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18, 2)");
 
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                     b.Property<string>("PickupLocation")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -498,14 +287,7 @@ namespace pentasharp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.Property<int>("TaxiCompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TaxiId")
-========
                     b.Property<int>("TaxiId")
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("TripEndTime")
@@ -522,11 +304,6 @@ namespace pentasharp.Migrations
 
                     b.HasKey("ReservationId");
 
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.HasIndex("TaxiCompanyId");
-
-========
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                     b.HasIndex("TaxiId");
 
                     b.HasIndex("UserId");
@@ -562,12 +339,6 @@ namespace pentasharp.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-========
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -645,40 +416,6 @@ namespace pentasharp.Migrations
                     b.Navigation("Route");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
-                {
-                    b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
-                        .WithMany("Buses")
-                        .HasForeignKey("BusCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BusCompany");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.Notifications", b =>
-                {
-                    b.HasOne("pentasharp.Models.Entities.TaxiBookings", "TaxiBooking")
-                        .WithMany("Notifications")
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-========
-                        .HasForeignKey("BookingId");
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
-
-                    b.HasOne("pentasharp.Models.Entities.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TaxiBooking");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
                 {
                     b.HasOne("pentasharp.Models.Entities.TaxiCompany", "TaxiCompany")
@@ -690,81 +427,28 @@ namespace pentasharp.Migrations
                     b.Navigation("TaxiCompany");
                 });
 
-            modelBuilder.Entity("pentasharp.Models.Entities.TaxiBookings", b =>
-                {
-                    b.HasOne("pentasharp.Models.Entities.Taxi", "Taxi")
-                        .WithMany("TaxiBookings")
-                        .HasForeignKey("TaxiId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("pentasharp.Models.Entities.User", "User")
-                        .WithMany("TaxiBookings")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Taxi");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiReservations", b =>
                 {
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.HasOne("pentasharp.Models.Entities.TaxiCompany", "TaxiCompany")
-                        .WithMany()
-                        .HasForeignKey("TaxiCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("pentasharp.Models.Entities.Taxi", "Taxi")
-                        .WithMany("TaxiReservations")
-                        .HasForeignKey("TaxiId")
-                        .OnDelete(DeleteBehavior.Restrict);
-========
                     b.HasOne("pentasharp.Models.Entities.Taxi", "Taxi")
                         .WithMany("TaxiReservations")
                         .HasForeignKey("TaxiId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
 
                     b.HasOne("pentasharp.Models.Entities.User", "User")
                         .WithMany("TaxiReservations")
                         .HasForeignKey("UserId")
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                        .OnDelete(DeleteBehavior.Restrict)
-========
                         .OnDelete(DeleteBehavior.Cascade)
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                         .IsRequired();
 
                     b.Navigation("Taxi");
 
-<<<<<<<< HEAD:pentasharp/Migrations/20241127013430_ss.Designer.cs
-                    b.Navigation("TaxiCompany");
-
-========
->>>>>>>> 9e7b2daf32926a2e63cfd96fb6f46733f3be4274:pentasharp/Migrations/20241126015514_InitialCreate.Designer.cs
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
-                {
-                    b.Navigation("Buses");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
                 {
-                    b.Navigation("TaxiBookings");
-
                     b.Navigation("TaxiReservations");
-                });
-
-            modelBuilder.Entity("pentasharp.Models.Entities.TaxiBookings", b =>
-                {
-                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiCompany", b =>
@@ -774,10 +458,6 @@ namespace pentasharp.Migrations
 
             modelBuilder.Entity("pentasharp.Models.Entities.User", b =>
                 {
-                    b.Navigation("Notifications");
-
-                    b.Navigation("TaxiBookings");
-
                     b.Navigation("TaxiReservations");
                 });
 #pragma warning restore 612, 618

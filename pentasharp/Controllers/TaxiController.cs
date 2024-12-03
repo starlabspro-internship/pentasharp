@@ -2,10 +2,12 @@
 using System.Diagnostics;
 using WebApplication1.Models;
 using WebApplication1.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication1.Controllers
 {
-    [ServiceFilter(typeof(AdminOnlyFilter))]
+
+    [AllowAnonymous]
     public class TaxiController : Controller
     {
 
@@ -20,4 +22,4 @@ namespace WebApplication1.Controllers
         }
 
     }
-} 
+}
