@@ -2,9 +2,12 @@
 using System.Diagnostics;
 using WebApplication1.Models;
 using WebApplication1.Filters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApplication1.Controllers
 {
+
+    [AllowAnonymous]
     public class TaxiController : Controller
     {
         public IActionResult TaxiBooking()
@@ -16,4 +19,4 @@ namespace WebApplication1.Controllers
             return View();
         }
     }
-} 
+}

@@ -1,4 +1,4 @@
-﻿namespace pentasharp.ViewModel.TaxiBooking
+﻿namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents the detailed view model for a taxi booking.

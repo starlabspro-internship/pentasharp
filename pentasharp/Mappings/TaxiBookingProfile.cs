@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.TaxiBooking;
+using pentasharp.Models.TaxiRequest;
 
 namespace pentasharp.Mapping
 {
@@ -15,8 +15,10 @@ namespace pentasharp.Mapping
                 .ForMember(dest => dest.Notifications, opt => opt.Ignore());
 
             CreateMap<TaxiBookings, TaxiBookingViewModel>()
-                .ForMember(dest => dest.PassengerName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
-                .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Taxi != null ? src.Taxi.DriverName : "No Driver Chosen"));
+            .ForMember(dest => dest.PassengerName, opt => opt.MapFrom(src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}" : "Unknown"))
+            .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Taxi.DriverName ?? "No Driver Assigned"))
+            .ForMember(dest => dest.BookingTime, opt => opt.MapFrom(src => src.BookingTime.ToString("HH:mm")))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
             CreateMap<EditTaxiBookingViewModel, TaxiBookings>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace pentasharp.ViewModel.TaxiBooking
+namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents the data required to create a taxi booking.
@@ -14,7 +14,7 @@ namespace pentasharp.ViewModel.TaxiBooking
         [Required]
         public int TaxiCompanyId { get; set; }
 
-        /// <summary>
+        /// <summary>S
         /// The pickup location for the booking.
         /// </summary>
         [Required]

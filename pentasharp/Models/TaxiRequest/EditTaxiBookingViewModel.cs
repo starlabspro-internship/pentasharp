@@ -1,6 +1,6 @@
 ﻿using pentasharp.Models.Enums;
 
-namespace pentasharp.ViewModel.TaxiBooking
+namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents the data required to edit a taxi booking.

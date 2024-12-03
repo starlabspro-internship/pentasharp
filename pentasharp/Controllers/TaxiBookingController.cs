@@ -8,31 +8,29 @@ using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.Utilities;
 using pentasharp.ViewModel.Taxi;
-using pentasharp.ViewModel.TaxiBooking;
 using pentasharp.ViewModel.TaxiModels;
 using WebApplication1.Filters;
+using pentasharp.Interfaces;
+using pentasharp.Models.TaxiRequest;
 
 namespace WebApplication1.Controllers
 {
     [Route("api/TaxiBooking")]
     public class TaxiBookingController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ITaxiBookingService _taxiBookingService;
 
-        public TaxiBookingController(AppDbContext context, IMapper mapper)
+        public TaxiBookingController(ITaxiBookingService taxiBookingService)
         {
-            _context = context;
-            _mapper = mapper;
+            _taxiBookingService = taxiBookingService;
         }
 
         [AllowAnonymous]
         [HttpPost("SearchAvailableTaxis")]
-        public IActionResult GetCompanies()
+        public async Task<IActionResult> GetCompanies()
         {
-            var companies = _context.TaxiCompanies.ToList();
-            var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
-            return Ok(new { success = true, companies = viewModel });
+            var companies = await _taxiBookingService.GetAllCompaniesAsync();
+            return Ok(new { success = true, companies });
         }
 
         [ServiceFilter(typeof(LoginRequiredFilter))]
@@ -42,10 +40,9 @@ namespace WebApplication1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { success = false, message = "Invalid data" });
 
-            var taxiBooking = _mapper.Map<TaxiBookings>(model);
-
-            _context.TaxiBookings.Add(taxiBooking);
-            await _context.SaveChangesAsync();
+            var success = await _taxiBookingService.CreateBookingAsync(model);
+            if (!success)
+                return BadRequest(new { success = false, message = "Booking creation failed." });
 
             return Ok(new { success = true, message = "Booking created successfully" });
         }
@@ -54,20 +51,13 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBookings")]
         public async Task<IActionResult> GetBookings()
         {
-            var bookings = await _context.TaxiBookings
-                .Include(b => b.User)
-                .Include(b => b.TaxiCompany)
-                .Include(b => b.Taxi)
-                .ToListAsync();
-
-            var viewModel = _mapper.Map<List<TaxiBookingViewModel>>(bookings);
-
+            var bookings = await _taxiBookingService.GetAllBookingsAsync();
             return Ok(new StandardApiResponse<List<TaxiBookingViewModel>>
             {
                 Success = true,
                 Message = ResponseMessages.Success,
                 Code = ResponseCodes.Success,
-                Data = viewModel
+                Data = bookings
             });
         }
 
@@ -75,11 +65,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBooking")]
         public async Task<IActionResult> GetBookingById(int id)
         {
-            var booking = await _context.TaxiBookings
-                .Include(b => b.User)
-                .Include(b => b.Taxi)
-                .FirstOrDefaultAsync(b => b.BookingId == id);
-
+            var booking = await _taxiBookingService.GetBookingByIdAsync(id);
             if (booking == null)
             {
                 return NotFound(new StandardApiResponse<string>
@@ -90,25 +76,12 @@ namespace WebApplication1.Controllers
                 });
             }
 
-            var viewModel = new TaxiBookingViewModel
-            {
-                BookingId = booking.BookingId,
-                PassengerName = booking.User != null ? $"{booking.User.FirstName} {booking.User.LastName}" : "Unknown",
-                PickupLocation = booking.PickupLocation,
-                DropoffLocation = booking.DropoffLocation,
-                BookingTime = booking.BookingTime.ToString("HH:mm"),
-                Status = booking.Status.ToString(),
-                DriverName = booking.Taxi?.DriverName ?? "No Driver Assigned",
-                TaxiId = booking.Taxi?.TaxiId
-            };
-
-
             return Ok(new StandardApiResponse<TaxiBookingViewModel>
             {
                 Success = true,
                 Message = ResponseMessages.Success,
                 Code = ResponseCodes.Success,
-                Data = viewModel
+                Data = booking
             });
         }
 
@@ -119,22 +92,9 @@ namespace WebApplication1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { success = false, message = "Invalid data." });
 
-            var booking = await _context.TaxiBookings.FirstOrDefaultAsync(b => b.BookingId == model.BookingId);
-            if (booking == null)
+            var success = await _taxiBookingService.UpdateBookingAsync(model);
+            if (!success)
                 return NotFound(new { success = false, message = "Booking not found." });
-
-            booking.PickupLocation = model.PickupLocation;
-            booking.DropoffLocation = model.DropoffLocation;
-            booking.BookingTime = model.BookingTime;
-            if (Enum.TryParse(typeof(ReservationStatus), model.Status.ToString(), true, out var status))
-                booking.Status = (ReservationStatus)status;
-            else
-                return BadRequest(new { success = false, message = "Invalid status value." });
-
-            booking.TaxiId = model.TaxiId;
-            booking.UpdatedAt = model.UpdateAt;
-
-            await _context.SaveChangesAsync();
 
             return Ok(new { success = true, message = "Booking updated successfully." });
         }

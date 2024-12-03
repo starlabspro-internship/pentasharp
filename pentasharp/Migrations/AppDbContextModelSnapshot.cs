@@ -445,9 +445,13 @@ namespace pentasharp.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<decimal>("Fare")
+                    b.Property<decimal?>("Fare")
+                        .IsRequired()
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("PassengerCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("PickupLocation")
                         .IsRequired()
@@ -462,7 +466,10 @@ namespace pentasharp.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("TaxiId")
+                    b.Property<int>("TaxiCompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaxiId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("TripEndTime")
@@ -478,6 +485,8 @@ namespace pentasharp.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ReservationId");
+
+                    b.HasIndex("TaxiCompanyId");
 
                     b.HasIndex("TaxiId");
 
@@ -660,19 +669,26 @@ namespace pentasharp.Migrations
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiReservations", b =>
                 {
+                    b.HasOne("pentasharp.Models.Entities.TaxiCompany", "TaxiCompany")
+                        .WithMany()
+                        .HasForeignKey("TaxiCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("pentasharp.Models.Entities.Taxi", "Taxi")
                         .WithMany("TaxiReservations")
                         .HasForeignKey("TaxiId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("pentasharp.Models.Entities.User", "User")
                         .WithMany("TaxiReservations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Taxi");
+
+                    b.Navigation("TaxiCompany");
 
                     b.Navigation("User");
                 });
