@@ -2,7 +2,6 @@
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
-using pentasharp.ViewModel.TaxiReservation;
 
 namespace pentasharp.Mappings
 {
@@ -23,7 +22,7 @@ namespace pentasharp.Mappings
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.PassengerCount, opt => opt.MapFrom(src => src.PassengerCount));
 
-            CreateMap<UpdateReservationViewModel, TaxiReservations>()
+            CreateMap<UpdateTaxiReservationViewModel, TaxiReservations>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ReservationStatus>(src.Status ?? "Pending")));
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using pentasharp.Models.TaxiRequest;
-using pentasharp.ViewModel.TaxiReservation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -43,6 +42,6 @@ namespace pentasharp.Interfaces
         /// <param name="reservationId">The ID of the reservation to update.</param>
         /// <param name="model">The model containing updated reservation details.</param>
         /// <returns>The model representing a boolean indicating whether the update was successful.</returns>
-        Task<bool> UpdateReservationAsync(int reservationId, UpdateReservationViewModel model);
+        Task<bool> UpdateReservationAsync(int reservationId, UpdateTaxiReservationViewModel model);
     }
 }
