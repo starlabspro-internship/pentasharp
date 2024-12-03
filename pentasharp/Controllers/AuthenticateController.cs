@@ -107,18 +107,45 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
 
-            // Map the updated properties from the view model to the User entity
             _mapper.Map(model, user);
 
             if (!string.IsNullOrEmpty(model.Password))
             {
-                user.PasswordHash = HashPassword(model.Password);  // Update password if provided
+                user.PasswordHash = HashPassword(model.Password);
+            }
+
+            if (model.Role.HasValue)
+            {
+                user.Role = model.Role.Value;
+            }
+
+            if (model.BusinessType.HasValue)
+            {
+                user.BusinessType = model.BusinessType.Value;
             }
 
             _context.Users.Update(user);
             _context.SaveChanges();
 
             return RedirectToAction("UserList");
+        }
+
+        [HttpGet("GetEnums")]
+        public IActionResult GetEnums()
+        {
+            var roles = Enum.GetValues(typeof(UserRole))
+                .Cast<UserRole>()
+                .Select(role => new { Value = (int)role, Text = role.ToString() });
+
+            var businessTypes = Enum.GetValues(typeof(BusinessType))
+                .Cast<BusinessType>()
+                .Select(type => new { Value = (int)type, Text = type.ToString() });
+
+            return Ok(new
+            {
+                Roles = roles,
+                BusinessTypes = businessTypes
+            });
         }
 
         [HttpGet("Delete/{id}")]

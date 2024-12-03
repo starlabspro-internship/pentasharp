@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.Data.Configurations
 {
@@ -76,6 +77,10 @@ namespace pentasharp.Data.Configurations
             builder.HasMany(u => u.Notifications)
                 .WithOne(n => n.User)
                 .HasForeignKey(n => n.UserId);
+
+            builder.Property(u => u.BusinessType)
+                 .IsRequired()
+                 .HasDefaultValue(BusinessType.None);
         }
     }
 }

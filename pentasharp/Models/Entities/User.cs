@@ -37,6 +37,8 @@ namespace pentasharp.Models.Entities
         /// </summary>
         public UserRole Role { get; set; } = UserRole.User;
 
+        public BusinessType BusinessType { get; set; } = BusinessType.None;
+
         /// <summary>
         /// Gets or sets a value indicating whether the user has administrative privileges.
         /// </summary>
@@ -66,5 +68,6 @@ namespace pentasharp.Models.Entities
         /// Gets or sets a value indicating whether the user is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }
+
     }
 }

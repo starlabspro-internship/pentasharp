@@ -1,10 +1,10 @@
 @model pentasharp.ViewModel.Authenticate.EditUserViewModel
 @{
     Layout = "_DashboardLayout";
-    }
+}
 <h2>Edit User</h2>
 
-<form asp-action="EditUser" method="post">
+<form id="editUserForm" asp-action="EditUser" method="post">
     <div class="form-group">
         <label for="FirstName">First Name</label>
         <input type="text" id="FirstName" name="FirstName" class="form-control" value="@Model.FirstName" />
@@ -22,6 +22,20 @@
         <input type="password" id="Password" name="Password" class="form-control" />
         <small class="form-text text-muted">Leave blank if you don't want to change the password.</small>
     </div>
-    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <div class="form-group">
+        <label for="Role">Role</label>
+        <select id="Role" name="Role" class="form-control" data-selected-value="@Model.Role">
+            <option value="">Select Role</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="BusinessType">Business Type</label>
+        <select id="BusinessType" name="BusinessType" class="form-control" data-selected-value="@Model.BusinessType">
+            <option value="">Select Business Type</option>
+        </select>
+    </div>
+    <input type="hidden" name="UserId" id="UserId" value="@Model.UserId" />
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
+
+<script src="~/js/authenticate/editUser.js"></script>
