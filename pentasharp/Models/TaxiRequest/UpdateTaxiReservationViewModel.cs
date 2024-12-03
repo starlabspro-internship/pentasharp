@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace pentasharp.ViewModel.TaxiReservation
+namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents the view model used to update an existing taxi reservation.
     /// </summary>
-    public class UpdateReservationViewModel
+    public class UpdateTaxiReservationViewModel
     {
         /// <summary>
         /// Gets or sets the identifier of the taxi assigned to the reservation.

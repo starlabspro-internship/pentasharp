@@ -72,6 +72,7 @@ namespace pentasharp.Data.Configurations
             builder.Property(tr => tr.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
         }
+
         private void ConfigureRelationships(EntityTypeBuilder<TaxiReservations> builder)
         {
             builder.HasOne(tr => tr.User)

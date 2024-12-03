@@ -7,7 +7,6 @@ using pentasharp.Interfaces;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
-using pentasharp.ViewModel.TaxiReservation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +46,7 @@ namespace pentasharp.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while searching for available taxis.");
+                _logger.LogError(ex, "Error occurred while searching for available taxis in {methodName}.", nameof(SearchAvailableTaxisAsync));
                 throw;
             }
         }
@@ -77,7 +76,7 @@ namespace pentasharp.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a reservation.");
+                _logger.LogError(ex, "Error occurred while creating a reservation in {methodName}.", nameof(CreateReservationAsync));
                 return new ObjectResult(new { success = false, message = "An internal server error occurred.", error = ex.Message })
                 {
                     StatusCode = 500
@@ -112,7 +111,7 @@ namespace pentasharp.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching reservations.");
+                _logger.LogError(ex, "Error occurred while fetching reservations in {methodName}.", nameof(GetReservationsAsync));
                 throw;
             }
         }
@@ -131,12 +130,12 @@ namespace pentasharp.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching taxis for taxi company ID {TaxiCompanyId}.", taxiCompanyId);
+                _logger.LogError(ex, "Error occurred while fetching taxis for taxi company ID {TaxiCompanyId} in {methodName}.", taxiCompanyId, nameof(GetTaxisByTaxiCompanyAsync));
                 throw;
             }
         }
 
-        public async Task<bool> UpdateReservationAsync(int reservationId, UpdateReservationViewModel model)
+        public async Task<bool> UpdateReservationAsync(int reservationId, UpdateTaxiReservationViewModel model)
         {
             try
             {
@@ -183,7 +182,7 @@ namespace pentasharp.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while updating reservation with ID {ReservationId}.", reservationId);
+                _logger.LogError(ex, "Error occurred while updating reservation with ID {ReservationId} in {methodName}.", reservationId, nameof(UpdateReservationAsync));
                 throw;
             }
         }

@@ -5,7 +5,6 @@ using pentasharp.Interfaces;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
-using pentasharp.ViewModel.TaxiReservation;
 using WebApplication1.Filters;
 
 namespace pentasharp.Controllers
@@ -29,14 +28,12 @@ namespace pentasharp.Controllers
             return Ok(new { success = true, companies = taxiCompanies });
         }
 
-
         [ServiceFilter(typeof(LoginRequiredFilter))]
         [HttpPost("CreateReservation")]
         public async Task<IActionResult> CreateReservation([FromBody] TaxiReservationViewModel model)
         {
             return await _taxiReservationService.CreateReservationAsync(model);
         }
-
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetReservations")]
@@ -72,7 +69,7 @@ namespace pentasharp.Controllers
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpPut("UpdateReservation/{reservationId}")]
-        public async Task<IActionResult> UpdateReservation(int reservationId, [FromBody] UpdateReservationViewModel model)
+        public async Task<IActionResult> UpdateReservation(int reservationId, [FromBody] UpdateTaxiReservationViewModel model)
         {
             try
             {
