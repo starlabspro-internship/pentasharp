@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiModels;
 
 namespace pentasharp.Mappings
@@ -21,7 +21,7 @@ namespace pentasharp.Mappings
                 .ForMember(dest => dest.TaxiId, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
 
-            CreateMap<Taxi, TaxiDto>();
+            CreateMap<Taxi, TaxiRequest>();
 
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace pentasharp.ViewModel.TaxiModels
+namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents the view model for creating a new taxi reservation.

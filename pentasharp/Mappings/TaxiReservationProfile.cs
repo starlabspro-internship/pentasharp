@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
-using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiReservation;
 
 namespace pentasharp.Mappings
@@ -11,12 +10,12 @@ namespace pentasharp.Mappings
     {
         public TaxiReservationProfile()
         {
-            CreateMap<TaxiCompany, TaxiCompanyDto>();
+            CreateMap<TaxiCompany, TaxiCompanyRequest>();
 
             CreateMap<TaxiReservationViewModel, TaxiReservations>()
             .ForMember(dest => dest.ReservationTime, opt => opt.Ignore());
 
-            CreateMap<TaxiReservations, TaxiReservationDto>()
+            CreateMap<TaxiReservations, TaxiReservationRequest>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))  
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt)) 
             .ForMember(dest => dest.ReservationTime, opt => opt.MapFrom(src => src.ReservationTime.ToString("hh:mm tt")))

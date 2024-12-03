@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace pentasharp.Models.DTOs
+namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents a DTO for a taxi reservation, including details about the reservation, user, and taxi.
     /// </summary>
-    public class TaxiReservationDto
+    public class TaxiReservationRequest
     {
         /// <summary>
         /// Gets or sets the unique identifier for the taxi company associated with the reservation.

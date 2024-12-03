@@ -4,7 +4,7 @@ using pentasharp.Data;
 using pentasharp.Interfaces;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiReservation;
 using WebApplication1.Filters;
 

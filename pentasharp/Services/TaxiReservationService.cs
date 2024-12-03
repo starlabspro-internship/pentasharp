@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using pentasharp.Data;
 using pentasharp.Interfaces;
-using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiReservation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace pentasharp.Services
 {
@@ -15,33 +19,48 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<TaxiReservationService> _logger;
 
-        public TaxiReservationService(AppDbContext context, IMapper mapper)
+        public TaxiReservationService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<IEnumerable<TaxiCompanyDto>> SearchAvailableTaxisAsync()
+        public async Task<IEnumerable<TaxiCompanyRequest>> SearchAvailableTaxisAsync()
         {
-            var taxiCompanies = await _context.TaxiCompanies
-                .Select(c => new TaxiCompanyDto
-                {
-                    TaxiCompanyId = c.TaxiCompanyId,
-                    CompanyName = c.CompanyName,
-                    ContactInfo = c.ContactInfo
-                })
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation("Searching for available taxis...");
+                var taxiCompanies = await _context.TaxiCompanies
+                    .Select(c => new TaxiCompanyRequest
+                    {
+                        TaxiCompanyId = c.TaxiCompanyId,
+                        CompanyName = c.CompanyName,
+                        ContactInfo = c.ContactInfo
+                    })
+                    .ToListAsync();
 
-            return taxiCompanies;
+                _logger.LogInformation("Found {Count} taxi companies.", taxiCompanies.Count);
+                return taxiCompanies;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while searching for available taxis.");
+                throw;
+            }
         }
 
         public async Task<IActionResult> CreateReservationAsync(TaxiReservationViewModel model)
         {
             try
             {
+                _logger.LogInformation("Creating a new taxi reservation for user {UserId}.", model.UserId);
+
                 if (!TimeSpan.TryParse(model.ReservationTime, out var timeSpan))
                 {
+                    _logger.LogWarning("Invalid ReservationTime format: {ReservationTime}.", model.ReservationTime);
                     return new BadRequestObjectResult(new { success = false, message = "Invalid ReservationTime format. Must be HH:mm:ss." });
                 }
 
@@ -53,11 +72,12 @@ namespace pentasharp.Services
                 _context.TaxiReservations.Add(reservation);
                 await _context.SaveChangesAsync();
 
+                _logger.LogInformation("Reservation created successfully with ID {ReservationId}.", reservation.ReservationId);
                 return new OkObjectResult(new { success = true, message = "Reservation created successfully." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
+                _logger.LogError(ex, "Error occurred while creating a reservation.");
                 return new ObjectResult(new { success = false, message = "An internal server error occurred.", error = ex.Message })
                 {
                     StatusCode = 500
@@ -65,77 +85,107 @@ namespace pentasharp.Services
             }
         }
 
-        public async Task<List<TaxiReservationDto>> GetReservationsAsync()
+        public async Task<List<TaxiReservationRequest>> GetReservationsAsync()
         {
             try
             {
-                // Fetch reservations with eager loading
+                _logger.LogInformation("Fetching all taxi reservations.");
                 var reservations = await _context.TaxiReservations
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
                     .Include(r => r.TaxiCompany)
                     .ToListAsync();
-                var reservationDtos = _mapper.Map<List<TaxiReservationDto>>(reservations);
-                foreach (var reservationDto in reservationDtos)
+
+                var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
+
+                foreach (var reservationDto in reservationInfo)
                 {
                     var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
-                    reservationDto.PassengerName = reservationEntity?.User != null ? reservationEntity.User.FirstName : "Unknown";
-
+                    reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
                     reservationDto.Driver = reservationEntity?.Taxi != null
-               ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
-               : "Unassigned";
+                        ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
+                        : "Unassigned";
                 }
 
-                return reservationDtos;
+                _logger.LogInformation("Successfully fetched {Count} reservations.", reservationInfo.Count);
+                return reservationInfo;
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while fetching reservations.", ex);
+                _logger.LogError(ex, "Error occurred while fetching reservations.");
+                throw;
             }
         }
 
-        public async Task<List<TaxiDto>> GetTaxisByTaxiCompanyAsync(int taxiCompanyId)
+        public async Task<List<TaxiRequest>> GetTaxisByTaxiCompanyAsync(int taxiCompanyId)
         {
-            var taxis = await _context.Taxis
-                .Where(t => t.TaxiCompanyId == taxiCompanyId)
-                .ToListAsync();
+            try
+            {
+                _logger.LogInformation("Fetching taxis for taxi company ID {TaxiCompanyId}.", taxiCompanyId);
+                var taxis = await _context.Taxis
+                    .Where(t => t.TaxiCompanyId == taxiCompanyId)
+                    .ToListAsync();
 
-            return _mapper.Map<List<TaxiDto>>(taxis);
+                _logger.LogInformation("Found {Count} taxis for taxi company ID {TaxiCompanyId}.", taxis.Count, taxiCompanyId);
+                return _mapper.Map<List<TaxiRequest>>(taxis);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching taxis for taxi company ID {TaxiCompanyId}.", taxiCompanyId);
+                throw;
+            }
         }
 
         public async Task<bool> UpdateReservationAsync(int reservationId, UpdateReservationViewModel model)
         {
-            var reservation = await _context.TaxiReservations
-                .Include(r => r.Taxi)
-                .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
-
-            if (reservation == null) return false;
-
-            var taxi = model.TaxiId.HasValue && model.TaxiId != 0
-                ? await _context.Taxis.FirstOrDefaultAsync(t => t.TaxiId == model.TaxiId)
-                : null;
-
-            if (taxi == null && model.TaxiId.HasValue && model.TaxiId != 0) return false;
-
-            if (model.ReservationDate.HasValue && !string.IsNullOrEmpty(model.ReservationTime))
+            try
             {
-                var reservationDateTime = model.ReservationDate.Value
-                    .Add(TimeSpan.Parse(model.ReservationTime));
-                reservation.ReservationTime = reservationDateTime;
+                _logger.LogInformation("Updating reservation with ID {ReservationId}.", reservationId);
+                var reservation = await _context.TaxiReservations
+                    .Include(r => r.Taxi)
+                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
+
+                if (reservation == null)
+                {
+                    _logger.LogWarning("Reservation with ID {ReservationId} not found.", reservationId);
+                    return false;
+                }
+
+                var taxi = model.TaxiId.HasValue && model.TaxiId != 0
+                    ? await _context.Taxis.FirstOrDefaultAsync(t => t.TaxiId == model.TaxiId)
+                    : null;
+
+                if (taxi == null && model.TaxiId.HasValue && model.TaxiId != 0)
+                {
+                    _logger.LogWarning("Taxi with ID {TaxiId} not found.", model.TaxiId);
+                    return false;
+                }
+
+                if (model.ReservationDate.HasValue && !string.IsNullOrEmpty(model.ReservationTime))
+                {
+                    var reservationDateTime = model.ReservationDate.Value.Add(TimeSpan.Parse(model.ReservationTime));
+                    reservation.ReservationTime = reservationDateTime;
+                }
+                else
+                {
+                    _logger.LogError("ReservationDate or ReservationTime is missing for reservation ID {ReservationId}.", reservationId);
+                    throw new ArgumentException("ReservationDate or ReservationTime is missing.");
+                }
+
+                _mapper.Map(model, reservation);
+                reservation.UpdatedAt = DateTime.UtcNow;
+
+                _context.TaxiReservations.Update(reservation);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Reservation with ID {ReservationId} updated successfully.", reservationId);
+                return true;
             }
-            else
+            catch (Exception ex)
             {
-                throw new ArgumentException("ReservationDate or ReservationTime is missing.");
+                _logger.LogError(ex, "Error occurred while updating reservation with ID {ReservationId}.", reservationId);
+                throw;
             }
-
-            // Map other fields
-            _mapper.Map(model, reservation);
-            reservation.UpdatedAt = DateTime.UtcNow;
-
-            _context.TaxiReservations.Update(reservation);
-            await _context.SaveChangesAsync();
-
-            return true;
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace pentasharp.Models.DTOs
+﻿namespace pentasharp.Models.TaxiRequest
 {
     /// <summary>
     /// Represents a DTO for a taxi, including its ID, driver's name, and license plate.
     /// </summary>
-    public class TaxiDto
+    public class TaxiRequest
     {
         /// <summary>
         /// Gets or sets the unique identifier for the taxi.
