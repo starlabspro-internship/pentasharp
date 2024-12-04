@@ -6,7 +6,6 @@ using pentasharp.Models.DTOs;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
-using pentasharp.Models.TaxiRequests;
 using pentasharp.ViewModel.TaxiModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,10 +29,18 @@ namespace pentasharp.Services
             return _mapper.Map<List<TaxiCompanyViewModel>>(companies);
         }
 
-        public async Task<bool> CreateBookingAsync(CreateBookingViewModel model)
+        public async Task<bool> CreateBookingAsync(TaxiBookingRequest request)
         {
-
-            var taxiBooking = _mapper.Map<TaxiBookings>(model);
+            var taxiBooking = new TaxiBookings
+            {
+                TaxiCompanyId = request.TaxiCompanyId,
+                PickupLocation = request.PickupLocation,
+                DropoffLocation = request.DropoffLocation,
+                BookingTime = request.BookingTime,
+                PassengerCount = request.PassengerCount,
+                UserId = request.UserId,
+                Status = request.Status
+            };
 
             _context.TaxiBookings.Add(taxiBooking);
             await _context.SaveChangesAsync();
@@ -42,7 +49,6 @@ namespace pentasharp.Services
 
         public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync()
         {
-
             var bookings = await _context.TaxiBookings
                 .Include(b => b.User)
                 .Include(b => b.TaxiCompany)
@@ -54,7 +60,6 @@ namespace pentasharp.Services
 
         public async Task<TaxiBookingViewModel> GetBookingByIdAsync(int id)
         {
-
             var booking = await _context.TaxiBookings
                 .Include(b => b.User)
                 .Include(b => b.Taxi)
@@ -70,7 +75,6 @@ namespace pentasharp.Services
 
         public async Task<bool> UpdateBookingAsync(EditTaxiBookingViewModel model)
         {
-
             var booking = await _context.TaxiBookings.FirstOrDefaultAsync(b => b.BookingId == model.BookingId);
 
             if (booking == null)

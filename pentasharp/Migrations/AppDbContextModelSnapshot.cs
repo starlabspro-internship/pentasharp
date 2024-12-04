@@ -350,7 +350,7 @@ namespace pentasharp.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("PassangerCount")
+                    b.Property<int>("PassengerCount")
                         .HasColumnType("int");
 
                     b.Property<string>("PickupLocation")

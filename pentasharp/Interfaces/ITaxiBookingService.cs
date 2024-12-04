@@ -22,7 +22,7 @@ namespace pentasharp.Interfaces
         /// </summary>
         /// <param name="model">The <see cref="CreateBookingViewModel"/> containing booking details.</param>
         /// <returns>A boolean indicating whether the booking was created successfully.</returns>
-        Task<bool> CreateBookingAsync(CreateBookingViewModel model);
+        Task<bool> CreateBookingAsync(TaxiBookingRequest request);
 
         /// <summary>
         /// Retrieves all taxi bookings.

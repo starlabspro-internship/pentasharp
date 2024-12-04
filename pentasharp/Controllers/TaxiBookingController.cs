@@ -40,12 +40,24 @@ namespace WebApplication1.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new { success = false, message = "Invalid data" });
 
-            var success = await _taxiBookingService.CreateBookingAsync(model);
+            var request = new TaxiBookingRequest
+            {
+                TaxiCompanyId = model.TaxiCompanyId,
+                PickupLocation = model.PickupLocation,
+                DropoffLocation = model.DropoffLocation,
+                BookingTime = model.BookingTime,
+                PassengerCount = model.PassengerCount,
+                UserId = model.UserId,
+                Status = ReservationStatus.Pending 
+            };
+
+            var success = await _taxiBookingService.CreateBookingAsync(request);
             if (!success)
                 return BadRequest(new { success = false, message = "Booking creation failed." });
 
             return Ok(new { success = true, message = "Booking created successfully" });
         }
+
 
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetBookings")]

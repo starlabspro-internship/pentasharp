@@ -49,7 +49,7 @@ namespace pentasharp.Data.Configurations
                 .HasPrecision(10, 2)
                 .IsRequired(false);
 
-            builder.Property(tb => tb.PassangerCount)
+            builder.Property(tb => tb.PassengerCount)
                 .IsRequired();
 
             builder.Property(tb => tb.TaxiId)

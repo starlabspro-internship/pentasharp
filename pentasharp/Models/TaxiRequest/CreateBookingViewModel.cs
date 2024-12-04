@@ -38,7 +38,7 @@ namespace pentasharp.Models.TaxiRequest
         /// The number of passengers for the booking.
         /// </summary>
         [Required]
-        public int PassangerCount { get; set; }
+        public int PassengerCount { get; set; }
 
         /// <summary>
         /// The ID of the user making the booking.
