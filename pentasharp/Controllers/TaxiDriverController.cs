@@ -8,7 +8,6 @@ namespace WebApplication1.Controllers
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiDriverController : Controller
     {
-
         public IActionResult TaxiDriver()
         {
             return View();

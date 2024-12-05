@@ -10,16 +10,13 @@ namespace WebApplication1.Controllers
     [AllowAnonymous]
     public class TaxiController : Controller
     {
-
         public IActionResult TaxiBooking()
         {
             return View();
         }
-
         public IActionResult TaxiReservation()
         {
             return View();
         }
-
     }
 }
