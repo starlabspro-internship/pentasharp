@@ -5,6 +5,7 @@ using pentasharp.Services;
 using pentasharp.Mappings;
 using pentasharp.Models.DTOs;
 using WebApplication1.Filters;
+using pentasharp.Interfaces;
 
 namespace WebApplication1
 {
@@ -23,6 +24,9 @@ namespace WebApplication1
             builder.Services.AddAutoMapper(typeof(AdminProfile));
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
+
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.Taxi;
 using pentasharp.ViewModel.TaxiModels;
 
@@ -29,7 +30,8 @@ namespace pentasharp.Mappings
 
             CreateMap<EditTaxiViewModel, Taxi>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<TaxiStatus>(src.Status, true)));
-
+            
+            CreateMap<TaxiCompany, TaxiCompanyRequest>();
         }
     }
 }

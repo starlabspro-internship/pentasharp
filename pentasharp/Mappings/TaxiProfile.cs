@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using pentasharp.Models.Entities;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiModels;
 
 namespace pentasharp.Mappings
@@ -19,6 +20,8 @@ namespace pentasharp.Mappings
                 .ReverseMap()
                 .ForMember(dest => dest.TaxiId, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+
+            CreateMap<Taxi, TaxiRequest>();
         }
     }
 }

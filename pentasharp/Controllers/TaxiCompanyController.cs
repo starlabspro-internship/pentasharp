@@ -1,12 +1,8 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using pentasharp.Data;
-using pentasharp.Models.Entities;
-using pentasharp.ViewModel.Taxi;
-using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Interfaces;
+using pentasharp.Models.TaxiRequest; 
+using System.Threading.Tasks;
 using WebApplication1.Filters;
-using pentasharp.Models.Enums;
 
 namespace WebApplication1.Controllers
 {
@@ -14,169 +10,151 @@ namespace WebApplication1.Controllers
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiCompanyController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ITaxiCompanyService _taxiCompanyService;
 
-        public TaxiCompanyController(AppDbContext context, IMapper mapper)
+        public TaxiCompanyController(ITaxiCompanyService taxiCompanyService)
         {
-            _context = context;
-            _mapper = mapper;
+            _taxiCompanyService = taxiCompanyService;
         }
 
-        [HttpGet("GetTaxiStatuses")]
-        public IActionResult GetTaxiStatuses()
+        [HttpGet("Add")]
+        public IActionResult AddTaxiCompany()
         {
-            var statuses = Enum.GetValues(typeof(TaxiStatus))
-                               .Cast<TaxiStatus>()
-                               .Select(s => new { Name = s.ToString(), Value = (int)s })
-                               .ToList();
-
-            return Ok(statuses);
-        }
-
-        [HttpGet("Taxi")]
-        public IActionResult Add()
-        {
-            var companies = _context.TaxiCompanies.ToList();
-            var viewModel = new ManageTaxiCompanyViewModel
-            {
-                TaxiCompanies = _mapper.Map<List<TaxiCompanyViewModel>>(companies),
-            };
-            return View(viewModel);
-        }
-
-        [HttpPost("AddCompany")]
-        public IActionResult AddCompany([FromBody] TaxiCompanyViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var company = _mapper.Map<TaxiCompany>(model);
-                _context.TaxiCompanies.Add(company);
-                _context.SaveChanges();
-                return Ok(new { success = true, message = "Company added successfully." });
-            }
-            return BadRequest(new { success = false, message = "Invalid data provided." });
+            return View();
         }
 
         [HttpGet("GetCompanies")]
-        public IActionResult GetCompanies()
+        public async Task<IActionResult> GetCompanies()
         {
-            var companies = _context.TaxiCompanies.Include(c => c.Taxis).ToList();
-            var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
-            return Ok(viewModel);
+            var companies = await _taxiCompanyService.GetAllCompaniesAsync();
+            return Ok(companies);
+        }
+
+        [HttpPost("AddCompany")]
+        public async Task<IActionResult> AddCompany([FromBody] TaxiCompanyRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { success = false, message = "Invalid data provided." });
+            }
+
+            var result = await _taxiCompanyService.AddCompanyAsync(model);
+            if (!result)
+            {
+                return BadRequest(new { success = false, message = "Failed to add company." });
+            }
+
+            return Ok(new { success = true, message = "Company added successfully." });
         }
 
         [HttpPut("EditCompany/{id}")]
-        public IActionResult EditCompany(int id, [FromBody] TaxiCompanyViewModel model)
+        public async Task<IActionResult> EditCompany(int id, [FromBody] TaxiCompanyRequest model)
         {
-            var company = _context.TaxiCompanies.Find(id);
-            if (company == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { success = false, message = "Company not found." });
+                return BadRequest(new { success = false, message = "Invalid data provided." });
             }
 
-            _mapper.Map(model, company);
-            company.UpdatedAt = DateTime.UtcNow;
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Company updated successfully." });
+            try
+            {
+                var result = await _taxiCompanyService.UpdateCompanyAsync(id, model);
+                if (!result)
+                {
+                    return BadRequest(new { success = false, message = "Failed to update company." });
+                }
+
+                return Ok(new { success = true, message = "Company updated successfully." });
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpDelete("DeleteCompany/{id}")]
-        public IActionResult DeleteCompany(int id)
+        public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = _context.TaxiCompanies.Include(c => c.Taxis).FirstOrDefault(c => c.TaxiCompanyId == id);
-            if (company == null)
+            try
             {
-                return NotFound(new { success = false, message = "Company not found." });
-            }
+                var result = await _taxiCompanyService.DeleteCompanyAsync(id);
+                if (!result)
+                {
+                    return BadRequest(new { success = false, message = "Failed to delete company." });
+                }
 
-            _context.TaxiCompanies.Remove(company);
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Company deleted successfully." });
+                return Ok(new { success = true, message = "Company deleted successfully." });
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet("GetTaxis/{taxiCompanyId}")]
+        public async Task<IActionResult> GetTaxis(int taxiCompanyId)
+        {
+            var taxis = await _taxiCompanyService.GetTaxisByCompanyAsync(taxiCompanyId);
+            return Ok(taxis);
         }
 
         [HttpPost("AddTaxi")]
-        public IActionResult AddTaxi([FromBody] AddTaxiViewModel model)
+        public async Task<IActionResult> AddTaxi([FromBody] TaxiRequest model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (!Enum.TryParse<TaxiStatus>(model.Status, true, out var status))
-                {
-                    return BadRequest(new { success = false, message = "Invalid status value." });
-                }
-
-                var existingTaxi = _context.Taxis.FirstOrDefault(t => t.LicensePlate == model.LicensePlate);
-                if (existingTaxi != null)
-                {
-                    return BadRequest(new { success = false, message = "Taxi with the same License Plate already exists." });
-                }
-
-                var taxi = _mapper.Map<Taxi>(model);
-                taxi.Status = status;
-
-                _context.Taxis.Add(taxi);
-                _context.SaveChanges();
-                return Ok(new { success = true, message = "Taxi added successfully." });
+                return BadRequest(new { success = false, message = "Invalid data provided." });
             }
-            return BadRequest(new { success = false, message = "Invalid data provided." });
-        }
 
-        [HttpGet("GetTaxis")]
-        public IActionResult GetTaxis()
-        {
-            var taxis = _context.Taxis.Include(t => t.TaxiCompany).ToList();
-            var viewModel = taxis.Select(t => new TaxiViewModel
+            var result = await _taxiCompanyService.AddTaxiAsync(model);
+            if (!result)
             {
-                TaxiId = t.TaxiId,
-                LicensePlate = t.LicensePlate,
-                DriverName = t.DriverName,
-                Status = t.Status.ToString(),
-                CompanyName = t.TaxiCompany.CompanyName
-            }).ToList();
+                return BadRequest(new { success = false, message = "Failed to add taxi." });
+            }
 
-            return Ok(viewModel);
+            return Ok(new { success = true, message = "Taxi added successfully." });
         }
 
         [HttpPut("EditTaxi/{id}")]
-        public IActionResult EditTaxi(int id, [FromBody] EditTaxiViewModel model)
+        public async Task<IActionResult> EditTaxi(int id, [FromBody] TaxiRequest model)
         {
-            var taxi = _context.Taxis.Find(id);
-            if (taxi == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound(new { success = false, message = "Taxi not found." });
+                return BadRequest(new { success = false, message = "Invalid data provided." });
             }
 
-            if (!Enum.TryParse<TaxiStatus>(model.Status, true, out var status))
+            try
             {
-                return BadRequest(new { success = false, message = "Invalid status value." });
-            }
+                var result = await _taxiCompanyService.UpdateTaxiAsync(id, model);
+                if (!result)
+                {
+                    return BadRequest(new { success = false, message = "Failed to update taxi." });
+                }
 
-            var existingTaxi = _context.Taxis.FirstOrDefault(t => t.LicensePlate == model.LicensePlate && t.TaxiId != id);
-            if (existingTaxi != null)
+                return Ok(new { success = true, message = "Taxi updated successfully." });
+            }
+            catch (System.InvalidOperationException ex)
             {
-                return BadRequest(new { success = false, message = "Taxi with the same License Plate already exists." });
+                return NotFound(new { success = false, message = ex.Message });
             }
-
-            _mapper.Map(model, taxi);
-            taxi.Status = status;
-            taxi.UpdatedAt = DateTime.UtcNow;
-
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Taxi updated successfully." });
         }
 
         [HttpDelete("DeleteTaxi/{id}")]
-        public IActionResult DeleteTaxi(int id)
+        public async Task<IActionResult> DeleteTaxi(int id)
         {
-            var taxi = _context.Taxis.Find(id);
-            if (taxi == null)
+            try
             {
-                return NotFound(new { success = false, message = "Taxi not found." });
-            }
+                var result = await _taxiCompanyService.DeleteTaxiAsync(id);
+                if (!result)
+                {
+                    return BadRequest(new { success = false, message = "Failed to delete taxi." });
+                }
 
-            _context.Taxis.Remove(taxi);
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Taxi deleted successfully." });
+                return Ok(new { success = true, message = "Taxi deleted successfully." });
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                return NotFound(new { success = false, message = ex.Message });
+            }
         }
     }
 }
