@@ -1,8 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using pentasharp.Data;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
+using pentasharp.ViewModel.Authenticate;
 using pentasharp.ViewModel.Taxi;
 using pentasharp.ViewModel.TaxiModels; 
 using WebApplication1.Filters;

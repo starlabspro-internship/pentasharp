@@ -22,6 +22,8 @@ namespace pentasharp.Models.Entities
         /// </summary>
         public string ContactInfo { get; set; } = string.Empty;
 
+        public int UserId { get; set; }
+
         /// <summary>
         /// Gets or sets the date and time when the taxi company was created.
         /// </summary>
@@ -42,5 +44,7 @@ namespace pentasharp.Models.Entities
         /// Gets or sets a value indicating whether the taxi company is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }
+
+        public User User { get; set; } = null!;
     }
 }

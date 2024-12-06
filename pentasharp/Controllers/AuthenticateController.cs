@@ -42,9 +42,9 @@ namespace WebApplication1.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Use AutoMapper to map the model to the User entity
+
                 var user = _mapper.Map<User>(model);
-                user.PasswordHash = HashPassword(model.Password);  // Handle PasswordHash separately
+                user.PasswordHash = HashPassword(model.Password);  
 
                 _context.Users.Add(user);
                 _context.SaveChanges();
@@ -84,6 +84,41 @@ namespace WebApplication1.Controllers
             return View();
         }
 
+        [ServiceFilter(typeof(AdminOnlyFilter))]
+        [HttpGet("GetTaxiCompanyUsers")]
+        public IActionResult GetTaxiCompanyUsers()
+        {
+            var users = _context.Users
+                .Where(user => user.BusinessType == BusinessType.TaxiCompany)
+                .Select(user => new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                })
+                .ToList();
+
+            return Ok(users);
+        }
+
+        [ServiceFilter(typeof(AdminOnlyFilter))]
+        [HttpGet("GetTaxiDriver")]
+        public IActionResult GetTaxiDriver()
+        {
+            var users = _context.Users
+                .Where(user => user.Role == UserRole.Driver)
+                .Select(user => new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                })
+                .ToList(); 
+
+            return Ok(users);
+        }
+
+
         [HttpGet("Edit/{id}")]
         public IActionResult Edit(int id)
         {
@@ -117,6 +152,15 @@ namespace WebApplication1.Controllers
             if (model.Role.HasValue)
             {
                 user.Role = model.Role.Value;
+            }
+
+            if (user.Role == UserRole.Admin)
+            {
+                user.IsAdmin = true;
+            }
+            else
+            {
+                user.IsAdmin = false; 
             }
 
             if (model.BusinessType.HasValue)
@@ -232,6 +276,9 @@ namespace WebApplication1.Controllers
             session.SetString("UserId", user.UserId.ToString());
             session.SetString("FirstName", user.FirstName);
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+            var businessType = user.BusinessType.ToString();
+            session.SetString("BusinessType", businessType);
+
 
             _logger.LogInformation("User {Email} logged in successfully.", model.Email);
 

@@ -37,6 +37,8 @@ namespace pentasharp.Models.Entities
         /// </summary>
         public UserRole Role { get; set; } = UserRole.User;
 
+        public int? CompanyId { get; set; }
+
         public BusinessType BusinessType { get; set; } = BusinessType.None;
 
         /// <summary>

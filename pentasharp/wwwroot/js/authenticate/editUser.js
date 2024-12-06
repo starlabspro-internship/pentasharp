@@ -2,12 +2,27 @@
     const userId = document.getElementById("UserId").value;
     const selectedRole = document.getElementById("Role").dataset.selectedValue;
     const selectedBusinessType = document.getElementById("BusinessType").dataset.selectedValue;
+    const selectedTaxiCompany = document.getElementById("TaxiCompany").dataset.selectedValue;
 
+    // Fetch enums and populate Role and Business Type dropdowns
     fetch(`/Authenticate/GetEnums`)
         .then((response) => response.json())
         .then((data) => {
             populateDropdown("Role", data.roles, selectedRole);
             populateDropdown("BusinessType", data.businessTypes, selectedBusinessType);
+        });
+
+    fetch(`/api/TaxiCompany/GetCompanies`)
+        .then((response) => response.json())
+        .then((data) => {
+            const taxiCompanies = data.map(company => ({
+                value: company.taxiCompanyId,
+                text: company.companyName
+            }));
+            populateDropdown("TaxiCompany", taxiCompanies, selectedTaxiCompany);
+        })
+        .catch((error) => {
+            console.error("Error fetching taxi companies:", error);
         });
 
     function populateDropdown(id, options, selectedValue) {

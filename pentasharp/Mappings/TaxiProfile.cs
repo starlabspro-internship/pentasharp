@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using pentasharp.Models.Entities;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.ViewModel.Authenticate;
 using pentasharp.ViewModel.TaxiModels;
 
 namespace pentasharp.Mappings
@@ -20,6 +21,14 @@ namespace pentasharp.Mappings
                 .ReverseMap()
                 .ForMember(dest => dest.TaxiId, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
+
+            CreateMap<AddTaxiDriverViewModel, Taxi>()
+                .ForMember(dest => dest.TaxiCompanyId, opt => opt.MapFrom(src => src.TaxiCompanyId));
+
+            CreateMap<RegisterViewModel, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
 
             CreateMap<Taxi, TaxiRequest>();
 

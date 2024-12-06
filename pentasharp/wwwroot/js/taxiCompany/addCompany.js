@@ -131,11 +131,24 @@ document.addEventListener("DOMContentLoaded", () => {
     addEntityButton.addEventListener("click", () => {
         const isCompany = entitySelect.value === "companies";
         modalTitle.textContent = isCompany ? "Add Company" : "Add Taxi";
+
         if (isCompany) {
-            entityForm.innerHTML = `
-                <input type="text" class="form-control mb-3" id="companyName" placeholder="Company Name" />
-                <input type="text" class="form-control mb-3" id="contactInfo" placeholder="Contact Info" />
-                <button type="submit" class="btn btn-primary">Save</button>`;
+            fetch("/Authenticate/GetTaxiCompanyUsers")
+                .then((response) => response.json())
+                .then((users) => {
+                    const userOptions = users.map((user) =>
+                        `<option value="${user.userId}">${user.firstName} ${user.lastName}</option>`
+                    ).join("");
+
+                    entityForm.innerHTML = `
+                    <input type="text" class="form-control mb-3" id="companyName" placeholder="Company Name" />
+                    <input type="text" class="form-control mb-3" id="contactInfo" placeholder="Contact Info" />
+                    <select class="form-select mb-3" id="userSelect">
+                        <option value="" disabled selected>Select User</option>
+                        ${userOptions}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Save</button>`;
+                });
         } else {
             fetch("/api/TaxiCompany/GetCompanies")
                 .then((response) => response.json())
@@ -143,25 +156,30 @@ document.addEventListener("DOMContentLoaded", () => {
                     const companyOptions = companies.map((company) =>
                         `<option value="${company.taxiCompanyId}">${company.companyName}</option>`
                     ).join("");
+
                     entityForm.innerHTML = `
-                        <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
-                        <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
-                        <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
-                        <button type="submit" class="btn btn-primary">Save</button>`;
+                    <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
+                    <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
+                    <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
+                    <button type="submit" class="btn btn-primary">Save</button>`;
                 });
         }
+
         entityForm.onsubmit = (e) => {
             e.preventDefault();
             saveEntity(isCompany ? "/api/TaxiCompany/AddCompany" : "/api/TaxiCompany/AddTaxi", "POST", {
                 companyName: document.getElementById("companyName")?.value,
                 contactInfo: document.getElementById("contactInfo")?.value,
+                userId: document.getElementById("userSelect")?.value, 
                 licensePlate: document.getElementById("licensePlate")?.value,
                 driverName: document.getElementById("driverName")?.value,
                 taxiCompanyId: document.getElementById("taxiCompanySelect")?.value,
             });
         };
+
         entityModal.show();
     });
+
 
     entitySelect.addEventListener("change", () => {
         const isCompany = entitySelect.value === "companies";

@@ -417,10 +417,15 @@ namespace pentasharp.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("TaxiCompanyId");
 
                     b.HasIndex("CompanyName")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("TaxiCompanies");
                 });
@@ -505,6 +510,9 @@ namespace pentasharp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -660,6 +668,17 @@ namespace pentasharp.Migrations
                         .IsRequired();
 
                     b.Navigation("Taxi");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("pentasharp.Models.Entities.TaxiCompany", b =>
+                {
+                    b.HasOne("pentasharp.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

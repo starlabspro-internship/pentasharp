@@ -44,6 +44,9 @@ namespace pentasharp.Data.Configurations
             builder.Property(u => u.Role)
                 .IsRequired();
 
+            builder.Property(u => u.CompanyId)
+               .IsRequired(false);
+
             builder.Property(u => u.IsAdmin)
                 .HasDefaultValue(false);
 

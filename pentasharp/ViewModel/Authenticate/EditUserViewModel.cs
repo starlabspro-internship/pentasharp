@@ -32,6 +32,9 @@ namespace pentasharp.ViewModel.Authenticate
         /// </summary>
         public string Password { get; set; }
 
+        public int? CompanyId { get; set; }
+
+
         /// <summary>
         /// Gets or sets the user's role.
         /// </summary>
