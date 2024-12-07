@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modalTitle.textContent = isCompany ? "Add Company" : "Add Taxi";
 
         if (isCompany) {
-            fetch("/Authenticate/GetTaxiCompanyUsers")
+            fetch("/api/TaxiCompany/GetTaxiCompanyUsers")
                 .then((response) => response.json())
                 .then((users) => {
                     const userOptions = users.map((user) =>
@@ -150,18 +150,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     <button type="submit" class="btn btn-primary">Save</button>`;
                 });
         } else {
-            fetch("/api/TaxiCompany/GetCompanies")
+            fetch("/api/TaxiCompany/GetCompany")
                 .then((response) => response.json())
-                .then((companies) => {
-                    const companyOptions = companies.map((company) =>
-                        `<option value="${company.taxiCompanyId}">${company.companyName}</option>`
-                    ).join("");
+                .then((company) => {
 
-                    entityForm.innerHTML = `
-                    <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
-                    <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
-                    <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
-                    <button type="submit" class="btn btn-primary">Save</button>`;
+                   entityForm.innerHTML = `
+                     <p class="form-control mb-3 border"><strong>Company: </strong>${company.companyName}</p>
+                      <input type="hidden" id="taxiCompanySelect" name="taxiCompanyId" value="${company.taxiCompanyId}" />
+                     <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
+                     <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
+                     <button type="submit" class="btn btn-primary">Save</button>`;
                 });
         }
 

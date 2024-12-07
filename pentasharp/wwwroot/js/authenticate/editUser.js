@@ -4,7 +4,6 @@
     const selectedBusinessType = document.getElementById("BusinessType").dataset.selectedValue;
     const selectedTaxiCompany = document.getElementById("TaxiCompany").dataset.selectedValue;
 
-    // Fetch enums and populate Role and Business Type dropdowns
     fetch(`/Authenticate/GetEnums`)
         .then((response) => response.json())
         .then((data) => {
@@ -19,6 +18,8 @@
                 value: company.taxiCompanyId,
                 text: company.companyName
             }));
+            console.log("taxiCompanies", taxiCompanies);
+
             populateDropdown("TaxiCompany", taxiCompanies, selectedTaxiCompany);
         })
         .catch((error) => {
@@ -27,7 +28,7 @@
 
     function populateDropdown(id, options, selectedValue) {
         const dropdown = document.getElementById(id);
-        dropdown.innerHTML = `<option value="">Select ${id}</option>`;
+        dropdown.innerHTML = `<option value="">Select ${id }</option>`;
         options.forEach((option) => {
             const isSelected = option.value == selectedValue ? "selected" : "";
             dropdown.innerHTML += `<option value="${option.value}" ${isSelected}>${option.text}</option>`;

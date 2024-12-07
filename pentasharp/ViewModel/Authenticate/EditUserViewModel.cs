@@ -34,7 +34,6 @@ namespace pentasharp.ViewModel.Authenticate
 
         public int? CompanyId { get; set; }
 
-
         /// <summary>
         /// Gets or sets the user's role.
         /// </summary>

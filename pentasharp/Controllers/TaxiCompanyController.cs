@@ -18,11 +18,13 @@ namespace WebApplication1.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TaxiCompanyController(AppDbContext context, IMapper mapper)
+        public TaxiCompanyController(AppDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("Taxi")]
@@ -44,6 +46,21 @@ namespace WebApplication1.Controllers
                 var company = _mapper.Map<TaxiCompany>(model);
                 _context.TaxiCompanies.Add(company);
                 _context.SaveChanges();
+
+                if (model.UserId != 0) 
+                {
+                    var user = _context.Users.Find(model.UserId);
+                    if (user != null)
+                    {
+                        user.CompanyId = company.TaxiCompanyId;
+                        user.Role = UserRole.Admin;
+                        if (user.Role == UserRole.Admin)
+                        {
+                            user.IsAdmin = true;
+                        }
+                        _context.SaveChanges();
+                    }
+                }
                 return Ok(new { success = true, message = "Company added successfully." });
             }
             return BadRequest(new { success = false, message = "Invalid data provided." });
@@ -55,6 +72,61 @@ namespace WebApplication1.Controllers
             var companies = _context.TaxiCompanies.Include(c => c.Taxis).ToList();
             var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
             return Ok(viewModel);
+        }
+
+        [HttpGet("GetCompany")]
+        public IActionResult GetCompany()
+        {
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+            if (!userId.HasValue)
+            {
+                return Unauthorized("No user is logged in.");
+            }
+
+            var user = _context.Users.Find(userId.Value);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            if (user.BusinessType == BusinessType.TaxiCompany)
+            {
+
+                var company = _context.TaxiCompanies
+                    .Where(c => c.UserId == userId.Value)
+                    .FirstOrDefault();
+
+                if (company == null)
+                {
+                    return NotFound("No associated taxi company found for this user.");
+                }
+
+                return Ok(company);
+            }
+            else
+            {
+                return Ok("User is not associated with Taxi Company.");
+            }
+        }
+
+
+
+        [ServiceFilter(typeof(AdminOnlyFilter))]
+        [HttpGet("GetTaxiCompanyUsers")]
+        public IActionResult GetTaxiCompanyUsers()
+        {
+            var users = _context.Users
+                .Where(user => user.BusinessType == BusinessType.TaxiCompany)
+                .Where(user => user.CompanyId == null)
+                .Select(user => new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                })
+                .ToList();
+
+            return Ok(users);
         }
 
         [HttpPut("EditCompany/{id}")]

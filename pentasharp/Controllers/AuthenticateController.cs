@@ -84,41 +84,6 @@ namespace WebApplication1.Controllers
             return View();
         }
 
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [HttpGet("GetTaxiCompanyUsers")]
-        public IActionResult GetTaxiCompanyUsers()
-        {
-            var users = _context.Users
-                .Where(user => user.BusinessType == BusinessType.TaxiCompany)
-                .Select(user => new
-                {
-                    user.UserId,
-                    user.FirstName,
-                    user.LastName
-                })
-                .ToList();
-
-            return Ok(users);
-        }
-
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [HttpGet("GetTaxiDriver")]
-        public IActionResult GetTaxiDriver()
-        {
-            var users = _context.Users
-                .Where(user => user.Role == UserRole.Driver)
-                .Select(user => new
-                {
-                    user.UserId,
-                    user.FirstName,
-                    user.LastName
-                })
-                .ToList(); 
-
-            return Ok(users);
-        }
-
-
         [HttpGet("Edit/{id}")]
         public IActionResult Edit(int id)
         {
@@ -141,6 +106,8 @@ namespace WebApplication1.Controllers
             {
                 return NotFound();
             }
+
+            int? oldCompanyId = user.CompanyId;
 
             _mapper.Map(model, user);
 
@@ -167,6 +134,32 @@ namespace WebApplication1.Controllers
             {
                 user.BusinessType = model.BusinessType.Value;
             }
+
+            if (model.CompanyId.HasValue)
+            {
+                
+                user.CompanyId = model.CompanyId.Value;
+
+                var taxiCompany = _context.TaxiCompanies.FirstOrDefault(tc => tc.TaxiCompanyId == model.CompanyId.Value);
+                if (taxiCompany != null)
+                {
+                    taxiCompany.UserId = user.UserId;
+                    _context.TaxiCompanies.Update(taxiCompany);
+                }
+            }
+            else
+            {
+
+                user.CompanyId = null;
+
+                var oldCompany = _context.TaxiCompanies.FirstOrDefault(tc => tc.UserId == user.UserId);
+                if (oldCompany != null)
+                {
+                    oldCompany.UserId = 0;
+                    _context.TaxiCompanies.Update(oldCompany);
+                }
+            }
+
 
             _context.Users.Update(user);
             _context.SaveChanges();
@@ -201,6 +194,7 @@ namespace WebApplication1.Controllers
                 return NotFound();
             }
             return View(user);
+
         }
         [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
@@ -274,6 +268,7 @@ namespace WebApplication1.Controllers
 
             var session = _httpContextAccessor.HttpContext.Session;
             session.SetString("UserId", user.UserId.ToString());
+            session.SetInt32("UserID", user.UserId);
             session.SetString("FirstName", user.FirstName);
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
             var businessType = user.BusinessType.ToString();
