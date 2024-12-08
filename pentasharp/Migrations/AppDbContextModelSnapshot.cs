@@ -49,7 +49,7 @@ namespace pentasharp.Migrations
 
                     b.HasKey("BusCompanyId");
 
-                    b.ToTable("BusCompanies");
+                    b.ToTable("BusCompanies", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>
@@ -96,7 +96,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BusReservations");
+                    b.ToTable("BusReservations", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusRouteAssignments", b =>
@@ -127,7 +127,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("RouteId");
 
-                    b.ToTable("BusRouteAssignments");
+                    b.ToTable("BusRouteAssignments", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusRoutes", b =>
@@ -159,7 +159,7 @@ namespace pentasharp.Migrations
 
                     b.HasKey("RouteId");
 
-                    b.ToTable("BusRoutes");
+                    b.ToTable("BusRoutes", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusSchedule", b =>
@@ -206,7 +206,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("RouteId");
 
-                    b.ToTable("BusSchedules");
+                    b.ToTable("BusSchedules", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Buses", b =>
@@ -242,7 +242,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("BusCompanyId");
 
-                    b.ToTable("Buses");
+                    b.ToTable("Buses", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Notifications", b =>
@@ -275,7 +275,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
@@ -327,7 +327,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("TaxiCompanyId");
 
-                    b.ToTable("Taxis");
+                    b.ToTable("Taxis", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiBookings", b =>
@@ -392,7 +392,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TaxiBookings");
+                    b.ToTable("TaxiBookings", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiCompany", b =>
@@ -434,7 +434,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TaxiCompanies");
+                    b.ToTable("TaxiCompanies", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.TaxiReservations", b =>
@@ -502,7 +502,7 @@ namespace pentasharp.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TaxiReservations");
+                    b.ToTable("TaxiReservations", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.User", b =>
@@ -561,7 +561,7 @@ namespace pentasharp.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>

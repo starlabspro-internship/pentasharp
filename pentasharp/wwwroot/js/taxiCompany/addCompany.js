@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             if (licensePlate) {
                                 saveEntity(`/api/TaxiCompany/EditTaxi/${taxiId}`, "PUT", {
                                     licensePlate,
-                                    DriverId: driverId > 0 ? driverId : null,
+                                    DriverId: driverId > 0 ? driverId : null, 
                                 });
                             } else {
                                 alert("Please enter a valid license plate.");
@@ -410,7 +410,12 @@ document.addEventListener("DOMContentLoaded", () => {
                                 if (licensePlate) {
                                     saveEntity("/api/TaxiCompany/AddTaxi", "POST", {
                                         licensePlate,
-                                        DriverId: selectedDriverId > 0 ? selectedDriverId : null, 
+                                        DriverId: selectedDriverId > 0 ? selectedDriverId : null,
+                                        TaxiCompanyId: taxiCompanyId,
+                                    });
+                                    console.log("Payload sent to AddTaxi:", {
+                                        licensePlate,
+                                        DriverId: selectedDriverId > 0 ? selectedDriverId : null,
                                         TaxiCompanyId: taxiCompanyId,
                                     });
                                 } else {

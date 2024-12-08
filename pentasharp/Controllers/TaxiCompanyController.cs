@@ -1,15 +1,10 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using pentasharp.Data;
-using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.Authenticate;
-using pentasharp.ViewModel.Taxi;
-using pentasharp.ViewModel.TaxiModels; 
 using WebApplication1.Filters;
-using System.Text;
+using pentasharp.Data;
+using pentasharp.Services;
+using pentasharp.Models.TaxiRequest;
 
 namespace WebApplication1.Controllers
 {
@@ -17,40 +12,47 @@ namespace WebApplication1.Controllers
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class TaxiCompanyController : Controller
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ITaxiCompanyService _taxiCompanyService;
+        private readonly ITaxiService _taxiService;
+        private readonly IDriverService _driverService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly AppDbContext _context;
 
-        public TaxiCompanyController(AppDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public TaxiCompanyController(
+            ITaxiCompanyService taxiCompanyService,
+            ITaxiService taxiService,
+            IDriverService driverService,
+            IHttpContextAccessor httpContextAccessor,
+            AppDbContext context)
         {
-            _context = context;
-            _mapper = mapper;
+            _taxiCompanyService = taxiCompanyService;
+            _taxiService = taxiService;
+            _driverService = driverService;
             _httpContextAccessor = httpContextAccessor;
+            _context = context;
         }
 
         [HttpGet("Taxi")]
         public IActionResult Add()
         {
-            var companies = _context.TaxiCompanies.ToList();
-            var viewModel = new ManageTaxiCompanyViewModel
+            var companies = _taxiCompanyService.GetAllCompanies();
+            var viewModel = new ManageTaxiCompanyRequest
             {
-                TaxiCompanies = _mapper.Map<List<TaxiCompanyViewModel>>(companies),
+                TaxiCompanies = companies,
             };
             return View(viewModel);
         }
 
         [HttpPost("AddCompany")]
-        public IActionResult AddCompany([FromBody] TaxiCompanyViewModel model)
+        public async Task<IActionResult> AddCompany([FromBody] TaxiCompanyRequest model)
         {
             if (ModelState.IsValid)
             {
-                var company = _mapper.Map<TaxiCompany>(model);
-                _context.TaxiCompanies.Add(company);
-                _context.SaveChanges();
+                var company = await _taxiCompanyService.AddCompanyAsync(model);
 
                 if (model.UserId != 0)
                 {
-                    var user = _context.Users.Find(model.UserId);
+                    var user = await _context.Users.FindAsync(model.UserId);
                     if (user != null)
                     {
                         user.CompanyId = company.TaxiCompanyId;
@@ -59,7 +61,7 @@ namespace WebApplication1.Controllers
                         {
                             user.IsAdmin = true;
                         }
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
                     }
                 }
                 return Ok(new { success = true, message = "Company added successfully." });
@@ -71,7 +73,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetCompanies()
         {
             var companies = _context.TaxiCompanies.Include(c => c.Taxis).ToList();
-            var viewModel = _mapper.Map<List<TaxiCompanyViewModel>>(companies);
+            var viewModel = _taxiCompanyService.GetAllCompanies();
             return Ok(viewModel);
         }
 
@@ -92,10 +94,8 @@ namespace WebApplication1.Controllers
 
             if (user.BusinessType == BusinessType.TaxiCompany)
             {
-
                 var company = _context.TaxiCompanies
-                    .Where(c => c.UserId == userId.Value)
-                    .FirstOrDefault();
+                    .FirstOrDefault(c => c.UserId == userId.Value);
 
                 if (company == null)
                 {
@@ -110,7 +110,6 @@ namespace WebApplication1.Controllers
             }
         }
 
-        [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetTaxiCompanyUsers")]
         public IActionResult GetTaxiCompanyUsers()
         {
@@ -128,7 +127,6 @@ namespace WebApplication1.Controllers
             return Ok(users);
         }
 
-        [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetTaxiCompanyUser/{companyId}")]
         public IActionResult GetTaxiCompanyUser(int companyId)
         {
@@ -156,172 +154,122 @@ namespace WebApplication1.Controllers
             return Ok(new { success = true, data = company });
         }
 
-
         [HttpPut("EditCompany/{id}")]
-        public IActionResult EditCompany(int id, [FromBody] TaxiCompanyViewModel model)
+        public async Task<IActionResult> EditCompany(int id, [FromBody] TaxiCompanyRequest model)
         {
-            var company = _context.TaxiCompanies.Find(id);
-            if (company == null)
+            var result = await _taxiCompanyService.EditCompanyAsync(id, model);
+            if (!result)
             {
                 return NotFound(new { success = false, message = "Company not found." });
             }
+
             if (model.UserId != 0)
             {
-                var user = _context.Users.Find(model.UserId);
+                var user = await _context.Users.FindAsync(model.UserId);
                 if (user != null)
                 {
-                    user.CompanyId = company.TaxiCompanyId;
+                    user.CompanyId = id;
                     user.Role = UserRole.Admin;
                     if (user.Role == UserRole.Admin)
                     {
                         user.IsAdmin = true;
                     }
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
             }
 
-            _mapper.Map(model, company);
-            _context.SaveChanges();
             return Ok(new { success = true, message = "Company updated successfully." });
         }
 
         [HttpDelete("DeleteCompany/{id}")]
-        public IActionResult DeleteCompany(int id)
+        public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = _context.TaxiCompanies
-                                  .Include(c => c.Taxis)
-                                  .FirstOrDefault(c => c.TaxiCompanyId == id);
-
-            if (company == null)
+            var success = await _taxiCompanyService.DeleteCompanyAsync(id);
+            if (!success)
             {
                 return NotFound(new { success = false, message = "Company not found." });
             }
-
-            company.IsDeleted = true;
-            company.UpdatedAt = DateTime.UtcNow;
-
-            foreach (var taxi in company.Taxis)
-            {
-                taxi.IsDeleted = true;
-                taxi.UpdatedAt = DateTime.UtcNow;
-            }
-
-            _context.TaxiCompanies.Update(company);
-            _context.Taxis.UpdateRange(company.Taxis);
-            _context.SaveChanges();
 
             return Ok(new { success = true, message = "Company and its taxis deleted successfully (soft delete)." });
         }
 
         [HttpPost("AddTaxi")]
-        public async Task<IActionResult> AddTaxi([FromBody] AddTaxiViewModel model)
+        public async Task<IActionResult> AddTaxi([FromBody] AddTaxiRequest model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(new { success = false, code = ResponseCodes.InvalidData, message = "Invalid data provided." });
             }
 
-            bool isDriverAssigned = await _context.Taxis.AnyAsync(t => t.DriverId == model.DriverId && !t.IsDeleted);
+            bool isDriverAssigned = await _context.Taxis.AnyAsync(t => t.DriverId == model.DriverId && model.DriverId != null && !t.IsDeleted);
             if (isDriverAssigned)
             {
-                return Conflict(new { success = false, code = ResponseCodes.Conflict, message = "Driver is already assigned to another taxi." });
+                return Conflict(new { success = false, message = "Driver is already assigned to another taxi." });
             }
 
-            var taxi = _mapper.Map<Taxi>(model);
-            _context.Taxis.Add(taxi);
-            await _context.SaveChangesAsync();
-
+            var taxi = await _taxiService.AddTaxiAsync(model);
             return Ok(new { success = true, code = ResponseCodes.Success, message = "Taxi added successfully." });
         }
 
         [HttpGet("GetTaxis")]
-        public IActionResult GetTaxis()
-        {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
-            if (!userId.HasValue)
-            {
-                return Unauthorized("No user is logged in.");
-            }
-
-            var user = _context.Users.Find(userId.Value);
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-
-            if (!user.CompanyId.HasValue)
-            {
-                return NotFound("The logged-in user has no associated company.");
-            }
-
-            var companyId = user.CompanyId.Value;
-
-            var taxis = _context.Taxis
-                .Include(t => t.TaxiCompany)
-                .Include(t => t.Driver)
-                .Where(t => t.TaxiCompanyId == companyId && !t.IsDeleted)
-                .ToList();
-
-            var viewModel = taxis.Select(t => new TaxiViewModel
-            {
-                TaxiId = t.TaxiId,
-                LicensePlate = t.LicensePlate,
-                TaxiCompanyId = t.TaxiCompanyId,
-                CompanyName = t.TaxiCompany?.CompanyName,
-                DriverId = t.DriverId,
-                DriverName = t.DriverId.HasValue
-                ? _context.Users
-                    .Where(u => u.UserId == t.DriverId.Value)
-                    .Select(u => $"{u.FirstName} {u.LastName}")
-                    .FirstOrDefault()
-                : "No Driver Assigned"
-
-            }).ToList();
-
-            return Ok(viewModel);
-        }
-
-        [HttpPut("EditTaxi/{id}")]
-        public IActionResult EditTaxi(int id, [FromBody] EditTaxiViewModel model)
+        public async Task<IActionResult> GetTaxis()
         {
             try
             {
-                var taxi = _context.Taxis.Find(id);
-                if (taxi == null)
+                var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+                if (!userId.HasValue)
                 {
-                    return NotFound(new { success = false, message = "Taxi not found." });
+                    return Unauthorized(new { success = false, message = "No user is logged in." });
                 }
 
-                _mapper.Map(model, taxi);
-                _context.SaveChanges();
-                return Ok(new { success = true, message = "Taxi updated successfully." });
+                var user = await _context.Users.FindAsync(userId.Value);
+                if (user == null)
+                {
+                    return NotFound(new { success = false, message = "User not found." });
+                }
+
+                if (!user.CompanyId.HasValue)
+                {
+                    return NotFound(new { success = false, message = "The logged-in user has no associated company." });
+                }
+
+                var companyId = user.CompanyId.Value;
+                var taxis = await _taxiService.GetTaxisAsync(companyId);
+
+                return Ok(taxis);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in EditTaxi: {ex.Message}");
-                return StatusCode(500, new { success = false, message = "An error occurred while updating the taxi." });
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
             }
         }
 
-
-        [HttpDelete("DeleteTaxi/{id}")]
-        public IActionResult DeleteTaxi(int id)
+        [HttpPut("EditTaxi/{id}")]
+        public async Task<IActionResult> EditTaxi(int id, [FromBody] EditTaxiRequest model)
         {
-            var taxi = _context.Taxis.Find(id);
-            if (taxi == null)
+            var success = await _taxiService.EditTaxiAsync(id, model);
+            if (!success)
             {
                 return NotFound(new { success = false, message = "Taxi not found." });
             }
 
-            taxi.IsDeleted = true;
+            return Ok(new { success = true, message = "Taxi updated successfully." });
+        }
 
-            _context.Taxis.Remove(taxi);
-            _context.SaveChanges();
+        [HttpDelete("DeleteTaxi/{id}")]
+        public async Task<IActionResult> DeleteTaxi(int id)
+        {
+            var success = await _taxiService.DeleteTaxiAsync(id);
+            if (!success)
+            {
+                return NotFound(new { success = false, message = "Taxi not found." });
+            }
+
             return Ok(new { success = true, message = "Taxi deleted successfully." });
         }
 
         [HttpPost("AddDriver")]
-        public IActionResult AddDriver([FromBody] RegisterDriverViewModel model)
+        public async Task<IActionResult> AddDriver([FromBody] RegisterDriverRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -334,48 +282,20 @@ namespace WebApplication1.Controllers
                 return Unauthorized("No user is logged in.");
             }
 
-            var user = _context.Users.Find(userId.Value);
+            var user = await _context.Users.FindAsync(userId.Value);
             if (user == null)
             {
                 return NotFound("User not found.");
             }
 
-            var company = _context.TaxiCompanies.FirstOrDefault(c => c.UserId == user.UserId);
+            var company = await _context.TaxiCompanies.FirstOrDefaultAsync(c => c.UserId == user.UserId);
             if (company == null)
             {
                 return NotFound("No associated taxi company found for this user.");
             }
 
-            var newUser = new User
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                PasswordHash = HashPassword(model.Password),
-                CompanyId = company.TaxiCompanyId,
-                Role = UserRole.Driver,
-                IsAdmin = false,
-                BusinessType = BusinessType.TaxiCompany
-            };
-
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
-
+            var newDriver = await _driverService.AddDriverAsync(model, company.TaxiCompanyId);
             return Ok(new { success = true, message = "Driver added successfully." });
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                var builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
         }
 
         [HttpGet("GetDrivers")]
@@ -399,23 +319,12 @@ namespace WebApplication1.Controllers
                 return NotFound("No associated taxi company found for this user.");
             }
 
-            var drivers = _context.Users
-                .Where(u => u.CompanyId == company.TaxiCompanyId && u.Role == UserRole.Driver && !u.IsDeleted)
-                .Select(u => new
-                {
-                    u.UserId,
-                    u.FirstName,
-                    u.LastName,
-                    u.Email,
-                    CompanyName = company.CompanyName
-                })
-                .ToList();
-
+            var drivers = _driverService.GetDrivers(company.TaxiCompanyId);
             return Ok(drivers);
         }
 
         [HttpGet("GetAvailableDrivers/{taxiId?}")]
-        public IActionResult GetAvailableDrivers(int? taxiId = null)
+        public async Task<IActionResult> GetAvailableDrivers(int? taxiId = null)
         {
             var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
             if (!userId.HasValue)
@@ -423,74 +332,42 @@ namespace WebApplication1.Controllers
                 return Unauthorized(new { success = false, code = ApiStatusEnum.UNAUTHORIZED, message = "No user is logged in." });
             }
 
-            var user = _context.Users.Find(userId.Value);
+            var user = await _context.Users.FindAsync(userId.Value);
             if (user == null)
             {
                 return NotFound(new { success = false, code = ResponseCodes.NotFound, message = "User not found." });
             }
 
-            var company = _context.TaxiCompanies.FirstOrDefault(c => c.UserId == user.UserId);
+            var company = await _context.TaxiCompanies.FirstOrDefaultAsync(c => c.UserId == user.UserId);
             if (company == null)
             {
                 return NotFound(new { success = false, code = ResponseCodes.NotFound, message = "No associated taxi company found for this user." });
             }
 
-            var assignedDriverIds = _context.Taxis
-                .Where(t => t.TaxiCompanyId == company.TaxiCompanyId && !t.IsDeleted && (taxiId == null || t.TaxiId != taxiId))
-                .Select(t => t.DriverId)
-                .ToList();
-
-            var drivers = _context.Users
-                .Where(u => u.CompanyId == company.TaxiCompanyId
-                            && u.Role == UserRole.Driver
-                            && !u.IsDeleted
-                            && !assignedDriverIds.Contains(u.UserId))
-                .Select(u => new {
-                    u.UserId,
-                    u.FirstName,
-                    u.LastName,
-                    u.Email,
-                    CompanyName = company.CompanyName
-                })
-                .ToList();
-
+            var drivers = await _taxiService.GetAvailableDriversAsync(company.TaxiCompanyId, taxiId);
             return Ok(new { success = true, drivers });
         }
 
         [HttpPut("EditDriver/{id}")]
-        public IActionResult EditDriver(int id, [FromBody] EditDriverViewModel model)
+        public async Task<IActionResult> EditDriver(int id, [FromBody] EditDriverRequest model)
         {
-            var user = _context.Users.Find(id);
-            if (user == null || user.IsDeleted || user.Role != UserRole.Driver)
+            var success = await _driverService.EditDriverAsync(id, model);
+            if (!success)
             {
                 return NotFound(new { success = false, message = "Driver not found." });
             }
 
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Email = model.Email;
-            if (!string.IsNullOrEmpty(model.Password))
-            {
-                user.PasswordHash = HashPassword(model.Password);
-            }
-
-            _context.Users.Update(user);
-            _context.SaveChanges();
             return Ok(new { success = true, message = "Driver updated successfully." });
         }
 
         [HttpDelete("DeleteDriver/{id}")]
-        public IActionResult DeleteDriver(int id)
+        public async Task<IActionResult> DeleteDriver(int id)
         {
-            var user = _context.Users.Find(id);
-            if (user == null || user.IsDeleted || user.Role != UserRole.Driver)
+            var success = await _driverService.DeleteDriverAsync(id);
+            if (!success)
             {
                 return NotFound(new { success = false, message = "Driver not found." });
             }
-
-            user.IsDeleted = true;
-            _context.Users.Update(user);
-            _context.SaveChanges();
 
             return Ok(new { success = true, message = "Driver deleted successfully." });
         }

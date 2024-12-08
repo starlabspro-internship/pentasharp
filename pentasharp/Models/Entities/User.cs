@@ -4,72 +4,80 @@ using pentasharp.Models.Enums;
 
 namespace pentasharp.Models.Entities
 {
+    /// <summary>
+    /// Represents a user in the system, including personal details, roles, and associations.
+    /// </summary>
     public class User
     {
         /// <summary>
-        /// Gets or sets the unique identifier for the user.
+        /// Unique identifier for the user.
         /// </summary>
         [Key]
         public int UserId { get; set; }
 
         /// <summary>
-        /// Gets or sets the user's first name.
+        /// First name of the user.
         /// </summary>
         public string FirstName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's last name.
+        /// Last name of the user.
         /// </summary>
         public string LastName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's email address.
+        /// Email address of the user.
         /// </summary>
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the hashed password of the user.
+        /// Hashed password of the user.
         /// </summary>
         public string PasswordHash { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the user's role within the application (e.g., User, Admin).
+        /// Role of the user within the application (e.g., User, Admin).
         /// </summary>
         public UserRole Role { get; set; } = UserRole.User;
 
+        /// <summary>
+        /// Identifier of the company associated with the user, if any.
+        /// </summary>
         public int? CompanyId { get; set; }
 
+        /// <summary>
+        /// Business type associated with the user.
+        /// </summary>
         public BusinessType BusinessType { get; set; } = BusinessType.None;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user has administrative privileges.
+        /// Indicates whether the user has administrative privileges.
         /// </summary>
         public bool IsAdmin { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the date and time when the user was created.
+        /// Date and time when the user was created.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Gets or sets the collection of taxi reservations associated with the user.
+        /// Collection of taxi reservations associated with the user.
         /// </summary>
         public ICollection<TaxiReservations> TaxiReservations { get; set; } = new List<TaxiReservations>();
 
         /// <summary>
-        /// Gets or sets the collection of taxi bookings made by the user.
+        /// Collection of taxi bookings made by the user.
         /// </summary>
         public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
 
         /// <summary>
-        /// Gets or sets the collection of notifications for the user.
+        /// Collection of notifications for the user.
         /// </summary>
         public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user is marked as deleted.
+        /// Indicates whether the user is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }
-
     }
 }
