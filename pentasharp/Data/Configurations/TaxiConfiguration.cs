@@ -29,9 +29,8 @@ namespace pentasharp.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
-            builder.Property(t => t.DriverName)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.Property(t => t.DriverId)
+                .IsRequired(false); // Nullable to allow for unassigned drivers
 
             builder.Property(t => t.Status)
                 .IsRequired();
@@ -47,6 +46,10 @@ namespace pentasharp.Data.Configurations
         {
             builder.HasIndex(t => t.LicensePlate)
                 .IsUnique();
+
+            builder.HasIndex(t => t.DriverId)
+                .IsUnique()
+                .HasFilter("[DriverId] IS NOT NULL");
         }
 
         private void ConfigureDefaults(EntityTypeBuilder<Taxi> builder)
@@ -58,9 +61,9 @@ namespace pentasharp.Data.Configurations
         private void ConfigureRelationships(EntityTypeBuilder<Taxi> builder)
         {
             builder.HasOne(t => t.TaxiCompany)
-        .WithMany(tc => tc.Taxis)
-        .HasForeignKey(t => t.TaxiCompanyId)
-        .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(tc => tc.Taxis)
+                .HasForeignKey(t => t.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(t => t.TaxiReservations)
                 .WithOne(tr => tr.Taxi)
@@ -69,6 +72,11 @@ namespace pentasharp.Data.Configurations
             builder.HasMany(t => t.TaxiBookings)
                 .WithOne(tb => tb.Taxi)
                 .HasForeignKey(tb => tb.TaxiId);
+
+            builder.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(t => t.DriverId)
+                .OnDelete(DeleteBehavior.SetNull); 
         }
     }
 }

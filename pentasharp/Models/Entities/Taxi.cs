@@ -27,11 +27,16 @@ namespace pentasharp.Models.Entities
         public string LicensePlate { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the name of the driver for the taxi.
+        /// Foreign key for the driver, referencing the User entity.
+        /// Nullable to allow for unassigned drivers.
         /// </summary>
-        [Required]
-        [StringLength(50)]
-        public string DriverName { get; set; } = string.Empty;
+        [ForeignKey("Driver")]
+        public int? DriverId { get; set; }
+
+        /// <summary>
+        /// Navigation property for the driver.
+        /// </summary>
+        public User? Driver { get; set; }
 
         /// <summary>
         /// Gets or sets the current status of the taxi (e.g., Available, In-Use, etc.).

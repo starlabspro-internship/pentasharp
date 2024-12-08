@@ -9,6 +9,7 @@
             <select id="entitySelect" class="form-select w-25">
                 <option value="companies" selected>Companies</option>
                 <option value="taxis">Taxis</option>
+                <option value="drivers">Drivers</option>
             </select>
             <button id="addEntityButton" class="btn btn-primary">Add Company</button>
         </div>
@@ -43,6 +44,25 @@
                             </tr>
                         </thead>
                         <tbody id="taxisTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 d-none" id="driversSection">
+            <div class="card shadow-lg p-4 rounded-4">
+                <h3 class="fw-bold text-secondary mb-3">Drivers</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>FirstName</th>
+                                <th>LastName</th>
+                                <th>Email</th>
+                                <th>Company</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="driversTableBody"></tbody>
                     </table>
                 </div>
             </div>

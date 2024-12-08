@@ -44,7 +44,7 @@ namespace WebApplication1.Controllers
             {
 
                 var user = _mapper.Map<User>(model);
-                user.PasswordHash = HashPassword(model.Password);  
+                user.PasswordHash = HashPassword(model.Password);
 
                 _context.Users.Add(user);
                 _context.SaveChanges();

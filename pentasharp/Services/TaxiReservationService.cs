@@ -102,7 +102,7 @@ namespace pentasharp.Services
                     var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
                     reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
                     reservationDto.Driver = reservationEntity?.Taxi != null
-                        ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
+                        ? $"{reservationEntity.Taxi.DriverId} - {reservationEntity.Taxi.LicensePlate}"
                         : "Unassigned";
                 }
 

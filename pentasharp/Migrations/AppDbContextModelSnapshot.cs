@@ -291,10 +291,11 @@ namespace pentasharp.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<string>("DriverName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DriverUserId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -314,6 +315,12 @@ namespace pentasharp.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("TaxiId");
+
+                    b.HasIndex("DriverId")
+                        .IsUnique()
+                        .HasFilter("[DriverId] IS NOT NULL");
+
+                    b.HasIndex("DriverUserId");
 
                     b.HasIndex("LicensePlate")
                         .IsUnique();
@@ -644,11 +651,22 @@ namespace pentasharp.Migrations
 
             modelBuilder.Entity("pentasharp.Models.Entities.Taxi", b =>
                 {
+                    b.HasOne("pentasharp.Models.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("pentasharp.Models.Entities.User", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverUserId");
+
                     b.HasOne("pentasharp.Models.Entities.TaxiCompany", "TaxiCompany")
                         .WithMany("Taxis")
                         .HasForeignKey("TaxiCompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Driver");
 
                     b.Navigation("TaxiCompany");
                 });
