@@ -25,7 +25,10 @@ namespace pentasharp.Services
 
         public async Task<List<TaxiCompanyViewModel>> GetAllCompaniesAsync()
         {
-            var companies = await _context.TaxiCompanies.ToListAsync();
+            var companies = await _context.TaxiCompanies
+                .Where(tc => !tc.IsDeleted)
+                .ToListAsync();
+
             return _mapper.Map<List<TaxiCompanyViewModel>>(companies);
         }
 
@@ -47,25 +50,36 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync()
+        public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync(int userId)
         {
+
+            var companyId = await _context.Users
+                .Where(u => u.UserId == userId)
+                .Select(u => u.CompanyId)
+                .FirstOrDefaultAsync();
+
+            if (companyId == null)
+                return new List<TaxiBookingViewModel>(); 
+
             var bookings = await _context.TaxiBookings
-                .Include(b => b.User) 
+                .Include(b => b.User)
                 .Include(b => b.Taxi)
-                .ThenInclude(t => t.Driver) 
-                .Include(b => b.TaxiCompany) 
+                .ThenInclude(t => t.Driver)
+                .Include(b => b.TaxiCompany)
+                .Where(b => b.TaxiCompanyId == companyId) 
                 .ToListAsync();
 
             return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
         }
-
 
         public async Task<TaxiBookingViewModel> GetBookingByIdAsync(int id)
         {
             var booking = await _context.TaxiBookings
                 .Include(b => b.User)
                 .Include(b => b.Taxi)
-                .ThenInclude(t => t.Driver) 
+                .ThenInclude(t => t.Driver)
+                 .Where(b => _context.Users
+                    .Any(u => u.CompanyId == b.TaxiCompanyId))
                 .FirstOrDefaultAsync(b => b.BookingId == id);
 
             if (booking == null)

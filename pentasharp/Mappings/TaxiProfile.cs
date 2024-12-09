@@ -31,8 +31,12 @@ namespace pentasharp.Mappings
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
-            CreateMap<Taxi, TaxiRequest>();
-
+            CreateMap<Taxi, TaxiRequest>()
+                .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src => src.Driver != null
+                      ? $"{src.Driver.FirstName} {src.Driver.LastName}"
+                      : "Unassigned"))
+                .ForMember(dest => dest.TaxiCompanyId, opt => opt.MapFrom(src => src.TaxiCompanyId))
+                .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.TaxiCompany.CompanyName));
         }
     }
 }

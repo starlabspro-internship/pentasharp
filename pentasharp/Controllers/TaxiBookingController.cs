@@ -19,10 +19,12 @@ namespace WebApplication1.Controllers
     public class TaxiBookingController : Controller
     {
         private readonly ITaxiBookingService _taxiBookingService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TaxiBookingController(ITaxiBookingService taxiBookingService)
+        public TaxiBookingController(ITaxiBookingService taxiBookingService, IHttpContextAccessor httpContextAccessor)
         {
             _taxiBookingService = taxiBookingService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [AllowAnonymous]
@@ -32,7 +34,11 @@ namespace WebApplication1.Controllers
             try
             {
                 var companies = await _taxiBookingService.GetAllCompaniesAsync();
-                return Ok(companies);
+                if (companies == null || !companies.Any())
+                {
+                    return Ok(new { success = false, message = "No companies found." });
+                }
+                return Ok(new { success = true, companies });
             }
             catch (Exception ex)
             {
@@ -40,7 +46,6 @@ namespace WebApplication1.Controllers
                 return StatusCode(500, new { success = false, message = "Internal Server Error" });
             }
         }
-
 
         [ServiceFilter(typeof(LoginRequiredFilter))]
         [HttpPost("CreateBooking")]
@@ -67,12 +72,24 @@ namespace WebApplication1.Controllers
             return Ok(new { success = true, message = "Booking created successfully" });
         }
 
-
         [ServiceFilter(typeof(AdminOnlyFilter))]
         [HttpGet("GetBookings")]
         public async Task<IActionResult> GetBookings()
         {
-            var bookings = await _taxiBookingService.GetAllBookingsAsync();
+            var session = _httpContextAccessor.HttpContext.Session;
+            var userId = session.GetInt32("UserID");
+
+            if (userId == null)
+            {
+                return Unauthorized(new StandardResponse(
+                    ApiStatusEnum.UNAUTHORIZED,
+                    Guid.NewGuid().ToString(),
+                    "User is not logged in."
+                ));
+            }
+
+            var bookings = await _taxiBookingService.GetAllBookingsAsync(userId.Value);
+
             return Ok(new StandardApiResponse<List<TaxiBookingViewModel>>
             {
                 Success = true,

@@ -28,7 +28,7 @@ namespace pentasharp.Interfaces
         /// Retrieves all taxi bookings.
         /// </summary>
         /// <returns>A list of <see cref="TaxiBookingViewModel"/> representing all bookings.</returns>
-        Task<List<TaxiBookingViewModel>> GetAllBookingsAsync();
+        Task<List<TaxiBookingViewModel>> GetAllBookingsAsync(int userId);
 
         /// <summary>
         /// Retrieves a taxi booking by its ID.

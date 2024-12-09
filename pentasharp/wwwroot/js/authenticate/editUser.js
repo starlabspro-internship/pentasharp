@@ -46,7 +46,6 @@
         })
             .then((response) => {
                 if (response.ok) {
-                    alert("User updated successfully!");
                     window.location.href = "/Authenticate/UserList";
                 } else {
                     alert("Error updating user.");

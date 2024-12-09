@@ -2,6 +2,7 @@
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.ViewModel.TaxiModels;
 
 namespace pentasharp.Mapping
 {
@@ -22,6 +23,8 @@ namespace pentasharp.Mapping
 
             CreateMap<EditTaxiBookingViewModel, TaxiBookings>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
+            CreateMap<TaxiCompany, TaxiCompanyViewModel>();
         }
     }
 }

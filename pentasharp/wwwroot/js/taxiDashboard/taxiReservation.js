@@ -6,6 +6,7 @@ function fetchReservations() {
             if (data.success) {
                 reservations = data.reservations;
                 populateReservationTable(reservations); 
+                console.log("reservations1",reservations)
             } else {
                 console.error("Error fetching reservations:", data.message);
                 alert("Error fetching reservations: " + data.message);
@@ -21,6 +22,8 @@ function populateReservationTable(reservations) {
     const reservationList = document.getElementById('reservationList');
     reservationList.innerHTML = '';  
 
+    console.log("reservations2", reservations);
+
     reservations.forEach((reservation, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -29,7 +32,7 @@ function populateReservationTable(reservations) {
             <td>${reservation.dropoffLocation}</td>
             <td>${reservation.reservationDate} ${reservation.reservationTime}</td>
             <td><span class="badge ${getStatusClass(reservation.status)}">${reservation.status}</span></td>
-            <td>${reservation.driver || 'Unassigned'}</td>
+            <td>${reservation.driverName || 'Unassigned'}</td>
             <td>
                 <button class="btn btn-sm btn-outline-info" onclick="openEditReservationModal(${index})">Edit</button>
             </td>
@@ -88,9 +91,8 @@ function openEditReservationModal(index) {
                 option.textContent = `${taxi.driverName} - ${taxi.licensePlate}`;
                 driverSelect.appendChild(option);
             });
-
             if (reservation.taxiId) {
-                driverSelect.value = reservation.taxiId;
+                driverSelect.value = reservation.taxiId; 
             }
         })
         .catch(error => console.error("Error fetching drivers:", error));

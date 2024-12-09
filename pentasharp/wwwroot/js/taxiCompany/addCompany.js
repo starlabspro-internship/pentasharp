@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((data) => renderFunction(data))
             .catch((error) => {
                 console.error(`Error fetching from ${url}:`, error);
-                alert(`An error occurred while fetching data from ${url}.`);
             });
     };
 

@@ -90,6 +90,8 @@ function saveBookingChanges() {
     const status = document.getElementById('editStatus').value;
     const taxiId = document.getElementById('editDriver').value;
 
+    console.log("taxiid", taxiId);
+
     console.log("Selected Taxi ID:", taxiId);
 
     if (!pickupLocation || !dropoffLocation || !pickupTimeContent) {

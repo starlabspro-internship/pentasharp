@@ -14,10 +14,12 @@ namespace pentasharp.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ITaxiReservationService _taxiReservationService;
-        public TaxiReservationController(AppDbContext context, ITaxiReservationService taxiReservationService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public TaxiReservationController(AppDbContext context, ITaxiReservationService taxiReservationService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _taxiReservationService = taxiReservationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("SearchAvailableTaxis")]
@@ -41,7 +43,15 @@ namespace pentasharp.Controllers
         {
             try
             {
-                var reservations = await _taxiReservationService.GetReservationsAsync();
+                var session = _httpContextAccessor.HttpContext.Session;
+                var userId = session.GetInt32("UserID");
+
+                if (userId == null)
+                {
+                    return Unauthorized(new { success = false, message = "User is not logged in." });
+                }
+
+                var reservations = await _taxiReservationService.GetReservationsAsync(userId.Value);
                 return Ok(new { success = true, reservations });
             }
             catch (Exception ex)

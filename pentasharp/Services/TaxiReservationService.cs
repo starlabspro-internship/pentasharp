@@ -84,15 +84,29 @@ namespace pentasharp.Services
             }
         }
 
-        public async Task<List<TaxiReservationRequest>> GetReservationsAsync()
+        public async Task<List<TaxiReservationRequest>> GetReservationsAsync(int userId)
         {
             try
             {
-                _logger.LogInformation("Fetching all taxi reservations.");
+                _logger.LogInformation("Fetching reservations for user ID: {UserId}", userId);
+
+                var companyId = await _context.Users
+                    .Where(u => u.UserId == userId)
+                    .Select(u => u.CompanyId)
+                    .FirstOrDefaultAsync();
+
+                if (companyId == null)
+                {
+                    _logger.LogWarning("No company found for user ID: {UserId}", userId);
+                    return new List<TaxiReservationRequest>();
+                }
+
                 var reservations = await _context.TaxiReservations
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
+                    .ThenInclude(t => t.Driver)
                     .Include(r => r.TaxiCompany)
+                    .Where(r => r.TaxiCompanyId == companyId)
                     .ToListAsync();
 
                 var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
@@ -106,12 +120,12 @@ namespace pentasharp.Services
                         : "Unassigned";
                 }
 
-                _logger.LogInformation("Successfully fetched {Count} reservations.", reservationInfo.Count);
+                _logger.LogInformation("Successfully fetched {Count} reservations for company ID: {CompanyId}", reservationInfo.Count, companyId);
                 return reservationInfo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching reservations in {methodName}.", nameof(GetReservationsAsync));
+                _logger.LogError(ex, "Error occurred while fetching reservations in {MethodName}.", nameof(GetReservationsAsync));
                 throw;
             }
         }
@@ -122,6 +136,7 @@ namespace pentasharp.Services
             {
                 _logger.LogInformation("Fetching taxis for taxi company ID {TaxiCompanyId}.", taxiCompanyId);
                 var taxis = await _context.Taxis
+                    .Include(t => t.Driver)
                     .Where(t => t.TaxiCompanyId == taxiCompanyId)
                     .ToListAsync();
 
