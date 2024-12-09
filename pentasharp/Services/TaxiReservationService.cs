@@ -55,7 +55,7 @@ namespace pentasharp.Services
         {
             try
             {
-                _logger.LogInformation("Creating a new taxi reservation for user {UserId}.", model.UserId);
+             
 
                 if (!TimeSpan.TryParse(model.ReservationTime, out var timeSpan))
                 {
@@ -183,6 +183,40 @@ namespace pentasharp.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while updating reservation with ID {ReservationId} in {methodName}.", reservationId, nameof(UpdateReservationAsync));
+                throw;
+            }
+        }
+
+        public async Task<List<TaxiReservationRequest>> GetReservationsForUserAsync(int userId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching reservations for user with ID {UserId}.", userId);
+
+                var reservations = await _context.TaxiReservations
+                    .Where(r => r.UserId == userId)
+                    .Include(r => r.Taxi)
+                    .Include(r => r.TaxiCompany)
+                      .Include(r => r.User)
+                    .ToListAsync();
+
+                var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
+
+                foreach (var reservationDto in reservationInfo)
+                {
+                    var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
+                    reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
+                    reservationDto.Driver = reservationEntity?.Taxi != null
+                        ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
+                        : "Unassigned";
+                }
+
+                _logger.LogInformation("Successfully fetched {Count} reservations for user {UserId}.", reservationInfo.Count, userId);
+                return reservationInfo;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching reservations for user {UserId} in {methodName}.", userId, nameof(GetReservationsForUserAsync));
                 throw;
             }
         }

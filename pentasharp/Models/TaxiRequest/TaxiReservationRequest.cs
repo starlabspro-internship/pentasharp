@@ -66,5 +66,7 @@ namespace pentasharp.Models.TaxiRequest
         /// Gets or sets the details of the driver and taxi (e.g., driver name and license plate).
         /// </summary>
         public string Driver { get; set; }
+
+        public decimal? Fare { get; set; }
     }
 }

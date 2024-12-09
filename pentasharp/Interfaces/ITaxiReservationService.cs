@@ -43,5 +43,7 @@ namespace pentasharp.Interfaces
         /// <param name="model">The model containing updated reservation details.</param>
         /// <returns>The model representing a boolean indicating whether the update was successful.</returns>
         Task<bool> UpdateReservationAsync(int reservationId, UpdateTaxiReservationViewModel model);
+
+        Task<List<TaxiReservationRequest>> GetReservationsForUserAsync(int userId);
     }
 }

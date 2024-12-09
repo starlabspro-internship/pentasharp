@@ -1,0 +1,59 @@
+﻿<div class="container my-5">
+    <!-- Taxi Reservations -->
+    <div class="row bg-white shadow-sm rounded p-4 mb-4">
+        <div class="col-2 d-flex align-items-center justify-content-center">
+            <div class="icon-container bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                <i class="fas fa-taxi fa-lg"></i>
+            </div>
+        </div>
+        <div class="col-10">
+            <h5 class="mb-1">Taxi Reservations</h5>
+            <p class="mb-2 text-muted">View and manage your taxi reservations efficiently.</p>
+            <a asp-controller="UserActivity" asp-action="MyReservations" class="btn btn-danger btn-sm">View Reservations</a>
+        </div>
+    </div>
+
+    <!-- Bus Reserved Seats -->
+    <div class="row bg-white shadow-sm rounded p-4 mb-4">
+        <div class="col-2 d-flex align-items-center justify-content-center">
+            <div class="icon-container bg-success text-white rounded-circle d-flex align-items-center justify-content-center">
+                <i class="fas fa-bus-alt fa-lg"></i>
+            </div>
+        </div>
+        <div class="col-10">
+            <h5 class="mb-1">Bus Reserved Seats</h5>
+            <p class="mb-2 text-muted">Check and manage your reserved seats for upcoming bus trips.</p>
+            <a asp-controller="Bus" asp-action="MyBusSeats" class="btn btn-success btn-sm">View Bus Seats</a>
+        </div>
+    </div>
+
+    <!-- Taxi Bookings -->
+    <div class="row bg-white shadow-sm rounded p-4 mb-4">
+        <div class="col-2 d-flex align-items-center justify-content-center">
+            <div class="icon-container bg-warning text-white rounded-circle d-flex align-items-center justify-content-center">
+                <i class="fas fa-clipboard-check fa-lg"></i>
+            </div>
+        </div>
+        <div class="col-10">
+            <h5 class="mb-1">Taxi Bookings</h5>
+            <p class="mb-2 text-muted">Review and manage your past and current taxi bookings.</p>
+            <a asp-controller="Taxi" asp-action="MyBookings" class="btn btn-warning btn-sm">View Bookings</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .icon-container {
+        width: 60px;
+        height: 60px;
+    }
+
+    h5 {
+        font-weight: bold;
+        color: #343a40;
+    }
+
+    p {
+        font-size: 0.9rem;
+    }
+</style>

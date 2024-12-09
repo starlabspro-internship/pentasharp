@@ -90,5 +90,6 @@ namespace pentasharp.Controllers
                 return StatusCode(500, new { success = false, message = "An internal server error occurred.", error = ex.Message });
             }
         }
+
     }
 }

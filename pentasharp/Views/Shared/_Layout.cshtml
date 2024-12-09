@@ -67,7 +67,12 @@
                 <div class="navbar-nav ms-auto py-0">
                     <a asp-controller="Home" asp-action="Index" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">Home</a>
                     <a asp-controller="Home" asp-action="Services" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Service" ? "active" : "")">Service</a>
-                    @if (isAdmin)
+                        @if (isLoggedIn)
+                        {
+                            <a asp-controller="Home" asp-action="UserActivity" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "UserActivity" ? "active" : "")">User-Activity</a>
+                        }
+
+                        @if (isAdmin)
                         {
                     <a asp-controller="Dashboard" asp-action="Dashboard" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
                         }
