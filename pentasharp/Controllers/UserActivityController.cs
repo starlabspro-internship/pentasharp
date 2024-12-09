@@ -1,37 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using pentasharp.Interfaces;
-using pentasharp.Models.TaxiRequest;
-using System;
 using System.Threading.Tasks;
-using WebApplication1.Filters;
+using Microsoft.AspNetCore.Http;
+using pentasharp.Models.Entities;
+using AutoMapper;
 
 namespace pentasharp.Controllers
 {
+    [Route("UserActivity")]
     public class UserActivityController : Controller
     {
         private readonly ITaxiReservationService _taxiReservationService;
         private readonly ILogger<UserActivityController> _logger;
-
-        // Change ILogger to ILogger<UserActivityController>
-        public UserActivityController(ITaxiReservationService taxiReservationService, ILogger<UserActivityController> logger)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserActivityController(
+            ITaxiReservationService taxiReservationService,
+            ILogger<UserActivityController> logger,
+            IHttpContextAccessor httpContextAccessor)
         {
             _taxiReservationService = taxiReservationService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        [ServiceFilter(typeof(LoginRequiredFilter))]
+        [HttpGet("MyReservations")]
         public async Task<IActionResult> MyReservations()
         {
-            _logger.LogInformation("Fetching reservations for the user.");
 
-            if (HttpContext.Items["UserId"] is not int userId)
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+
+            try
             {
-                return BadRequest(new { success = false, message = "User is not authenticated." });
+                var reservations = await _taxiReservationService.GetReservationsForUserAsync(userId.Value);
+                return View("MyReservations", reservations);
             }
-
-            var reservations = await _taxiReservationService.GetReservationsForUserAsync(userId);
-            return View("MyReservations", reservations);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving reservations for user {UserId}", userId);
+                return View("Error", new { message = "An error occurred while retrieving your reservations." });
+            }
         }
     }
 }

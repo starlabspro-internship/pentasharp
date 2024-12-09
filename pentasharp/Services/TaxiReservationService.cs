@@ -191,34 +191,23 @@ namespace pentasharp.Services
         {
             try
             {
-                _logger.LogInformation("Fetching reservations for user with ID {UserId}.", userId);
-
                 var reservations = await _context.TaxiReservations
-                    .Where(r => r.UserId == userId)
-                    .Include(r => r.Taxi)
-                    .Include(r => r.TaxiCompany)
-                      .Include(r => r.User)
-                    .ToListAsync();
+                     .Include(r => r.User)
+                     .Where(r => r.UserId == userId)
+                     .Include(r => r.Taxi)
+                     .Include(r => r.TaxiCompany)
+                     .Where(r => r.UserId == userId)
+                     .ToListAsync();
 
                 var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
-
-                foreach (var reservationDto in reservationInfo)
-                {
-                    var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
-                    reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
-                    reservationDto.Driver = reservationEntity?.Taxi != null
-                        ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
-                        : "Unassigned";
-                }
-
-                _logger.LogInformation("Successfully fetched {Count} reservations for user {UserId}.", reservationInfo.Count, userId);
                 return reservationInfo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching reservations for user {UserId} in {methodName}.", userId, nameof(GetReservationsForUserAsync));
+                _logger.LogError(ex, "Error occurred while fetching reservations for user {UserId}", userId);
                 throw;
             }
         }
+
     }
 }

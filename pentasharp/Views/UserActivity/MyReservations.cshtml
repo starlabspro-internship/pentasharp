@@ -1,30 +1,44 @@
-﻿@if (Model.Any())
+﻿@using pentasharp.Models.TaxiRequest
+@model List<pentasharp.Models.TaxiRequest.TaxiReservationRequest>
+
+@if (Model != null && Model.Any())
 {
-    <div class="container">
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">My Reservations</h2>
         <div class="row">
             @foreach (var reservation in Model)
             {
                 <div class="col-md-4">
                     <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
-                            Reservation #@reservation.ReservationId
+                            <h5>Reservation #@reservation.ReservationId</h5>
                         </div>
                         <div class="card-body">
+                            <p><strong>Passenger Name:</strong> @reservation.PassengerName</p>
                             <p><strong>Pickup Location:</strong> @reservation.PickupLocation</p>
-                            @{
-                                if (DateTime.TryParse(reservation.ReservationTime, out DateTime reservationDate))
-                                {
-                                    <p><strong>Date & Time:</strong> @reservationDate.ToString("g", System.Globalization.CultureInfo.CurrentCulture)</p>
-                                }
-                                else
-                                {
-                                    <p><strong>Date & Time:</strong> Invalid date</p>
-                                }
+
+                            @if (DateTime.TryParse(reservation.ReservationDate, out var reservationDate))
+                            {
+                                <p><strong>Trip Start Date & Time:</strong> @reservationDate.ToString("g", System.Globalization.CultureInfo.CurrentCulture)</p>
                             }
+                            else
+                            {
+                                <p><strong>Trip Start Date & Time:</strong> <span class="text-danger">Invalid date</span></p>
+                            }
+
                             <p><strong>Dropoff Location:</strong> @reservation.DropoffLocation</p>
                             <p><strong>Driver:</strong> @reservation.Driver</p>
-                            <p><strong>Status:</strong> @reservation.Status.ToString()</p>
-                            <p><strong>Fare:</strong> @(reservation.Fare.HasValue ? reservation.Fare.Value.ToString("C", System.Globalization.CultureInfo.CurrentCulture) : "N/A")</p>
+
+                            <p>
+                                <strong>Status:</strong> @reservation.Status
+                            </p>
+
+                            <p>
+                                <strong>Fare:</strong>
+                                @(reservation.Fare.HasValue
+                                    ? reservation.Fare.Value.ToString("C", System.Globalization.CultureInfo.CurrentCulture)
+                                    : "N/A")
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -34,7 +48,7 @@
 }
 else
 {
-    <div class="alert alert-info text-center">
+    <div class="alert alert-info text-center mt-4">
         <strong>No reservations found.</strong> You haven't made any taxi reservations yet.
     </div>
 }
