@@ -41,6 +41,11 @@ namespace pentasharp.Models.Entities
         public DateTime? UpdatedAt { get; set; }
 
         /// <summary>
+        /// Collection of taxi bookings associated with the taxi company.
+        /// </summary>
+        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
+
+        /// <summary>
         /// Collection of taxis associated with the taxi company.
         /// </summary>
         public ICollection<Taxi> Taxis { get; set; } = new List<Taxi>();

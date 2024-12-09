@@ -24,27 +24,39 @@ namespace pentasharp.Data.Configurations
             builder.Property(tb => tb.BookingId)
                 .ValueGeneratedOnAdd();
 
+            builder.Property(tb => tb.TaxiCompanyId)
+                .IsRequired();
+
             builder.Property(tb => tb.PickupLocation)
                 .IsRequired()
                 .HasMaxLength(100);
 
             builder.Property(tb => tb.DropoffLocation)
                 .IsRequired()
-                .HasMaxLength(256);
+                .HasMaxLength(100);
 
             builder.Property(tb => tb.BookingTime)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.TripStartTime)
-                .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
 
             builder.Property(tb => tb.TripEndTime)
-                .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
 
-            builder.Property(tb => tb.UpdatedAt);
+            builder.Property(tb => tb.Fare)
+                .HasPrecision(10, 2)
+                .IsRequired(false);
+
+            builder.Property(tb => tb.PassengerCount)
+                .IsRequired();
+
+            builder.Property(tb => tb.TaxiId)
+                .IsRequired(false);
+
+            builder.Property(tb => tb.Status)
+                .IsRequired();
         }
 
         private void ConfigureDefaults(EntityTypeBuilder<TaxiBookings> builder)
@@ -53,15 +65,30 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(tb => tb.UpdatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false);
         }
 
         private void ConfigureRelationships(EntityTypeBuilder<TaxiBookings> builder)
         {
+            builder.HasOne(tb => tb.TaxiCompany)
+                .WithMany(tc => tc.TaxiBookings)
+                .HasForeignKey(tb => tb.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.HasOne(tb => tb.Taxi)
+                .WithMany(t => t.TaxiBookings)
+                .HasForeignKey(tb => tb.TaxiId)
+                .OnDelete(DeleteBehavior.SetNull); 
+
+            builder.HasOne(tb => tb.User)
+                .WithMany(u => u.TaxiBookings)
+                .HasForeignKey(tb => tb.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(tb => tb.Notifications)
                 .WithOne(n => n.TaxiBooking)
                 .HasForeignKey(n => n.BookingId)
-                .IsRequired(false); 
+                .IsRequired(false);
         }
     }
 }
