@@ -12,13 +12,8 @@ using pentasharp.Data;
 namespace pentasharp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:pentasharp/Migrations/20241204124132_initialcreate.Designer.cs
-    [Migration("20241204124132_initialcreate")]
-    partial class initialcreate
-========
-    [Migration("20241203195002_add-improved-db")]
-    partial class addimproveddb
->>>>>>>> 769afb28741ec61013648c6fb7837031d4b2d801:pentasharp/Migrations/20241203195002_add-improved-db.Designer.cs
+    [Migration("20241204210445_FixColumbTaxiBooking")]
+    partial class FixColumbTaxiBooking
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -358,7 +353,7 @@ namespace pentasharp.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("PassangerCount")
+                    b.Property<int>("PassengerCount")
                         .HasColumnType("int");
 
                     b.Property<string>("PickupLocation")
