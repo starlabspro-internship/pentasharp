@@ -55,9 +55,14 @@ namespace pentasharp.Models.Entities
         /// </summary>
         public DateTime? UpdatedAt { get; set; }
 
+        /// <summary>
+        /// The collection of bus schedules associated with this bus.
+        /// </summary>
         public ICollection<BusSchedule> BusSchedules { get; set; } = new List<BusSchedule>();
 
+        /// <summary>
+        /// Indicates whether this bus is marked as deleted.
+        /// </summary>
         public bool IsDeleted { get; set; }
-
     }
 }
