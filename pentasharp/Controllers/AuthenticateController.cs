@@ -202,7 +202,7 @@ namespace WebApplication1.Controllers
             }
 
             var session = _httpContextAccessor.HttpContext.Session;
-            session.SetString("UserId", user.UserId.ToString());
+            session.SetInt32("UserId", user.UserId);
             session.SetString("FirstName", user.FirstName);
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
 

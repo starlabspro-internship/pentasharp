@@ -2,17 +2,13 @@
 
 function fetchCurrentUser() {
     return fetch('/Authenticate/GetCurrentUser')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch current user.');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             currentUser = {
-                userId: data.userId,
-                name: `${data.firstName} ${data.lastName}`
+                userId: data.data.userId,
+                name: `${data.data.firstName} ${data.data.lastName}`
             };
+            console.log("currUs", currentUser)
         })
         .catch(error => {
             console.error('Error fetching user:', error);
