@@ -223,51 +223,73 @@ document.addEventListener("DOMContentLoaded", () => {
         modalTitle.textContent = isCompany ? "Add Company" : "Add Bus";
         entityForm.innerHTML = isCompany
             ? `
-                <div class="mb-3">
-                    <label for="companyName" class="form-label">Company Name</label>
-                    <input type="text" class="form-control" id="companyName" required />
-                </div>
-                <div class="mb-3">
-                    <label for="contactInfo" class="form-label">Contact Info</label>
-                    <input type="text" class="form-control" id="contactInfo" required />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            `
+        <div class="mb-3">
+            <label for="companyName" class="form-label">Company Name</label>
+            <input type="text" class="form-control" id="companyName" required />
+        </div>
+        <div class="mb-3">
+            <label for="contactInfo" class="form-label">Contact Info</label>
+            <input type="text" class="form-control" id="contactInfo" required />
+        </div>
+        <div class="mb-3">
+            <label for="userSelect" class="form-label">Select User</label>
+            <select class="form-select" id="userSelect" required></select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    `
             : `
-                <div class="mb-3">
-                    <label for="busNumber" class="form-label">Bus Number</label>
-                    <input type="number" class="form-control" id="busNumber" required />
-                </div>
-                <div class="mb-3">
-                    <label for="capacity" class="form-label">Capacity</label>
-                    <input type="number" class="form-control" id="capacity" required />
-                </div>
-                <div class="mb-3">
-                    <label for="companySelect" class="form-label">Select Company</label>
-                    <select class="form-select" id="companySelect" required></select>
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            `;
+        <div class="mb-3">
+            <label for="busNumber" class="form-label">Bus Number</label>
+            <input type="number" class="form-control" id="busNumber" required />
+        </div>
+        <div class="mb-3">
+            <label for="capacity" class="form-label">Capacity</label>
+            <input type="number" class="form-control" id="capacity" required />
+        </div>
+        <div class="mb-3">
+            <label for="companySelect" class="form-label">Select Company</label>
+            <select class="form-select" id="companySelect" required disabled></select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    `;
+
         if (!isCompany) {
-            fetch("/api/BusCompany/GetCompanies")
+            fetch("/api/BusCompany/GetCompany")
                 .then((response) => response.json())
-                .then((companies) => {
+                .then((company) => {
                     const companySelect = document.getElementById("companySelect");
                     companySelect.innerHTML = "";
-                    companies.forEach((company) => {
+                    const option = document.createElement("option");
+                    option.value = company.busCompanyId;
+                    option.textContent = company.companyName;
+                    companySelect.appendChild(option);
+                    companySelect.value = company.busCompanyId;
+                })
+                .catch(() => {
+                    alert("Could not load your company details.");
+                });
+        } else {
+            fetch("/api/BusCompany/GetBusCompanyUsers")
+                .then((response) => response.json())
+                .then((users) => {
+                    const userSelect = document.getElementById("userSelect");
+                    userSelect.innerHTML = "";
+                    users.forEach((user) => {
                         const option = document.createElement("option");
-                        option.value = company.busCompanyId;
-                        option.textContent = company.companyName;
-                        companySelect.appendChild(option);
+                        option.value = user.userId;
+                        option.textContent = `${user.firstName} ${user.lastName}`;
+                        userSelect.appendChild(option);
                     });
                 });
         }
+
         entityForm.onsubmit = (e) => {
             e.preventDefault();
             const data = isCompany
                 ? {
                     companyName: document.getElementById("companyName").value,
                     contactInfo: document.getElementById("contactInfo").value,
+                    userId: document.getElementById("userSelect").value,
                 }
                 : {
                     busNumber: document.getElementById("busNumber").value,
@@ -278,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         modal.show();
     });
+
 
     entitySelect.addEventListener("change", (e) => {
         const isCompany = e.target.value === "companies";

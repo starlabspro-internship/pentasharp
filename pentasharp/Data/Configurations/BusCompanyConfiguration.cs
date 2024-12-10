@@ -17,6 +17,11 @@ namespace pentasharp.Data.Configurations
         private void ConfigureKeys(EntityTypeBuilder<BusCompany> builder)
         {
             builder.HasKey(bc => bc.BusCompanyId);
+
+            builder.HasOne(bc => bc.User) 
+                   .WithOne()
+                   .HasForeignKey<BusCompany>(bc => bc.UserId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ConfigureProperties(EntityTypeBuilder<BusCompany> builder)
@@ -34,13 +39,25 @@ namespace pentasharp.Data.Configurations
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(bc => bc.UpdatedAt);
+            builder.Property(bc => bc.UpdatedAt)
+                .IsRequired(false);
         }
 
         private void ConfigureIndexes(EntityTypeBuilder<BusCompany> builder)
         {
             builder.HasIndex(bc => bc.CompanyName)
                 .IsUnique();
+
+            builder.HasIndex(bc => bc.UserId)
+                .IsUnique();
+        }
+
+        private void ConfigureRelationships(EntityTypeBuilder<BusCompany> builder)
+        {
+            builder.HasMany(bc => bc.Buses)
+                .WithOne()
+                .HasForeignKey(b => b.BusCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ConfigureDefaults(EntityTypeBuilder<BusCompany> builder)

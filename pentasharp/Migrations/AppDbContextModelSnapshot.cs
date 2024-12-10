@@ -47,7 +47,12 @@ namespace pentasharp.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("BusCompanyId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("BusCompanies");
                 });
@@ -561,6 +566,17 @@ namespace pentasharp.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
+                {
+                    b.HasOne("pentasharp.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>
