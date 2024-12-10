@@ -63,6 +63,11 @@ namespace pentasharp.Models.Entities
         public ICollection<Notifications> Notifications { get; set; } = new List<Notifications>();
 
         /// <summary>
+        /// The collection of bus reservations made by the user.
+        /// </summary>
+        public ICollection<BusReservations> BusReservations { get; init; } = new List<BusReservations>();
+
+        /// <summary>
         /// Gets or sets a value indicating whether the user is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }

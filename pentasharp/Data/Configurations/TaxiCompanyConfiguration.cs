@@ -50,5 +50,23 @@ namespace pentasharp.Data.Configurations
             builder.Property(tc => tc.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
         }
+
+        private void ConfigureRelationships(EntityTypeBuilder<TaxiCompany> builder)
+        {
+            builder.HasMany(tc => tc.Taxis)
+                .WithOne(t => t.TaxiCompany)
+                .HasForeignKey(t => t.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(tc => tc.TaxiBookings)
+                .WithOne(tb => tb.TaxiCompany)
+                .HasForeignKey(tb => tb.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(tc => tc.TaxiReservations)
+                .WithOne(tr => tr.TaxiCompany)
+                .HasForeignKey(tr => tr.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }
