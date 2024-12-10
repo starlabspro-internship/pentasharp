@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace pentasharp.Migrations
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:pentasharp/Migrations/20241204124132_initialcreate.cs
-    public partial class initialcreate : Migration
-========
-    public partial class addimproveddb : Migration
->>>>>>>> 769afb28741ec61013648c6fb7837031d4b2d801:pentasharp/Migrations/20241203195002_add-improved-db.cs
+    public partial class UpdateDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -133,35 +129,7 @@ namespace pentasharp.Migrations
                         column: x => x.TaxiCompanyId,
                         principalTable: "TaxiCompanies",
                         principalColumn: "TaxiCompanyId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BusRouteAssignments",
-                columns: table => new
-                {
-                    AssignmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BusId = table.Column<int>(type: "int", nullable: false),
-                    RouteId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusRouteAssignments", x => x.AssignmentId);
-                    table.ForeignKey(
-                        name: "FK_BusRouteAssignments_BusRoutes_RouteId",
-                        column: x => x.RouteId,
-                        principalTable: "BusRoutes",
-                        principalColumn: "RouteId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_BusRouteAssignments_Buses_BusId",
-                        column: x => x.BusId,
-                        principalTable: "Buses",
-                        principalColumn: "BusId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,13 +156,13 @@ namespace pentasharp.Migrations
                         column: x => x.RouteId,
                         principalTable: "BusRoutes",
                         principalColumn: "RouteId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BusSchedules_Buses_BusId",
                         column: x => x.BusId,
                         principalTable: "Buses",
                         principalColumn: "BusId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,24 +173,14 @@ namespace pentasharp.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TaxiCompanyId = table.Column<int>(type: "int", nullable: false),
                     PickupLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-<<<<<<<< HEAD:pentasharp/Migrations/20241204124132_initialcreate.cs
-                    DropoffLocation = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    BookingTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    TripStartTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    TripEndTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    Fare = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-========
                     DropoffLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     BookingTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     TripStartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TripEndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Fare = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: true),
-                    PassangerCount = table.Column<int>(type: "int", nullable: false),
+                    PassengerCount = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
->>>>>>>> 769afb28741ec61013648c6fb7837031d4b2d801:pentasharp/Migrations/20241203195002_add-improved-db.cs
                     UserId = table.Column<int>(type: "int", nullable: false),
                     TaxiId = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -235,7 +193,7 @@ namespace pentasharp.Migrations
                         column: x => x.TaxiCompanyId,
                         principalTable: "TaxiCompanies",
                         principalColumn: "TaxiCompanyId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaxiBookings_Taxis_TaxiId",
                         column: x => x.TaxiId,
@@ -246,7 +204,7 @@ namespace pentasharp.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -277,7 +235,7 @@ namespace pentasharp.Migrations
                         column: x => x.TaxiCompanyId,
                         principalTable: "TaxiCompanies",
                         principalColumn: "TaxiCompanyId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaxiReservations_Taxis_TaxiId",
                         column: x => x.TaxiId,
@@ -316,13 +274,13 @@ namespace pentasharp.Migrations
                         column: x => x.ScheduleId,
                         principalTable: "BusSchedules",
                         principalColumn: "ScheduleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BusReservations_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -334,7 +292,8 @@ namespace pentasharp.Migrations
                     Message = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     SentAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<int>(type: "int", nullable: true)
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    TaxiBookingsBookingId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -343,13 +302,19 @@ namespace pentasharp.Migrations
                         name: "FK_Notifications_TaxiBookings_BookingId",
                         column: x => x.BookingId,
                         principalTable: "TaxiBookings",
+                        principalColumn: "BookingId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_TaxiBookings_TaxiBookingsBookingId",
+                        column: x => x.TaxiBookingsBookingId,
+                        principalTable: "TaxiBookings",
                         principalColumn: "BookingId");
                     table.ForeignKey(
                         name: "FK_Notifications_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -368,16 +333,6 @@ namespace pentasharp.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BusRouteAssignments_BusId",
-                table: "BusRouteAssignments",
-                column: "BusId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BusRouteAssignments_RouteId",
-                table: "BusRouteAssignments",
-                column: "RouteId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BusSchedules_BusId",
                 table: "BusSchedules",
                 column: "BusId");
@@ -391,6 +346,11 @@ namespace pentasharp.Migrations
                 name: "IX_Notifications_BookingId",
                 table: "Notifications",
                 column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_TaxiBookingsBookingId",
+                table: "Notifications",
+                column: "TaxiBookingsBookingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -456,9 +416,6 @@ namespace pentasharp.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BusReservations");
-
-            migrationBuilder.DropTable(
-                name: "BusRouteAssignments");
 
             migrationBuilder.DropTable(
                 name: "Notifications");

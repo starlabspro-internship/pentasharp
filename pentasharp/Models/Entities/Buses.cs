@@ -1,5 +1,4 @@
-
-﻿using pentasharp.Models.Enums;
+using pentasharp.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -55,6 +54,9 @@ namespace pentasharp.Models.Entities
         /// Gets or sets the date and time when the bus information was last updated, if applicable.
         /// </summary>
         public DateTime? UpdatedAt { get; set; }
+
+        public ICollection<BusSchedule> BusSchedules { get; set; } = new List<BusSchedule>();
+
         public bool IsDeleted { get; set; }
 
     }

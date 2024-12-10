@@ -71,7 +71,7 @@ namespace pentasharp.Models.Entities
         /// <summary>
         /// Navigation property for accessing the bus schedule associated with the reservation.
         /// </summary>
-        public BusSchedule Schedule { get; set; } = null!;
+        public BusSchedule? Schedule { get; set; } = null!;
 
         /// <summary>
         /// Navigation property for accessing the user who made the reservation.
