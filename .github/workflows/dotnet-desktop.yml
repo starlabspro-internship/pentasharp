@@ -1,0 +1,46 @@
+name: CI/CD Pipeline for .NET Project
+
+on:  
+  push:    
+    branches: [main]  
+  pull_request:    
+    branches: [main]
+
+jobs:  
+  build-and-deploy:    
+    runs-on: ubuntu-latest    
+
+    steps:    
+    - name: Checkout code      
+      uses: actions/checkout@v2    
+
+    - name: Setup .NET      
+      uses: actions/setup-dotnet@v3      
+      with:        
+        dotnet-version: '7.x'  # Adjust based on your .NET version    
+
+    - name: Restore dependencies      
+      run: dotnet restore    
+
+    - name: Build the project      
+      run: dotnet build --configuration Release --no-restore    
+
+    - name: Run tests      
+      run: dotnet test --no-restore --verbosity normal    
+
+    - name: Publish the project      
+      run: dotnet publish -c Release -o ./publish    
+
+    - name: Deploy to Server      
+      uses: appleboy/ssh-action@v0.1.7      
+      with:        
+        host: "23.88.98.228"        
+        username: "root"        
+        key: ${{ secrets.SSH_PRIVATE_KEY }}        
+        script: |          
+          cd /var/www/pentasharp/pentasharp          
+          sudo systemctl stop pentasharp          
+          git reset --hard          
+          git pull origin main          
+          dotnet pentasharp.dll cache:clear          
+          sudo systemctl start pentasharp
