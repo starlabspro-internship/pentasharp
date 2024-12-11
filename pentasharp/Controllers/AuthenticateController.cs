@@ -231,8 +231,10 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCurrentUser")]
         public IActionResult GetCurrentUser()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
             {
                 return Unauthorized(new StandardResponse(
                     ApiStatusEnum.UNAUTHORIZED,
@@ -241,7 +243,7 @@ namespace WebApplication1.Controllers
                 ));
             }
 
-            var user = _context.Users.Find(int.Parse(userId));
+            var user = _context.Users.Find(userId.Value);
             if (user == null)
             {
                 return NotFound(new StandardResponse(

@@ -39,6 +39,16 @@ namespace pentasharp.Models.Entities
         public ICollection<Taxi> Taxis { get; set; } = new List<Taxi>();
 
         /// <summary>
+        /// The collection of taxi reservations associated with the taxi company.
+        /// </summary>
+        public ICollection<TaxiReservations> TaxiReservations { get; set; } = new List<TaxiReservations>();
+
+        /// <summary>
+        /// The collection of taxi bookings associated with the taxi company.
+        /// </summary>
+        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
+
+        /// <summary>
         /// Gets or sets a value indicating whether the taxi company is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }

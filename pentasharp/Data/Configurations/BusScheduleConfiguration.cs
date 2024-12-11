@@ -58,12 +58,15 @@ namespace pentasharp.Data.Configurations
         private void ConfigureRelationships(EntityTypeBuilder<BusSchedule> builder)
         {
             builder.HasOne(bs => bs.Bus)
-                .WithMany()
-                .HasForeignKey(bs => bs.BusId);
+                   .WithMany(b => b.BusSchedules)
+                    .HasForeignKey(bs => bs.BusId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
 
             builder.HasOne(bs => bs.Route)
                 .WithMany()
-                .HasForeignKey(bs => bs.RouteId);
+                .HasForeignKey(bs => bs.RouteId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

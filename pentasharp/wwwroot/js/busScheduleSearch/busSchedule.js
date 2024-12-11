@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
     const searchBtn = document.getElementById('searchBtn');
     const departureInput = document.getElementById("departure");
     const arrivalInput = document.getElementById("arrival");
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     confirmBookingBtn.addEventListener('click', function () {
         const numberOfSeats = parseInt(numberOfSeatsInput.value);
-        const totalAmount = parseFloat(totalAmountInput.value.replace('�', '').trim());
+        const totalAmount = parseFloat(totalAmountInput.value.replace('€', '').trim());
         const reservationDate = reservationDateInput.value;
 
         if (!numberOfSeats || numberOfSeats <= 0) {
