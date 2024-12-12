@@ -30,7 +30,8 @@ namespace pentasharp.Data.Configurations
                 .ValueGeneratedOnAdd();
 
             builder.Property(bc => bc.CompanyName)
-                .IsRequired();
+                 .IsRequired()
+                 .HasMaxLength(100);
 
             builder.Property(bc => bc.ContactInfo)
                 .IsRequired();
@@ -55,7 +56,7 @@ namespace pentasharp.Data.Configurations
         private void ConfigureRelationships(EntityTypeBuilder<BusCompany> builder)
         {
             builder.HasMany(bc => bc.Buses)
-                .WithOne()
+                .WithOne(b => b.BusCompany)
                 .HasForeignKey(b => b.BusCompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
         }

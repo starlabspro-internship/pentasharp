@@ -28,6 +28,9 @@ namespace WebApplication1
             builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
             builder.Services.AddScoped<ITaxiService, TaxiService>();
             builder.Services.AddScoped<IDriverService, DriverService>();
+            builder.Services.AddScoped<IBusCompanyService, BusCompanyService>();
+            builder.Services.AddScoped<IBusService, BusService>();
+
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

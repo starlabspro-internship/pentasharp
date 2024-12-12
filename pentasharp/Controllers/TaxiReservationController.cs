@@ -44,7 +44,7 @@ namespace pentasharp.Controllers
             try
             {
                 var session = _httpContextAccessor.HttpContext.Session;
-                var userId = session.GetInt32("UserID");
+                var userId = session.GetInt32("UserId");
 
                 if (userId == null)
                 {
@@ -100,5 +100,6 @@ namespace pentasharp.Controllers
                 return StatusCode(500, new { success = false, message = "An internal server error occurred.", error = ex.Message });
             }
         }
+
     }
 }

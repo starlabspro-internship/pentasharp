@@ -77,7 +77,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetBookings()
         {
             var session = _httpContextAccessor.HttpContext.Session;
-            var userId = session.GetInt32("UserID");
+            var userId = session.GetInt32("UserId");
 
             if (userId == null)
             {

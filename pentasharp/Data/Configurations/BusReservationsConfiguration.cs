@@ -57,11 +57,14 @@ namespace pentasharp.Data.Configurations
         {
             builder.HasOne(br => br.Schedule)
                 .WithMany()
-                .HasForeignKey(br => br.ScheduleId);
+                .HasForeignKey(br => br.ScheduleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(br => br.User)
-                .WithMany()
-                .HasForeignKey(br => br.UserId);
+                .WithMany(u => u.BusReservations)
+                .HasForeignKey(br => br.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
         }
     }
 }

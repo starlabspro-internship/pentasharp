@@ -9,6 +9,7 @@ function fetchCurrentUser() {
                 userId: data.data.userId,
                 name: `${data.data.firstName} ${data.data.lastName}`
             };
+            console.log("currUs", currentUser)
         })
         .catch(error => {
             console.error('Error fetching user:', error);

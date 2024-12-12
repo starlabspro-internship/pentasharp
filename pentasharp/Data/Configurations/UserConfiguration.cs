@@ -69,6 +69,12 @@ namespace pentasharp.Data.Configurations
         }
         private void ConfigureRelationships(EntityTypeBuilder<User> builder)
         {
+            builder.HasMany(u => u.BusReservations)
+                .WithOne(br => br.User)
+                .HasForeignKey(br => br.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
+
             builder.HasMany(u => u.TaxiReservations)
                 .WithOne(tr => tr.User)
                 .HasForeignKey(tr => tr.UserId);
@@ -79,6 +85,8 @@ namespace pentasharp.Data.Configurations
 
             builder.HasMany(u => u.Notifications)
                 .WithOne(n => n.User)
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
                 .HasForeignKey(n => n.UserId);
 
             builder.Property(u => u.BusinessType)

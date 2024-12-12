@@ -80,13 +80,15 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompany")]
         public IActionResult GetCompany()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
                 return Unauthorized("No user is logged in.");
             }
 
-            var user = _context.Users.Find(userId.Value);
+            var user = _context.Users
+                 .Where(u => u.UserId == userId.Value && u.BusinessType == BusinessType.TaxiCompany)
+                 .FirstOrDefault();
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -136,6 +138,7 @@ namespace WebApplication1.Controllers
                 {
                     User = _context.Users
                         .Where(u => u.CompanyId == companyId)
+                        .Where(user => user.BusinessType == BusinessType.TaxiCompany)
                         .Select(u => new
                         {
                             u.UserId,
@@ -216,7 +219,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+                var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
                 if (!userId.HasValue)
                 {
                     return Unauthorized(new { success = false, message = "No user is logged in." });
@@ -276,7 +279,7 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { success = false, message = "Invalid data provided." });
             }
 
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
                 return Unauthorized("No user is logged in.");
@@ -301,13 +304,16 @@ namespace WebApplication1.Controllers
         [HttpGet("GetDrivers")]
         public IActionResult GetDrivers()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
                 return Unauthorized("No user is logged in.");
             }
 
-            var user = _context.Users.Find(userId.Value);
+            var user = _context.Users
+                  .Where(u => u.UserId == userId.Value && u.BusinessType == BusinessType.TaxiCompany)
+                  .FirstOrDefault();
+
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -326,7 +332,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetAvailableDrivers/{taxiId?}")]
         public async Task<IActionResult> GetAvailableDrivers(int? taxiId = null)
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserID");
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
                 return Unauthorized(new { success = false, code = ApiStatusEnum.UNAUTHORIZED, message = "No user is logged in." });

@@ -89,6 +89,17 @@ namespace pentasharp.Data.Configurations
                 .WithOne(n => n.TaxiBooking)
                 .HasForeignKey(n => n.BookingId)
                 .IsRequired(false);
+
+            builder.HasOne(tb => tb.User)
+                .WithMany(u => u.TaxiBookings)
+                .HasForeignKey(tb => tb.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(tb => tb.TaxiCompany)
+                .WithMany(tc => tc.TaxiBookings)
+                .HasForeignKey(tb => tb.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
         }
     }
 }

@@ -47,6 +47,7 @@ namespace pentasharp.Services
                            join c in _context.TaxiCompanies on u.CompanyId equals c.TaxiCompanyId
                            where u.CompanyId == companyId
                                  && u.Role == UserRole.Driver
+                                 && u.BusinessType == BusinessType.TaxiCompany
                                  && !u.IsDeleted
                            select new DriverRequest
                            {

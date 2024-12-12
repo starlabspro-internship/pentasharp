@@ -15,7 +15,7 @@ namespace pentasharp.Models.TaxiRequest
         /// <summary>
         /// Gets or sets the unique identifier for the user who made the reservation.
         /// </summary>
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the pickup location for the reservation.
@@ -58,11 +58,6 @@ namespace pentasharp.Models.TaxiRequest
         public string PassengerName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the passenger who made the reservation.
-        /// </summary>
-        public double Fare { get; set; }
-
-        /// <summary>
         /// Gets or sets the formatted reservation date as a string.
         /// </summary>
         public string ReservationDate { get; set; }
@@ -73,5 +68,10 @@ namespace pentasharp.Models.TaxiRequest
         public string Driver { get; set; }
 
         public string DriverName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the fare.
+        /// </summary>
+        public decimal? Fare { get; set; }
     }
 }

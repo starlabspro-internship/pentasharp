@@ -2,7 +2,6 @@
     const userId = document.getElementById("UserId").value;
     const selectedRole = document.getElementById("Role").dataset.selectedValue;
     const selectedBusinessType = document.getElementById("BusinessType").dataset.selectedValue;
-    const selectedTaxiCompany = document.getElementById("TaxiCompany").dataset.selectedValue;
 
     fetch(`/Authenticate/GetEnums`)
         .then((response) => response.json())
@@ -11,20 +10,6 @@
             populateDropdown("BusinessType", data.businessTypes, selectedBusinessType);
         });
 
-    fetch(`/api/TaxiCompany/GetCompanies`)
-        .then((response) => response.json())
-        .then((data) => {
-            const taxiCompanies = data.map(company => ({
-                value: company.taxiCompanyId,
-                text: company.companyName
-            }));
-            console.log("taxiCompanies", taxiCompanies);
-
-            populateDropdown("TaxiCompany", taxiCompanies, selectedTaxiCompany);
-        })
-        .catch((error) => {
-            console.error("Error fetching taxi companies:", error);
-        });
 
     function populateDropdown(id, options, selectedValue) {
         const dropdown = document.getElementById(id);

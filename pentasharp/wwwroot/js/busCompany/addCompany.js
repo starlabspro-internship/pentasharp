@@ -152,47 +152,66 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteEntity(`/api/BusCompany/DeleteBus/${id}`);
     };
 
-    const openEditCompanyModal = (id, companyName, contactInfo) => {
+    const openEditCompanyModal = async (id, companyName, contactInfo) => {
+
+        const response = await fetch(`/api/BusCompany/GetBusCompanyUser/${id}`);
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(result.message || "Failed to fetch assigned user details.");
+            return;
+        }
+
+        const user = result.data.user;
+
+        console.log("user", user);
+
         modalTitle.textContent = "Edit Company";
         entityForm.innerHTML = `
-            <div class="mb-3">
-                <label for="companyName" class="form-label">Company Name</label>
-                <input type="text" class="form-control" id="companyName" value="${companyName}" required />
-            </div>
-            <div class="mb-3">
-                <label for="contactInfo" class="form-label">Contact Info</label>
-                <input type="text" class="form-control" id="contactInfo" value="${contactInfo}" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        `;
+        <p class="form-control mb-3 border"><strong>Assigned User: </strong>${user.firstName} ${user.lastName}</p>
+        <div class="mb-3">
+            <label for="companyName" class="form-label">Company Name</label>
+            <input type="text" class="form-control" id="companyName" value="${companyName}" required />
+        </div>
+        <div class="mb-3">
+            <label for="contactInfo" class="form-label">Contact Info</label>
+            <input type="text" class="form-control" id="contactInfo" value="${contactInfo}" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    `;
+
         entityForm.onsubmit = (e) => {
             e.preventDefault();
             const data = {
                 companyName: document.getElementById("companyName").value,
                 contactInfo: document.getElementById("contactInfo").value,
+                userId: user.userId,
             };
             saveEntity(`/api/BusCompany/EditCompany/${id}`, "PUT", data, fetchCompanies);
         };
+
         modal.show();
     };
+
 
     const openEditBusModal = (id, busNumber, capacity, busCompanyId) => {
         modalTitle.textContent = "Edit Bus";
         entityForm.innerHTML = `
-            <div class="mb-3">
-                <label for="busNumber" class="form-label">Bus Number</label>
-                <input type="number" class="form-control" id="busNumber" value="${busNumber}" required />
-            </div>
-            <div class="mb-3">
-                <label for="capacity" class="form-label">Capacity</label>
-                <input type="number" class="form-control" id="capacity" value="${capacity}" required />
-            </div>
-            <div class="mb-3">
-                <label for="companySelect" class="form-label">Select Company</label>
-                <select class="form-select" id="companySelect" required></select>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        `;
+        <div class="mb-3">
+            <label for="busNumber" class="form-label">Bus Number</label>
+            <input type="number" class="form-control" id="busNumber" value="${busNumber}" required />
+        </div>
+        <div class="mb-3">
+            <label for="capacity" class="form-label">Capacity</label>
+            <input type="number" class="form-control" id="capacity" value="${capacity}" required />
+        </div>
+        <div class="mb-3">
+            <label for="companySelect" class="form-label">Bus Company</label>
+            <select class="form-select" id="companySelect" disabled required></select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    `;
+
         fetch("/api/BusCompany/GetCompanies")
             .then((response) => response.json())
             .then((companies) => {
@@ -204,14 +223,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     option.textContent = company.companyName;
                     companySelect.appendChild(option);
                 });
-                companySelect.value = busCompanyId;
+                companySelect.value = busCompanyId; 
             });
+
         entityForm.onsubmit = (e) => {
             e.preventDefault();
             const data = {
                 busNumber: document.getElementById("busNumber").value,
                 capacity: document.getElementById("capacity").value,
-                busCompanyId: document.getElementById("companySelect").value,
             };
             saveEntity(`/api/BusCompany/EditBus/${id}`, "PUT", data, fetchBuses);
         };
@@ -274,12 +293,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then((users) => {
                     const userSelect = document.getElementById("userSelect");
                     userSelect.innerHTML = "";
-                    users.forEach((user) => {
-                        const option = document.createElement("option");
-                        option.value = user.userId;
-                        option.textContent = `${user.firstName} ${user.lastName}`;
-                        userSelect.appendChild(option);
-                    });
+
+                    if (users.length === 0) {
+
+                        const noUsersOption = document.createElement("option");
+                        noUsersOption.value = "";
+                        noUsersOption.textContent = "No Users Available";
+                        noUsersOption.disabled = true;
+                        noUsersOption.selected = true;
+                        userSelect.appendChild(noUsersOption);
+                    } else {
+              
+                        const selectUserOption = document.createElement("option");
+                        selectUserOption.value = "";
+                        selectUserOption.textContent = "Select User";
+                        selectUserOption.disabled = true; 
+                        selectUserOption.selected = true;
+                        userSelect.appendChild(selectUserOption);
+
+                        users.forEach((user) => {
+                            const option = document.createElement("option");
+                            option.value = user.userId;
+                            option.textContent = `${user.firstName} ${user.lastName}`;
+                            userSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching users:", error);
                 });
         }
 

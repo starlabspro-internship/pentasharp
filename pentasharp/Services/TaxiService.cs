@@ -33,7 +33,7 @@ namespace pentasharp.Services
                 TaxiId = t.TaxiId,
                 LicensePlate = t.LicensePlate,
                 TaxiCompanyId = t.TaxiCompanyId,
-                CompanyName = t.TaxiCompany?.CompanyName,
+                CompanyName = t.TaxiCompany.CompanyName,
                 DriverId = t.DriverId,
                 DriverName = t.DriverId.HasValue
                 ? _context.Users

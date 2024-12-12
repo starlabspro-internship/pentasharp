@@ -135,32 +135,6 @@ namespace WebApplication1.Controllers
                 user.BusinessType = model.BusinessType.Value;
             }
 
-            if (model.CompanyId.HasValue)
-            {
-                
-                user.CompanyId = model.CompanyId.Value;
-
-                var taxiCompany = _context.TaxiCompanies.FirstOrDefault(tc => tc.TaxiCompanyId == model.CompanyId.Value);
-                if (taxiCompany != null)
-                {
-                    taxiCompany.UserId = user.UserId;
-                    _context.TaxiCompanies.Update(taxiCompany);
-                }
-            }
-            else
-            {
-
-                user.CompanyId = null;
-
-                var oldCompany = _context.TaxiCompanies.FirstOrDefault(tc => tc.UserId == user.UserId);
-                if (oldCompany != null)
-                {
-                    oldCompany.UserId = 0;
-                    _context.TaxiCompanies.Update(oldCompany);
-                }
-            }
-
-
             _context.Users.Update(user);
             _context.SaveChanges();
 
@@ -267,8 +241,7 @@ namespace WebApplication1.Controllers
             }
 
             var session = _httpContextAccessor.HttpContext.Session;
-            session.SetString("UserId", user.UserId.ToString());
-            session.SetInt32("UserID", user.UserId);
+            session.SetInt32("UserId", user.UserId);
             session.SetString("FirstName", user.FirstName);
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
             var businessType = user.BusinessType.ToString();
@@ -300,8 +273,10 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCurrentUser")]
         public IActionResult GetCurrentUser()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+
+            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
             {
                 return Unauthorized(new StandardResponse(
                     ApiStatusEnum.UNAUTHORIZED,
@@ -310,7 +285,7 @@ namespace WebApplication1.Controllers
                 ));
             }
 
-            var user = _context.Users.Find(int.Parse(userId));
+            var user = _context.Users.Find(userId.Value);
             if (user == null)
             {
                 return NotFound(new StandardResponse(

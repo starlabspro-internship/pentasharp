@@ -1,35 +1,43 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
 using pentasharp.Models.Entities;
 
-namespace pentasharp.Data.Configurations
+public class NotificationConfiguration : IEntityTypeConfiguration<Notifications>
 {
-    public class NotificationConfiguration : IEntityTypeConfiguration<Notifications>
+    public void Configure(EntityTypeBuilder<Notifications> builder)
     {
-        public void Configure(EntityTypeBuilder<Notifications> builder)
-        {
-            ConfigureKeys(builder);
-            ConfigureProperties(builder);
-        }
+        ConfigureKeys(builder);
+        ConfigureProperties(builder);
+        ConfigureRelationships(builder);
+    }
 
-        private void ConfigureKeys(EntityTypeBuilder<Notifications> builder)
-        {
-            builder.HasKey(n => n.NotificationId);
-        }
+    private void ConfigureKeys(EntityTypeBuilder<Notifications> builder)
+    {
+        builder.HasKey(n => n.NotificationId);
+    }
 
-        private void ConfigureProperties(EntityTypeBuilder<Notifications> builder)
-        {
-            builder.Property(n => n.NotificationId)
-                .ValueGeneratedOnAdd();
+    private void ConfigureProperties(EntityTypeBuilder<Notifications> builder)
+    {
+        builder.Property(n => n.NotificationId)
+            .ValueGeneratedOnAdd();
 
-            builder.Property(n => n.Message)
-                .IsRequired()
-                .HasMaxLength(256);
+        builder.Property(n => n.SentAt)
+            .IsRequired()
+            .HasDefaultValueSql("GETUTCDATE()");
+    }
 
-            builder.Property(n => n.SentAt)
-                .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
-        }
+    private void ConfigureRelationships(EntityTypeBuilder<Notifications> builder)
+    {
+        builder.HasOne(n => n.User)
+            .WithMany(u => u.Notifications)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
 
+        builder.HasOne(n => n.TaxiBooking)
+            .WithMany()
+            .HasForeignKey(n => n.BookingId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(); 
     }
 }

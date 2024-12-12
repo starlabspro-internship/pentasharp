@@ -55,7 +55,7 @@ namespace pentasharp.Services
         {
             try
             {
-                _logger.LogInformation("Creating a new taxi reservation for user {UserId}.", model.UserId);
+             
 
                 if (!TimeSpan.TryParse(model.ReservationTime, out var timeSpan))
                 {
@@ -201,5 +201,28 @@ namespace pentasharp.Services
                 throw;
             }
         }
+
+        public async Task<List<TaxiReservationRequest>> GetReservationsForUserAsync(int userId)
+        {
+            try
+            {
+                var reservations = await _context.TaxiReservations
+                     .Include(r => r.User)
+                     .Where(r => r.UserId == userId)
+                     .Include(r => r.Taxi)
+                     .Include(r => r.TaxiCompany)
+                     .Where(r => r.UserId == userId)
+                     .ToListAsync();
+
+                var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
+                return reservationInfo;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching reservations for user {UserId}", userId);
+                throw;
+            }
+        }
+
     }
 }
