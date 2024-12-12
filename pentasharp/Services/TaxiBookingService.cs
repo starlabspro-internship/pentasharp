@@ -101,5 +101,39 @@ namespace pentasharp.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync(int userId)
+        {
+            var bookings = await _context.TaxiBookings
+                   .Include(r => r.User)
+                     .Where(r => r.UserId == userId)
+                     .Include(r => r.Taxi)
+                     .Include(r => r.TaxiCompany)
+                     .Where(r => r.UserId == userId)
+                .ToListAsync();
+
+            return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
+        }
+
+        public async Task<bool> CancelBookingAsync(int bookingId, int userId)
+        {
+            var booking = await _context.TaxiBookings
+                .FirstOrDefaultAsync(b => b.BookingId == bookingId && b.UserId == userId);
+
+            if (booking == null)
+            {
+                return false; // Booking not found or does not belong to the user
+            }
+
+            if (booking.Status != ReservationStatus.Pending)
+            {
+                return false; // Only bookings with a "Pending" status can be canceled
+            }
+
+            // Cancel the booking
+            _context.TaxiBookings.Remove(booking);
+            await _context.SaveChangesAsync();
+            return true; // Return true if the booking was successfully canceled
+        }
     }
 }

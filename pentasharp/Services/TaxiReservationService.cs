@@ -208,6 +208,32 @@ namespace pentasharp.Services
                 throw;
             }
         }
+        public async Task<bool> CancelReservationAsync(int reservationId, int userId)
+        {
+            try
+            {
+                var reservation = await _context.TaxiReservations
+                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId && r.UserId == userId);
+
+                if (reservation == null || reservation.Status != ReservationStatus.Pending)
+                {
+                    _logger.LogWarning("Reservation with ID {ReservationId} cannot be canceled because it is not pending or does not belong to user {UserId}.", reservationId, userId);
+                    return false;
+                }
+
+                reservation.Status = ReservationStatus.Canceled; // Update the status to 'Canceled'
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Reservation with ID {ReservationId} canceled successfully.", reservationId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while canceling reservation with ID {ReservationId}.", reservationId);
+                throw;
+            }
+        }
+
 
     }
 }

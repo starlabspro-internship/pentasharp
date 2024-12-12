@@ -1,0 +1,45 @@
+﻿@model List<pentasharp.ViewModel.BusReservation.MyBusReservationViewModel>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">My Bus Reservations</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row">
+            @foreach (var reservation in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5>Reservation #@reservation.ReservationId</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Reservation Date:</strong> @reservation.ReservationDate.ToString("g")</p>
+                            <p><strong>Seats Reserved:</strong> @reservation.NumberOfSeats</p>
+                            <p><strong>Total Amount:</strong> @reservation.TotalAmount.ToString("C")</p>
+                            <p><strong>Status:</strong> @reservation.Status</p>
+                            <p><strong>From:</strong> @reservation.FromLocation</p>
+                            <p><strong>To:</strong> @reservation.ToLocation</p>
+                            <p><strong>Departure:</strong> @reservation.DepartureTime.ToString("g")</p>
+                            <p><strong>Arrival:</strong> @reservation.ArrivalTime.ToString("g")</p>
+                            <p><strong>Price per Seat:</strong> @reservation.Price.ToString("C")</p>
+
+                            @if (reservation.Status == "Pending")
+                            {
+                                <form method="post" action="@Url.Action("CancelBusReservation", "UserActivity", new { id = reservation.ReservationId })">
+                                    <button type="submit" class="btn btn-danger">Cancel Reservation</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <strong>No bus reservations found.</strong> You haven't made any bus reservations yet.
+        </div>
+    }
+</div>
