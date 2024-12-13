@@ -12,6 +12,7 @@
     let currentPrice = 0;
     let selectedScheduleId = null;
     let userId = null;
+    let selectedCompanyId = null;
 
     const departureDropdown = document.createElement("ul");
     const arrivalDropdown = document.createElement("ul");
@@ -74,7 +75,7 @@
                 departureDropdown.classList.remove("show");
                 return;
             }
-            fetchSuggestions(`/api/BusSchedule/GetFromLocationSuggestions?query=${query}`, departureInput, departureDropdown, "departure location");
+            fetchSuggestions(`/api/SearchSchedule/GetFromLocationSuggestions?query=${query}`, departureInput, departureDropdown, "departure location");
         }, 300)
     );
 
@@ -88,7 +89,7 @@
                 return;
             }
             fetchSuggestions(
-                `/api/BusSchedule/GetToLocationSuggestions?fromLocation=${fromLocation}&query=${query}`,
+                `/api/SearchSchedule/GetToLocationSuggestions?fromLocation=${fromLocation}&query=${query}`,
                 arrivalInput,
                 arrivalDropdown,
                 "arrival location"
@@ -124,7 +125,7 @@
             return;
         }
 
-        fetch(`/api/BusSchedule/SearchSchedules?from=${from}&to=${to}&date=${date}`)
+        fetch(`/api/SearchSchedule/SearchSchedules?from=${from}&to=${to}&date=${date}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch schedules.');
@@ -143,7 +144,7 @@
 
                 schedules.forEach(schedule => {
                     const scheduleCard = `
-                        <div class="schedule-card">
+                        <div key="${schedule.busCompanyId}" class="schedule-card">
                             <div class="row align-items-center">
                                 <div class="col-5 d-flex align-items-start">
                                     <div class="me-3 text-center">
@@ -172,7 +173,7 @@
                                         <button class="btn btn-primary rounded-pill px-3 py-1" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#bookingModal" 
-                                            onclick="openBookingModal('${schedule.fromLocation}', '${schedule.toLocation}', '${schedule.availableSeats}', '${schedule.status}', ${schedule.price}, ${schedule.scheduleId})">
+                                            onclick="openBookingModal('${schedule.fromLocation}', '${schedule.toLocation}', '${schedule.availableSeats}', '${schedule.status}', ${schedule.price}, ${schedule.scheduleId}, ${schedule.busCompanyId})">
                                             Book Now
                                         </button>
                                     </div>
@@ -200,7 +201,7 @@
         totalAmountInput.value = totalAmount > 0 ? `${totalAmount}\u20AC` : '';
     });
 
-    window.openBookingModal = function (departure, arrival, availableSeats, status, price, scheduleId) {
+    window.openBookingModal = function (departure, arrival, availableSeats, status, price, scheduleId, busCompanyId) {
         document.getElementById('modalDeparture').textContent = departure;
         document.getElementById('modalArrival').textContent = arrival;
         document.getElementById('modalSeats').textContent = availableSeats;
@@ -210,6 +211,9 @@
         document.getElementById('totalAmount').value = '';
         currentPrice = price;
         selectedScheduleId = scheduleId;
+        selectedCompanyId = busCompanyId;
+
+        console.log("bus", selectedCompanyId);
 
         const now = new Date();
         reservationDateInput.value = now.toISOString();
@@ -246,9 +250,13 @@
             TotalAmount: totalAmount,
             ScheduleId: selectedScheduleId,
             UserId: userId,
+            BusCompanyId: selectedCompanyId
         };
 
-        fetch("/api/BusSchedule/AddReservation", {
+        console.log("bus", data);
+        
+
+        fetch("/api/SearchSchedule/AddReservation", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

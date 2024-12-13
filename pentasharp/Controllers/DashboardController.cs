@@ -8,7 +8,6 @@ namespace WebApplication1.Controllers
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class DashboardController : Controller
     {
-
         public IActionResult Dashboard()
         {
             return View();

@@ -59,6 +59,11 @@ namespace pentasharp.Data.Configurations
                 .WithOne(b => b.BusCompany)
                 .HasForeignKey(b => b.BusCompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(bc => bc.BusRoutes)
+               .WithOne(b => b.BusCompany)
+               .HasForeignKey(b => b.BusCompanyId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
 
         private void ConfigureDefaults(EntityTypeBuilder<BusCompany> builder)

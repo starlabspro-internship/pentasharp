@@ -246,6 +246,10 @@ namespace WebApplication1.Controllers
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
             var businessType = user.BusinessType.ToString();
             session.SetString("BusinessType", businessType);
+            if (user.CompanyId.HasValue)
+            {
+                session.SetInt32("CompanyId", user.CompanyId.Value);
+            }
 
 
             _logger.LogInformation("User {Email} logged in successfully.", model.Email);

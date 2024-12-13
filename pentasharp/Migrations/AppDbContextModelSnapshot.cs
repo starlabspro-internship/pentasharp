@@ -65,6 +65,9 @@ namespace pentasharp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationId"));
 
+                    b.Property<int?>("BusCompanyId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -97,6 +100,8 @@ namespace pentasharp.Migrations
 
                     b.HasKey("ReservationId");
 
+                    b.HasIndex("BusCompanyId");
+
                     b.HasIndex("ScheduleId");
 
                     b.HasIndex("UserId");
@@ -111,6 +116,9 @@ namespace pentasharp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RouteId"));
+
+                    b.Property<int>("BusCompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -133,6 +141,8 @@ namespace pentasharp.Migrations
 
                     b.HasKey("RouteId");
 
+                    b.HasIndex("BusCompanyId");
+
                     b.ToTable("BusRoutes");
                 });
 
@@ -148,6 +158,9 @@ namespace pentasharp.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("AvailableSeats")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BusCompanyId")
                         .HasColumnType("int");
 
                     b.Property<int>("BusId")
@@ -175,6 +188,8 @@ namespace pentasharp.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("ScheduleId");
+
+                    b.HasIndex("BusCompanyId");
 
                     b.HasIndex("BusId");
 
@@ -556,6 +571,11 @@ namespace pentasharp.Migrations
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>
                 {
+                    b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
+                        .WithMany("BusReservations")
+                        .HasForeignKey("BusCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("pentasharp.Models.Entities.BusSchedule", "Schedule")
                         .WithMany()
                         .HasForeignKey("ScheduleId")
@@ -568,13 +588,32 @@ namespace pentasharp.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("BusCompany");
+
                     b.Navigation("Schedule");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("pentasharp.Models.Entities.BusRoutes", b =>
+                {
+                    b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
+                        .WithMany("BusRoutes")
+                        .HasForeignKey("BusCompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BusCompany");
+                });
+
             modelBuilder.Entity("pentasharp.Models.Entities.BusSchedule", b =>
                 {
+                    b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
+                        .WithMany("BusSchedules")
+                        .HasForeignKey("BusCompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("pentasharp.Models.Entities.Buses", "Bus")
                         .WithMany("BusSchedules")
                         .HasForeignKey("BusId")
@@ -588,6 +627,8 @@ namespace pentasharp.Migrations
                         .IsRequired();
 
                     b.Navigation("Bus");
+
+                    b.Navigation("BusCompany");
 
                     b.Navigation("Route");
                 });
@@ -709,6 +750,12 @@ namespace pentasharp.Migrations
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
                 {
+                    b.Navigation("BusReservations");
+
+                    b.Navigation("BusRoutes");
+
+                    b.Navigation("BusSchedules");
+
                     b.Navigation("Buses");
                 });
 

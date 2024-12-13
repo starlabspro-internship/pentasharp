@@ -39,7 +39,7 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(br => br.UpdatedAt)
-                .IsRequired(false); // Nullable for optional updates
+                .IsRequired(false);
         }
 
         private void ConfigureIndexes(EntityTypeBuilder<BusRoutes> builder)
@@ -52,6 +52,14 @@ namespace pentasharp.Data.Configurations
             
             builder.HasIndex(br => new { br.FromLocation, br.ToLocation })
                 .HasDatabaseName("IX_BusRoutes_FromToLocation");
+        }
+
+        private void ConfigureRelationships(EntityTypeBuilder<BusRoutes> builder)
+        {
+            builder.HasOne(br => br.BusCompany)
+                    .WithMany(bc => bc.BusRoutes)
+                    .HasForeignKey(br=>br.BusCompanyId)
+                    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

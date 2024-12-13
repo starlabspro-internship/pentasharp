@@ -40,6 +40,9 @@ namespace pentasharp.ViewModel.BusReservation
         /// </summary>
         public int UserId { get; set; }
 
+        public int BusCompanyId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         /// <summary>
         /// Current status of the reservation.
         /// </summary>

@@ -62,6 +62,10 @@ namespace pentasharp.Models.Entities
         [Required]
         public int UserId { get; set; }
 
+        public int? BusCompanyId { get; set; }
+
+        public BusCompany BusCompany { get; set; } = null!;
+
         /// <summary>
         /// Gets or sets the current status of the reservation.
         /// </summary>

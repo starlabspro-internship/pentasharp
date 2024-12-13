@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     fetchReservations();
 });
 
@@ -12,7 +12,7 @@ if (actionSelect) {
 }
 
 function fetchReservations() {
-    fetch('/api/BusSchedule/GetReservations')
+    fetch('/api/BusReservation/GetReservations')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch reservations');
@@ -66,29 +66,43 @@ function populateReservations(reservations) {
         const badgeClass = reservation.status === 0 ? 'bg-warning' : reservation.status === 1 ? 'bg-success' : 'bg-danger';
         const passengerCount = Math.round(reservation.totalAmount / reservation.schedule.price);
         const reservationElement = `
-            <div class="list-group-item d-flex align-items-center justify-content-between shadow-sm p-3 mb-2 rounded" style="background-color: #fdfdfe;">
-                <div class="schedule-details">
-                    <h6 class="mb-1 fw-bold text-dark">Route: ${reservation.schedule.fromLocation} - ${reservation.schedule.toLocation}</h6>
-                    <small class="text-muted">Bus Number: <b>${reservation.schedule.busNumber}</b> | Schedule ID: <b>${reservation.schedule.scheduleId}</b></small><br />
-                    <small class="text-muted">Departure: <b>${new Date(reservation.schedule.departureTime).toLocaleString()}</b> | Arrival: <b>${new Date(reservation.schedule.arrivalTime).toLocaleString()}</b></small><br />
-                    <small class="text-muted">Price per Passenger: <b>${reservation.schedule.price}</b> | Status: <span class="badge ${badgeClass} text-white">${mapStatus(reservation.status)}</span></small><br />
-                    <small class="text-muted">Passenger Count: <b>${passengerCount}</b> | Total Amount: <b>${reservation.totalAmount}</b></small>
-                </div>
-                <div class="action-buttons d-flex flex-column align-items-center">
-                    <button class="btn btn-success btn-sm mb-2 d-flex align-items-center justify-content-center" onclick="confirmReservation(${reservation.reservationId})">
-                        <i class="fas fa-check me-2"></i> Confirm
-                    </button>
-                    <button class="btn btn-danger btn-sm d-flex align-items-center justify-content-center" onclick="cancelReservation(${reservation.reservationId})">
-                        <i class="fas fa-times me-2"></i> Cancel
-                    </button>
-                </div>
-            </div>`;
+    <div class="reservation-card shadow-sm mb-2 rounded p-2" style="background-color: #fdfdfd; border: 1px solid #eaeaea;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="fw-bold text-dark m-0">${reservation.schedule.fromLocation} → ${reservation.schedule.toLocation}</h6>
+                <small class="text-muted">Passenger: <b>${reservation.user.firstName} ${reservation.user.lastName}</b></small>
+            </div>
+            <span class="badge ${badgeClass} text-white">${mapStatus(reservation.status)}</span>
+        </div>
+        <hr class="my-1" />
+        <div class="reservation-details">
+            <small class="text-muted">
+                <b>Bus:</b> ${reservation.schedule.busNumber} | <b>Schedule:</b> ${reservation.schedule.scheduleId}
+            </small><br />
+            <small class="text-muted">
+                <b>Departure:</b> ${new Date(reservation.schedule.departureTime).toLocaleString()} | 
+                <b>Arrival:</b> ${new Date(reservation.schedule.arrivalTime).toLocaleString()}
+            </small><br />
+            <small class="text-muted">
+                <b>Price:</b> ${reservation.schedule.price} | <b>Total:</b> ${reservation.totalAmount} | 
+                <b>Seats:</b> ${passengerCount}
+            </small>
+        </div>
+        <div class="mt-2 d-flex justify-content-end gap-2">
+            <button class="btn btn-success btn-sm" onclick="confirmReservation(${reservation.reservationId})">
+                <i class="fas fa-check"></i> Confirm
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="cancelReservation(${reservation.reservationId})">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+        </div>
+    </div>`;
         confirmSection.insertAdjacentHTML('beforeend', reservationElement);
     });
 }
 
 function confirmReservation(reservationId) {
-    fetch('/api/BusSchedule/ConfirmReservation', {
+    fetch('/api/BusReservation/ConfirmReservation', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -114,7 +128,7 @@ function confirmReservation(reservationId) {
 }
 
 function cancelReservation(reservationId) {
-    fetch('/api/BusSchedule/CancelReservation', {
+    fetch('/api/BusReservation/CancelReservation', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
