@@ -22,8 +22,7 @@ namespace pentasharp.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-
-
+        
         public UserActivityController(
             ITaxiReservationService taxiReservationService,
               ITaxiBookingService taxiBookingService,
@@ -43,13 +42,23 @@ namespace pentasharp.Controllers
         [HttpGet("MyReservations")]
         public async Task<IActionResult> MyReservations()
         {
-
             var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
+            {
+                _logger.LogWarning("User ID not found in session.");
+                return View("Error", new { message = "User not found in session. Please log in again." });
+            }
 
             try
             {
                 var reservations = await _taxiReservationService.GetReservationsForUserAsync(userId.Value);
                 return View("MyReservations", reservations);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "User with ID {UserId} not found", userId);
+                return View("Error", new { message = "User not found." });
             }
             catch (Exception ex)
             {
@@ -61,20 +70,31 @@ namespace pentasharp.Controllers
         [HttpGet("MyBookings")]
         public async Task<IActionResult> MyBookings()
         {
-
             var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
+            {
+                _logger.LogWarning("User ID not found in session.");
+                return View("Error", new { message = "User not found in session. Please log in again." });
+            }
 
             try
             {
                 var bookings = await _taxiBookingService.GetBookingsForUserAsync(userId.Value);
                 return View("MyBookings", bookings);
             }
+            catch (KeyNotFoundException ex)
+            {
+                _logger.LogWarning(ex, "User with ID {UserId} not found", userId);
+                return View("Error", new { message = "User not found." });
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving reservations for user {UserId}", userId);
-                return View("Error", new { message = "An error occurred while retrieving your reservations." });
+                _logger.LogError(ex, "An error occurred while retrieving bookings for user {UserId}", userId);
+                return View("Error", new { message = "An error occurred while retrieving your bookings." });
             }
         }
+
 
         [HttpPost("CancelBooking/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
@@ -155,7 +175,7 @@ namespace pentasharp.Controllers
                 }
 
                 _logger.LogInformation("Reservation with ID {ReservationId} canceled successfully.", id);
-                return RedirectToAction("MyReservations"); 
+                return RedirectToAction("MyReservations");
             }
             catch (Exception ex)
             {

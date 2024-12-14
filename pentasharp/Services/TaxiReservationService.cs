@@ -191,9 +191,15 @@ namespace pentasharp.Services
         {
             try
             {
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found", userId);
+                    throw new KeyNotFoundException($"User with ID {userId} not found.");
+                }
+
                 var reservations = await _context.TaxiReservations
                      .Include(r => r.User)
-                     .Where(r => r.UserId == userId)
                      .Include(r => r.Taxi)
                      .Include(r => r.TaxiCompany)
                      .Where(r => r.UserId == userId)
@@ -208,20 +214,26 @@ namespace pentasharp.Services
                 throw;
             }
         }
+
         public async Task<bool> CancelReservationAsync(int reservationId, int userId)
         {
             try
             {
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found.", userId);
+                    return false; 
+                }
                 var reservation = await _context.TaxiReservations
-                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId && r.UserId == userId);
+                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId && r.UserId == userId && r.Status == ReservationStatus.Pending);
 
-                if (reservation == null || reservation.Status != ReservationStatus.Pending)
+                if (reservation == null)
                 {
                     _logger.LogWarning("Reservation with ID {ReservationId} cannot be canceled because it is not pending or does not belong to user {UserId}.", reservationId, userId);
                     return false;
                 }
-
-                reservation.Status = ReservationStatus.Canceled; // Update the status to 'Canceled'
+                reservation.Status = ReservationStatus.Canceled;
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Reservation with ID {ReservationId} canceled successfully.", reservationId);
@@ -233,7 +245,6 @@ namespace pentasharp.Services
                 throw;
             }
         }
-
 
     }
 }

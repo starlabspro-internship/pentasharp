@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using pentasharp.Data;
 using pentasharp.Interfaces;
 using pentasharp.Models.DTOs;
@@ -16,11 +17,13 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<TaxiReservationService> _logger;
 
-        public TaxiBookingService(AppDbContext context, IMapper mapper)
+        public TaxiBookingService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<TaxiCompanyViewModel>> GetAllCompaniesAsync()
@@ -104,36 +107,62 @@ namespace pentasharp.Services
 
         public async Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync(int userId)
         {
-            var bookings = await _context.TaxiBookings
-                   .Include(r => r.User)
-                     .Where(r => r.UserId == userId)
-                     .Include(r => r.Taxi)
-                     .Include(r => r.TaxiCompany)
-                     .Where(r => r.UserId == userId)
-                .ToListAsync();
+            try
+            {
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found", userId);
+                    throw new KeyNotFoundException($"User with ID {userId} not found.");
+                }
 
-            return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
+                var bookings = await _context.TaxiBookings
+                    .Include(r => r.User)
+                    .Include(r => r.Taxi)
+                    .Include(r => r.TaxiCompany)
+                    .Where(r => r.UserId == userId)
+                    .ToListAsync();
+
+                return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching bookings for user {UserId}", userId);
+                throw;
+            }
         }
 
         public async Task<bool> CancelBookingAsync(int bookingId, int userId)
         {
-            var booking = await _context.TaxiBookings
-                .FirstOrDefaultAsync(b => b.BookingId == bookingId && b.UserId == userId);
-
-            if (booking == null)
+            try
             {
-                return false; // Booking not found or does not belong to the user
-            }
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found.", userId);
+                    return false; 
+                }
+                var booking = await _context.TaxiBookings
+                    .FirstOrDefaultAsync(b => b.BookingId == bookingId && b.UserId == userId && b.Status == ReservationStatus.Pending);
 
-            if (booking.Status != ReservationStatus.Pending)
+                if (booking == null)
+                {
+                    _logger.LogWarning("Booking with ID {BookingId} not found, does not belong to user {UserId}, or is not pending", bookingId, userId);
+                    return false;
+                }
+
+                _context.TaxiBookings.Remove(booking);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Booking with ID {BookingId} canceled successfully", bookingId);
+                return true;
+            }
+            catch (Exception ex)
             {
-                return false; // Only bookings with a "Pending" status can be canceled
+                _logger.LogError(ex, "Error occurred while canceling booking with ID {BookingId}.", bookingId);
+                throw;
             }
-
-            // Cancel the booking
-            _context.TaxiBookings.Remove(booking);
-            await _context.SaveChangesAsync();
-            return true; // Return true if the booking was successfully canceled
         }
+
     }
 }

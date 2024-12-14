@@ -22,8 +22,8 @@ namespace pentasharp.Mappings
                 .ForMember(dest => dest.ReservationDate, opt => opt.MapFrom(src => src.ReservationDate))
                 .ForMember(dest => dest.NumberOfSeats, opt => opt.MapFrom(src => src.NumberOfSeats))
                 .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(src => src.TotalAmount))
-                .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus.ToString())) // Enum to string
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString())) // Enum to string
+                .ForMember(dest => dest.PaymentStatus, opt => opt.MapFrom(src => src.PaymentStatus.ToString())) 
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.BusNumber, opt => opt.MapFrom(src => src.Schedule.Bus.BusNumber))
                 .ForMember(dest => dest.FromLocation, opt => opt.MapFrom(src => src.Schedule.Route.FromLocation))
                 .ForMember(dest => dest.ToLocation, opt => opt.MapFrom(src => src.Schedule.Route.ToLocation))
