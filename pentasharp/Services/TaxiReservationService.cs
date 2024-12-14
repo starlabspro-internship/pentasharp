@@ -191,9 +191,15 @@ namespace pentasharp.Services
         {
             try
             {
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found", userId);
+                    throw new KeyNotFoundException($"User with ID {userId} not found.");
+                }
+
                 var reservations = await _context.TaxiReservations
                      .Include(r => r.User)
-                     .Where(r => r.UserId == userId)
                      .Include(r => r.Taxi)
                      .Include(r => r.TaxiCompany)
                      .Where(r => r.UserId == userId)
@@ -205,6 +211,37 @@ namespace pentasharp.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while fetching reservations for user {UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<bool> CancelReservationAsync(int reservationId, int userId)
+        {
+            try
+            {
+                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+                if (!userExists)
+                {
+                    _logger.LogWarning("User with ID {UserId} not found.", userId);
+                    return false; 
+                }
+                var reservation = await _context.TaxiReservations
+                    .FirstOrDefaultAsync(r => r.ReservationId == reservationId && r.UserId == userId && r.Status == ReservationStatus.Pending);
+
+                if (reservation == null)
+                {
+                    _logger.LogWarning("Reservation with ID {ReservationId} cannot be canceled because it is not pending or does not belong to user {UserId}.", reservationId, userId);
+                    return false;
+                }
+                reservation.Status = ReservationStatus.Canceled;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Reservation with ID {ReservationId} canceled successfully.", reservationId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while canceling reservation with ID {ReservationId}.", reservationId);
                 throw;
             }
         }

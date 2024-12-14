@@ -43,5 +43,20 @@ namespace pentasharp.Interfaces
         /// <param name="model">The <see cref="EditTaxiBookingViewModel"/> containing updated booking details.</param>
         /// <returns>A boolean indicating whether the booking was updated successfully.</returns>
         Task<bool> UpdateBookingAsync(EditTaxiBookingViewModel model);
+
+        /// <summary>
+        /// Retrieves a list of taxi bookings for a specific user.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose reservations are being retrieved.</param>
+        /// <returns>A list of taxi reservations made by the specified user.</returns>
+        Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync(int userId);
+
+        /// <summary>
+        /// Cancels a user's taxi booking if it is in a pending state.
+        /// </summary>
+        /// <param name="bookingId">The ID of the booking to be canceled.</param>
+        /// <param name="userId">The ID of the user requesting the cancellation.</param>
+        /// <returns>A boolean indicating whether the cancellation was successful.</returns>
+        Task<bool> CancelBookingAsync(int bookingId, int userId);
     }
 }

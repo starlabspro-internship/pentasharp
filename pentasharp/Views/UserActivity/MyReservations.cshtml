@@ -39,6 +39,12 @@
                                     ? reservation.Fare.Value.ToString("C", System.Globalization.CultureInfo.CurrentCulture)
                                     : "N/A")
                             </p>
+                            @if (reservation.Status == "Pending")
+                            {
+                                <form method="post" action="@Url.Action("CancelReservation", "UserActivity", new { id = reservation.ReservationId })">
+                                    <button type="submit" class="btn btn-danger">Cancel Reservation</button>
+                                </form>
+                            }
                         </div>
                     </div>
                 </div>
