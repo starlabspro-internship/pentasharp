@@ -6,6 +6,8 @@
         InvalidData,
         Conflict,
         InternalServerError,
-        NotFound
+        NotFound,
+        Unauthorized,
+        Forbidden
     }
 }

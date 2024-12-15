@@ -243,6 +243,8 @@ namespace WebApplication1.Controllers
             var session = _httpContextAccessor.HttpContext.Session;
             session.SetInt32("UserId", user.UserId);
             session.SetString("FirstName", user.FirstName);
+            var userRole = user.Role.ToString();
+            session.SetString("UserRole", userRole);
             session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
             var businessType = user.BusinessType.ToString();
             session.SetString("BusinessType", businessType);

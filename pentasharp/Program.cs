@@ -30,7 +30,9 @@ namespace WebApplication1
             builder.Services.AddScoped<IDriverService, DriverService>();
             builder.Services.AddScoped<IBusCompanyService, BusCompanyService>();
             builder.Services.AddScoped<IBusService, BusService>();
-
+            builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
+            builder.Services.AddScoped<ISearchBusScheduleService, SearchBusScheduleService>();
+            builder.Services.AddScoped<IBusReservationService, BusReservationService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -52,7 +54,15 @@ namespace WebApplication1
 
             builder.Services.AddScoped<AdminOnlyFilter>();
 
+            builder.Services.AddScoped<AdminBaseFilter>();
+
             builder.Services.AddScoped<LoginRequiredFilter>();
+
+            builder.Services.AddScoped<BusinessOnlyFilter>(provider =>
+            {
+                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+                return new BusinessOnlyFilter("", httpContextAccessor);
+            });
 
             var app = builder.Build();
 

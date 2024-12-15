@@ -1,61 +1,71 @@
 ﻿@{
+    var businessType = ViewContext.HttpContext.Session.GetString("BusinessType");
+    var isAdmin = ViewContext.HttpContext.Session.GetString("IsAdmin") == "true";
+    var role = ViewContext.HttpContext.Session.GetString("UserRole");
+
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Dashboard";
 }
 <div class="container-fluid py-4">
     <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
-                        <i class="bi bi-calendar3 text-white" style="font-size: 50px"></i>
+        @if (businessType == "BusCompany" && role == "Admin")
+        {
+            <div class="col-xl-3 col-sm-6 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
+                            <i class="bi bi-calendar3 text-white" style="font-size: 50px"></i>
+                        </div>
+                        <h6 class="text-uppercase font-weight-bold mb-0">Bus Schedule</h6>
                     </div>
-                    <h6 class="text-uppercase font-weight-bold mb-0">Bus Schedule</h6>
-                </div>
-                <div class="card-footer text-center bg-transparent">
-                    <a asp-controller="BusSchedule" asp-action="BusScheduleManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    <div class="card-footer text-center bg-transparent">
+                        <a asp-controller="BusSchedule" asp-action="BusScheduleManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
-                        <i class="bi bi-bus-front text-white" style="font-size: 50px"></i>
+            <div class="col-xl-3 col-sm-6 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
+                            <i class="bi bi-bus-front text-white" style="font-size: 50px"></i>
+                        </div>
+                        <h6 class="text-uppercase font-weight-bold mb-0">Bus Reservation</h6>
                     </div>
-                    <h6 class="text-uppercase font-weight-bold mb-0">Bus Reservation</h6>
-                </div>
-                <div class="card-footer text-center bg-transparent">
-                    <a asp-controller="BusSchedule" asp-action="BusReservationManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    <div class="card-footer text-center bg-transparent">
+                        <a asp-controller="BusSchedule" asp-action="BusReservationManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
-                        <i class="bi bi-car-front text-white" style="font-size: 50px"></i>
+        }
+        @if(businessType == "TaxiCompany" && role == "Admin")
+        {
+            <div class="col-xl-3 col-sm-6 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
+                            <i class="bi bi-car-front text-white" style="font-size: 50px"></i>
+                        </div>
+                        <h6 class="text-uppercase font-weight-bold mb-0">Taxi Booking</h6>
                     </div>
-                    <h6 class="text-uppercase font-weight-bold mb-0">Taxi Booking</h6>
-                </div>
-                <div class="card-footer text-center bg-transparent">
-                    <a asp-controller="TaxiManagement" asp-action="TaxiBookingManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    <div class="card-footer text-center bg-transparent">
+                        <a asp-controller="TaxiManagement" asp-action="TaxiBookingManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-4">
-            <div class="card shadow-lg border-0">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
-                        <i class="bi bi-receipt text-white" style="font-size: 50px"></i>
+            <div class="col-xl-3 col-sm-6 mb-4">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <div class="icon-box bg-gradient-primary shadow text-center border-radius-lg mb-4 d-flex justify-content-center align-items-center" style="width: 100px; height: 100px">
+                            <i class="bi bi-receipt text-white" style="font-size: 50px"></i>
+                        </div>
+                        <h6 class="text-uppercase font-weight-bold mb-0">Taxi Reservation</h6>
                     </div>
-                    <h6 class="text-uppercase font-weight-bold mb-0">Taxi Reservation</h6>
-                </div>
-                <div class="card-footer text-center bg-transparent">
-                    <a asp-controller="TaxiManagement" asp-action="TaxiReservationManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    <div class="card-footer text-center bg-transparent">
+                        <a asp-controller="TaxiManagement" asp-action="TaxiReservationManagement" class="btn btn-outline-primary w-100">Manage</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
     <div class="row mt-4">
         <div class="col-lg-7 mb-lg-0 mb-4">

@@ -24,6 +24,8 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
     <Folder Include="ViewModel\TaxiBooking\" />
+    <Folder Include="Views\BusCompany\" />
+    <Folder Include="Views\TaxiCompany\" />
   </ItemGroup>
 
 </Project>

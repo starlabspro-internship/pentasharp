@@ -21,27 +21,23 @@ namespace WebApplication1.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IBusCompanyService _IBusCompanyService;
+        private readonly ISearchBusScheduleService _scheduleService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public SearchBusScheduleController(AppDbContext context, IMapper mapper, IBusCompanyService busCompanyService, IHttpContextAccessor httpContextAccessor)
+        public SearchBusScheduleController(AppDbContext context, IMapper mapper, IBusCompanyService busCompanyService, IHttpContextAccessor httpContextAccessor, ISearchBusScheduleService scheduleService)
         {
             _context = context;
             _mapper = mapper;
             _IBusCompanyService = busCompanyService;
             _httpContextAccessor = httpContextAccessor;
+            _scheduleService = scheduleService;
         }
 
         [AllowAnonymous]
         [HttpGet("SearchSchedules")]
-        public IActionResult SearchSchedules(string from, string to, DateTime date)
+        public async Task<IActionResult> SearchSchedules(string from, string to, DateTime date)
         {
-
-            var schedules = _context.BusSchedules
-                .Where(s => s.Route.FromLocation.Contains(from)
-                            && s.Route.ToLocation.Contains(to)
-                            && s.DepartureTime.Date == date.Date)
-                .ProjectTo<SearchScheduleViewModel>(_mapper.ConfigurationProvider)
-                .ToList();
+            var schedules = await _scheduleService.SearchSchedulesAsync(from, to, date);
 
             if (!schedules.Any())
             {
@@ -52,149 +48,116 @@ namespace WebApplication1.Controllers
                 ));
             }
 
-            return Ok(schedules);
+            return Ok(ResponseFactory.CreateResponse(
+                ResponseCodes.Success,
+                "Schedules retrieved successfully.",
+                schedules
+            ));
         }
 
         [AllowAnonymous]
         [HttpGet("GetFromLocationSuggestions")]
-        public IActionResult GetFromLocationSuggestions(string query)
+        public async Task<IActionResult> GetFromLocationSuggestions(string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            try
+            {
+                var suggestions = await _scheduleService.GetFromLocationSuggestionsAsync(query);
+
+                if (!suggestions.Any())
+                {
+                    return NotFound(ResponseFactory.CreateResponse(
+                        ResponseCodes.NotFound,
+                        ResponseMessages.NotFound,
+                        suggestions
+                    ));
+                }
+
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    ResponseMessages.Success,
+                    suggestions
+                ));
+            }
+            catch (ArgumentException ex)
             {
                 return BadRequest(ResponseFactory.CreateResponse<string[]>(
                     ResponseCodes.InvalidData,
-                    ResponseMessages.InvalidData,
+                    ex.Message,
                     null
                 ));
             }
-
-            var suggestions = _context.BusRoutes
-                .Where(r => r.FromLocation.StartsWith(query))
-                .Select(r => r.FromLocation)
-                .Distinct()
-                .Take(10)
-                .ToList();
-
-            if (!suggestions.Any())
-            {
-                return NotFound(ResponseFactory.CreateResponse<string[]>(
-                    ResponseCodes.NotFound,
-                    ResponseMessages.NotFound,
-                    suggestions.ToArray()
-                ));
-            }
-
-            return Ok(ResponseFactory.CreateResponse(
-                ResponseCodes.Success,
-                ResponseMessages.Success,
-                suggestions.ToArray()
-            ));
         }
 
         [AllowAnonymous]
         [HttpGet("GetToLocationSuggestions")]
-        public IActionResult GetToLocationSuggestions(string fromLocation, string query)
+        public async Task<IActionResult> GetToLocationSuggestions(string fromLocation, string query)
         {
-            if (string.IsNullOrWhiteSpace(query) || string.IsNullOrWhiteSpace(fromLocation))
+            try
+            {
+                var suggestions = await _scheduleService.GetToLocationSuggestionsAsync(fromLocation, query);
+
+                if (!suggestions.Any())
+                {
+                    return NotFound(ResponseFactory.CreateResponse(
+                        ResponseCodes.NotFound,
+                        ResponseMessages.NotFound,
+                        suggestions
+                    ));
+                }
+
+                return Ok(ResponseFactory.CreateResponse(
+                    ResponseCodes.Success,
+                    ResponseMessages.Success,
+                    suggestions
+                ));
+            }
+            catch (ArgumentException ex)
             {
                 return BadRequest(ResponseFactory.CreateResponse<string[]>(
                     ResponseCodes.InvalidData,
-                    ResponseMessages.InvalidData,
+                    ex.Message,
                     null
                 ));
             }
-
-            var suggestions = _context.BusRoutes
-                .Where(r => r.FromLocation == fromLocation && r.ToLocation.StartsWith(query))
-                .Select(r => r.ToLocation)
-                .Distinct()
-                .Take(10)
-                .ToList();
-
-            if (!suggestions.Any())
-            {
-                return NotFound(ResponseFactory.CreateResponse<string[]>(
-                    ResponseCodes.NotFound,
-                    ResponseMessages.NotFound,
-                    suggestions.ToArray()
-                ));
-            }
-
-            return Ok(ResponseFactory.CreateResponse(
-                ResponseCodes.Success,
-                ResponseMessages.Success,
-                suggestions.ToArray()
-            ));
-        }
-
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [Route("BusReservationManagement")]
-        public IActionResult BusReservationManagement()
-        {
-            return View();
         }
 
         [ServiceFilter(typeof(LoginRequiredFilter))]
         [HttpPost("AddReservation")]
-        public IActionResult AddReservation([FromBody] AddBusReservationViewModel model)
+        public async Task<IActionResult> AddReservation([FromBody] AddBusReservationViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ResponseFactory.CreateResponse<object>(
                     ResponseCodes.InvalidData,
-                    "Invalid data.",
+                    ResponseMessages.InvalidData,
                     null
                 ));
             }
 
             try
             {
-                var schedule = _context.BusSchedules
-                    .Where(s => s.ScheduleId == model.ScheduleId)
-                    .Select(s => new
-                    {
-                        s.ScheduleId,
-                        s.BusCompanyId,
-                        s.AvailableSeats,
-                        s.Status
-                    })
-                    .FirstOrDefault();
-
-                if (schedule == null)
-                {
-                    return NotFound(ResponseFactory.CreateResponse<object>(
-                        ResponseCodes.NotFound,
-                        "The schedule does not exist.",
-                        null
-                    ));
-                }
-
-                if (schedule.Status != BusScheduleStatus.Scheduled)
-                {
-                    return BadRequest(ResponseFactory.CreateResponse<object>(
-                        ResponseCodes.InvalidData,
-                        "The schedule is not active for reservations.",
-                        null
-                    ));
-                }
-
-                if (schedule.AvailableSeats < model.NumberOfSeats)
-                {
-                    return BadRequest(ResponseFactory.CreateResponse<object>(
-                        ResponseCodes.InvalidData,
-                        "Not enough seats available for the selected schedule.",
-                        null
-                    ));
-                }
-
-                var reservation = _mapper.Map<BusReservations>(model);
-                _context.BusReservations.Add(reservation);
-                _context.SaveChanges();
+                var reservationId = await _scheduleService.AddReservationAsync(model);
 
                 return Ok(ResponseFactory.CreateResponse(
                     ResponseCodes.Success,
                     "Reservation added successfully.",
-                    new { reservation.ReservationId }
+                    new { reservationId }
+                ));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.NotFound,
+                    ex.Message,
+                    null
+                ));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ResponseFactory.CreateResponse<object>(
+                    ResponseCodes.InvalidData,
+                    ex.Message,
+                    null
                 ));
             }
             catch (Exception ex)

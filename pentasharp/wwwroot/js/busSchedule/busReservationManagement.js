@@ -12,23 +12,50 @@ if (actionSelect) {
 }
 
 function fetchReservations() {
+    const confirmSection = document.querySelector('#confirmReservationSection .list-group');
+
     fetch('/api/BusReservation/GetReservations')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch reservations');
+                if (response.status === 404) {
+                    confirmSection.innerHTML = `
+                        <div class="list-group-item text-center">
+                            <span class="text-muted">No reservations found. The endpoint may be missing or unavailable.</span>
+                        </div>`;
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
             }
             return response.json();
         })
-        .then(data => populateReservations(data))
-        .catch(error => {
-            console.error('Error fetching reservations:', error);
-            const confirmSection = document.querySelector('#confirmReservationSection .list-group');
-            if (confirmSection) {
+        .then(data => {
+      
+            if (!data.success) {
                 confirmSection.innerHTML = `
                     <div class="list-group-item text-center">
-                        <span class="text-muted">Failed to load reservations. Please try again later.</span>
+                        <span class="text-muted">${data.message || "No reservations found."}</span>
                     </div>`;
+                return;
             }
+
+            const reservations = data.data;
+
+            if (!reservations || reservations.length <= 0) {
+                confirmSection.innerHTML = `
+                    <div class="list-group-item text-center">
+                        <span class="text-muted">You don’t have any reservations at the moment.</span>
+                    </div>`;
+                return;
+            }
+
+            populateReservations(reservations);
+        })
+        .catch(error => {
+            console.error('Error fetching reservations:', error);
+            confirmSection.innerHTML = `
+                <div class="list-group-item text-center">
+                    <span class="text-muted">Failed to load reservations. Please try again later.</span>
+                </div>`;
         });
 }
 
@@ -47,20 +74,8 @@ function mapStatus(statusCode) {
 
 function populateReservations(reservations) {
     const confirmSection = document.querySelector('#confirmReservationSection .list-group');
-    if (!confirmSection) {
-        console.error('Confirm reservation section not found');
-        return;
-    }
 
     confirmSection.innerHTML = '';
-
-    if (!reservations || reservations.length === 0) {
-        confirmSection.innerHTML = `
-            <div class="list-group-item text-center">
-                <span class="text-muted">No reservations found.</span>
-            </div>`;
-        return;
-    }
 
     reservations.reverse().forEach(reservation => {
         const badgeClass = reservation.status === 0 ? 'bg-warning' : reservation.status === 1 ? 'bg-success' : 'bg-danger';

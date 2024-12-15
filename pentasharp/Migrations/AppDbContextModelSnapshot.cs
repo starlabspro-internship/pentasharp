@@ -611,7 +611,7 @@ namespace pentasharp.Migrations
                     b.HasOne("pentasharp.Models.Entities.BusCompany", "BusCompany")
                         .WithMany("BusSchedules")
                         .HasForeignKey("BusCompanyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("pentasharp.Models.Entities.Buses", "Bus")

@@ -187,15 +187,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     deleteScheduleButton.addEventListener("click", function () {
-        if (!currentEditScheduleId) return;
-        fetch(`/api/BusSchedule/DeleteSchedule/${currentEditScheduleId}`, { method: "DELETE" })
-            .then(response => response.json())
+
+        fetch(`/api/BusSchedule/DeleteSchedule/${currentEditScheduleId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || "Failed to delete the schedule.");
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     scheduleModal.hide();
-                    fetchSchedules();
-                    fetchRoutes();
+                    fetchSchedules(); 
+                    fetchRoutes();  
+                } else {
+                    alert(data.message || "Failed to delete the schedule.");
                 }
+            })
+            .catch(error => {
+                console.error("Error deleting schedule:", error);
             });
     });
 

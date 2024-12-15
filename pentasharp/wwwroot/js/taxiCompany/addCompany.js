@@ -121,9 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const refreshAll = () => {
-        fetchEntities("/api/TaxiCompany/GetCompanies", renderCompanies);
-        fetchEntities("/api/TaxiCompany/GetTaxis", renderTaxis);
-        fetchEntities("/api/TaxiCompany/GetDrivers", renderDrivers);
+        fetchEntities("/Admin/TaxiCompany/GetCompanies", renderCompanies);
+        fetchEntities("/Business/TaxiCompany/GetTaxis", renderTaxis);
+        fetchEntities("/Business/TaxiCompany/GetDrivers", renderDrivers);
     };
 
     const attachListeners = () => {
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const companyId = button.dataset.id;
 
-                fetch(`/api/TaxiCompany/GetTaxiCompanyUser/${companyId}`)
+                fetch(`/Admin/TaxiCompany/GetTaxiCompanyUser/${companyId}`)
                     .then((response) => response.json())
                     .then((data) => {
                         if (!data.success) {
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             const userId = document.getElementById("userId") ? document.getElementById("userId").value : null;
 
                             if (companyName && contactInfo) {
-                                saveEntity(`/api/TaxiCompany/EditCompany/${companyId}`, "PUT", {
+                                saveEntity(`/Admin/TaxiCompany/EditCompany/${companyId}`, "PUT", {
                                     companyName,
                                     contactInfo,
                                     userId: userId ? parseInt(userId, 10) : null
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalTitle.textContent = "Edit Taxi";
                 const taxiId = button.dataset.id;
 
-                fetch(`/api/TaxiCompany/GetAvailableDrivers/${taxiId}`)
+                fetch(`/Business/TaxiCompany/GetAvailableDrivers/${taxiId}`)
                     .then((response) => response.json())
                     .then((data) => {
                         if (!data.success) {
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             const driverId = parseInt(document.getElementById("driverSelect").value, 10);
 
                             if (licensePlate) {
-                                saveEntity(`/api/TaxiCompany/EditTaxi/${taxiId}`, "PUT", {
+                                saveEntity(`/Business/TaxiCompany/EditTaxi/${taxiId}`, "PUT", {
                                     licensePlate,
                                     DriverId: driverId > 0 ? driverId : null, 
                                 });
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const entityId = button.dataset.id;
 
                 deleteCallback = () => {
-                    fetch(`/api/TaxiCompany/Delete${entityType}/${entityId}`, { method: "DELETE" })
+                    fetch(`/Admin/TaxiCompany/Delete${entityType}/${entityId}`, { method: "DELETE" })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const password = document.getElementById("password").value;
 
                     if (firstName && lastName && email) {
-                        saveEntity(`/api/TaxiCompany/EditDriver/${button.dataset.id}`, "PUT", {
+                        saveEntity(`/Business/TaxiCompany/EditDriver/${button.dataset.id}`, "PUT", {
                             firstName,
                             lastName,
                             email,
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".delete-driver").forEach((button) => {
             button.addEventListener("click", () => {
                 deleteCallback = () => {
-                    fetch(`/api/TaxiCompany/DeleteDriver/${button.dataset.id}`, { method: "DELETE" })
+                    fetch(`/Business/TaxiCompany/DeleteDriver/${button.dataset.id}`, { method: "DELETE" })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (selectedEntity === "companies") {
             modalTitle.textContent = "Add Company";
-            fetch("/api/TaxiCompany/GetTaxiCompanyUsers")
+            fetch("/Admin/TaxiCompany/GetTaxiCompanyUsers")
                 .then((response) => response.json())
                 .then((users) => {
                     const userOptions = users.map((user) =>
@@ -352,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const userSelect = document.getElementById("userSelect").value;
 
                         if (companyName && contactInfo && userSelect) {
-                            saveEntity("/api/TaxiCompany/AddCompany", "POST", {
+                            saveEntity("/Admin/TaxiCompany/AddCompany", "POST", {
                                 companyName,
                                 contactInfo,
                                 userId: parseInt(userSelect, 10),
@@ -370,10 +370,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (selectedEntity === "taxis") {
             modalTitle.textContent = "Add Taxi";
 
-            fetch("/api/TaxiCompany/GetCompany")
+            fetch("/Business/TaxiCompany/GetCompany")
                 .then((response) => response.json())
                 .then((company) => {
-                    fetch("/api/TaxiCompany/GetAvailableDrivers")
+                    fetch("/Business/TaxiCompany/GetAvailableDrivers")
                         .then((response) => response.json())
                         .then((data) => {
                             if (!data.success) {
@@ -407,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 const taxiCompanyId = parseInt(document.getElementById("taxiCompanyId").value, 10);
 
                                 if (licensePlate) {
-                                    saveEntity("/api/TaxiCompany/AddTaxi", "POST", {
+                                    saveEntity("/Business/TaxiCompany/AddTaxi", "POST", {
                                         licensePlate,
                                         DriverId: selectedDriverId > 0 ? selectedDriverId : null,
                                         TaxiCompanyId: taxiCompanyId,
@@ -436,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         else if (selectedEntity === "drivers") {
             modalTitle.textContent = "Add Driver";
-            fetch("/api/TaxiCompany/GetCompany")
+            fetch("/Business/TaxiCompany/GetCompany")
                 .then((response) => response.json())
                 .then((company) => {
                     entityForm.innerHTML = `
@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const password = document.getElementById("password").value;
 
                         if (firstName && lastName && email && password) {
-                            saveEntity("/api/TaxiCompany/AddDriver", "POST", {
+                            saveEntity("/Business/TaxiCompany/AddDriver", "POST", {
                                 firstName,
                                 lastName,
                                 email,

@@ -71,7 +71,7 @@ namespace pentasharp.Data.Configurations
             builder.HasOne(br => br.BusCompany)
                     .WithMany(bc => bc.BusSchedules)
                     .HasForeignKey(br => br.BusCompanyId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

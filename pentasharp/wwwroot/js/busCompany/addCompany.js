@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let deleteCallback = null;
 
     const fetchCompanies = () => {
-        fetch("/api/BusCompany/GetCompanies")
+        fetch("/Admin/BusCompany/GetCompanies")
             .then((response) => response.json())
             .then((data) => renderCompanies(data));
     };
 
     const fetchBuses = () => {
-        fetch("/api/BusCompany/GetBuses")
+        fetch("/Business/BusCompany/GetBuses")
             .then((response) => response.json())
             .then((data) => renderBuses(data));
     };
@@ -145,16 +145,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const deleteCompany = (id) => {
-        deleteEntity(`/api/BusCompany/DeleteCompany/${id}`);
+        deleteEntity(`/Admin/BusCompany/DeleteCompany/${id}`);
     };
 
     const deleteBus = (id) => {
-        deleteEntity(`/api/BusCompany/DeleteBus/${id}`);
+        deleteEntity(`/Business/BusCompany/DeleteBus/${id}`);
     };
 
     const openEditCompanyModal = async (id, companyName, contactInfo) => {
 
-        const response = await fetch(`/api/BusCompany/GetBusCompanyUser/${id}`);
+        const response = await fetch(`/Admin/BusCompany/GetBusCompanyUser/${id}`);
         const result = await response.json();
 
         if (!result.success) {
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 contactInfo: document.getElementById("contactInfo").value,
                 userId: user.userId,
             };
-            saveEntity(`/api/BusCompany/EditCompany/${id}`, "PUT", data, fetchCompanies);
+            saveEntity(`/Admin/BusCompany/EditCompany/${id}`, "PUT", data, fetchCompanies);
         };
 
         modal.show();
@@ -212,18 +212,16 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="submit" class="btn btn-primary">Save</button>
     `;
 
-        fetch("/api/BusCompany/GetCompanies")
+        fetch("/Business/BusCompany/GetCompany")
             .then((response) => response.json())
-            .then((companies) => {
+            .then((company) => {
                 const companySelect = document.getElementById("companySelect");
                 companySelect.innerHTML = "";
-                companies.forEach((company) => {
-                    const option = document.createElement("option");
-                    option.value = company.busCompanyId;
-                    option.textContent = company.companyName;
-                    companySelect.appendChild(option);
-                });
-                companySelect.value = busCompanyId; 
+                const option = document.createElement("option");
+                option.value = company.busCompanyId;
+                option.textContent = company.companyName;
+                companySelect.appendChild(option);
+                companySelect.value = company.busCompanyId;
             });
 
         entityForm.onsubmit = (e) => {
@@ -232,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 busNumber: document.getElementById("busNumber").value,
                 capacity: document.getElementById("capacity").value,
             };
-            saveEntity(`/api/BusCompany/EditBus/${id}`, "PUT", data, fetchBuses);
+            saveEntity(`/Business/BusCompany/EditBus/${id}`, "PUT", data, fetchBuses);
         };
         modal.show();
     };
@@ -273,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
         if (!isCompany) {
-            fetch("/api/BusCompany/GetCompany")
+            fetch("/Business/BusCompany/GetCompany")
                 .then((response) => response.json())
                 .then((company) => {
                     const companySelect = document.getElementById("companySelect");
@@ -288,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert("Could not load your company details.");
                 });
         } else {
-            fetch("/api/BusCompany/GetBusCompanyUsers")
+            fetch("/Admin/BusCompany/GetBusCompanyUsers")
                 .then((response) => response.json())
                 .then((users) => {
                     const userSelect = document.getElementById("userSelect");
@@ -337,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     capacity: document.getElementById("capacity").value,
                     busCompanyId: document.getElementById("companySelect").value,
                 };
-            saveEntity(isCompany ? "/api/BusCompany/AddCompany" : "/api/BusCompany/AddBus", "POST", data, refreshAll);
+            saveEntity(isCompany ? "/Admin/BusCompany/AddCompany" : "/Business/BusCompany/AddBus", "POST", data, refreshAll);
         };
         modal.show();
     });
