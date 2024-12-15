@@ -33,6 +33,8 @@ namespace WebApplication1
             builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
             builder.Services.AddScoped<ISearchBusScheduleService, SearchBusScheduleService>();
             builder.Services.AddScoped<IBusReservationService, BusReservationService>();
+            builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
+
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

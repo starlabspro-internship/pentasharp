@@ -5,6 +5,7 @@ using WebApplication1.Filters;
 using pentasharp.Data;
 using pentasharp.Services;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.Models.Utilities;
 
 namespace WebApplication1.Controllers
 {
@@ -34,7 +35,7 @@ namespace WebApplication1.Controllers
             var userId = GetCompanyId();
             if (!userId.HasValue)
             {
-                return Unauthorized("No user is logged in.");
+                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
             }
 
             var user = _context.Users
@@ -42,7 +43,7 @@ namespace WebApplication1.Controllers
                  .FirstOrDefault();
             if (user == null)
             {
-                return NotFound("User not found.");
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
             }
 
             if (user.BusinessType == BusinessType.TaxiCompany)
@@ -52,7 +53,7 @@ namespace WebApplication1.Controllers
 
                 if (company == null)
                 {
-                    return NotFound("No associated taxi company found for this user.");
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No associated taxi company found for this user."));
                 }
 
                 return Ok(company);
@@ -66,26 +67,25 @@ namespace WebApplication1.Controllers
         [HttpPost("AddTaxi")]
         public async Task<IActionResult> AddTaxi([FromBody] AddTaxiRequest model)
         {
-
             var userId = GetCompanyId();
             if (!userId.HasValue)
             {
-                return Unauthorized(new { success = false, message = "No user is logged in." });
+                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new { success = false, code = ResponseCodes.InvalidData, message = "Invalid data provided." });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
             }
 
             bool isDriverAssigned = await _context.Taxis.AnyAsync(t => t.DriverId == model.DriverId && model.DriverId != null && !t.IsDeleted);
             if (isDriverAssigned)
             {
-                return Conflict(new { success = false, message = "Driver is already assigned to another taxi." });
+                return Conflict(ResponseFactory.ErrorResponse(ResponseCodes.Conflict, "Driver is already assigned to another taxi."));
             }
 
             var taxi = await _taxiService.AddTaxiAsync(model);
-            return Ok(new { success = true, code = ResponseCodes.Success, message = "Taxi added successfully." });
+            return Ok(ResponseFactory.SuccessResponse("Taxi added successfully.",taxi));
         }
 
         [HttpGet("GetTaxis")]
@@ -96,18 +96,18 @@ namespace WebApplication1.Controllers
                 var userId = GetCompanyId();
                 if (!userId.HasValue)
                 {
-                    return Unauthorized(new { success = false, message = "No user is logged in." });
+                    return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
                 }
 
                 var user = await _context.Users.FindAsync(userId.Value);
                 if (user == null)
                 {
-                    return NotFound(new { success = false, message = "User not found." });
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
                 }
 
                 if (!user.CompanyId.HasValue)
                 {
-                    return NotFound(new { success = false, message = "The logged-in user has no associated company." });
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "The logged-in user has no associated company."));
                 }
 
                 var companyId = user.CompanyId.Value;
@@ -115,9 +115,9 @@ namespace WebApplication1.Controllers
 
                 return Ok(taxis);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
             }
         }
 
@@ -127,10 +127,10 @@ namespace WebApplication1.Controllers
             var success = await _taxiService.EditTaxiAsync(id, model);
             if (!success)
             {
-                return NotFound(new { success = false, message = "Taxi not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Taxi not found."));
             }
 
-            return Ok(new { success = true, message = "Taxi updated successfully." });
+            return Ok(ResponseFactory.SuccessResponse("Taxi updated successfully.", success));
         }
 
         [HttpDelete("DeleteTaxi/{id}")]
@@ -139,11 +139,11 @@ namespace WebApplication1.Controllers
             var success = await _taxiService.DeleteTaxiAsync(id);
             if (!success)
             {
-                return NotFound(new { success = false, message = "Taxi not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Taxi not found."));
             }
 
-            return Ok(new { success = true, message = "Taxi deleted successfully." });
-        } 
+            return Ok(ResponseFactory.SuccessResponse("Taxi deleted successfully.", success));
+        }
 
         private int? GetCompanyId()
         {

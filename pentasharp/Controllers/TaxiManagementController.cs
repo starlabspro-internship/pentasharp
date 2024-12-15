@@ -47,22 +47,12 @@ namespace WebApplication1.Controllers
 
             if (userId == null)
             {
-                return Unauthorized(new StandardResponse(
-                    ApiStatusEnum.UNAUTHORIZED,
-                    Guid.NewGuid().ToString(),
-                    "User is not logged in."
-                ));
+                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, "User is not logged in."));
             }
 
             var bookings = await _taxiBookingService.GetAllBookingsAsync(userId.Value);
 
-            return Ok(new StandardApiResponse<List<TaxiBookingViewModel>>
-            {
-                Success = true,
-                Message = ResponseMessages.Success,
-                Code = ResponseCodes.Success,
-                Data = bookings
-            });
+            return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, bookings));
         }
 
         [HttpGet("GetBooking")]
@@ -71,34 +61,23 @@ namespace WebApplication1.Controllers
             var booking = await _taxiBookingService.GetBookingByIdAsync(id);
             if (booking == null)
             {
-                return NotFound(new StandardApiResponse<string>
-                {
-                    Success = false,
-                    Message = ResponseMessages.NotFound,
-                    Code = ResponseCodes.NotFound
-                });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
             }
 
-            return Ok(new StandardApiResponse<TaxiBookingViewModel>
-            {
-                Success = true,
-                Message = ResponseMessages.Success,
-                Code = ResponseCodes.Success,
-                Data = booking
-            });
+            return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, booking));
         }
 
         [HttpPut("UpdateBooking")]
         public async Task<IActionResult> UpdateBooking([FromBody] EditTaxiBookingViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new { success = false, message = "Invalid data." });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
 
             var success = await _taxiBookingService.UpdateBookingAsync(model);
             if (!success)
-                return NotFound(new { success = false, message = "Booking not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Booking not found."));
 
-            return Ok(new { success = true, message = "Booking updated successfully." });
+            return Ok(ResponseFactory.SuccessResponse("Booking updated successfully.",success));
         }
 
         [HttpGet("GetReservations")]
@@ -119,7 +98,6 @@ namespace WebApplication1.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
                 return StatusCode(500, new { success = false, message = "An internal server error occurred.", error = ex.Message });
             }
         }
@@ -130,12 +108,13 @@ namespace WebApplication1.Controllers
             try
             {
                 var taxis = await _taxiReservationService.GetTaxisByTaxiCompanyAsync(taxiCompanyId);
+
                 return Ok(taxis);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error occurred: {ex.Message}");
-                return StatusCode(500, new { success = false, message = "An internal server error occurred.", error = ex.Message });
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
             }
         }
 
@@ -147,20 +126,18 @@ namespace WebApplication1.Controllers
                 var updated = await _taxiReservationService.UpdateReservationAsync(reservationId, model);
 
                 if (!updated)
-                    return NotFound(new { success = false, message = "Reservation or Taxi not found." });
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Reservation or Taxi not found."));
 
-                return Ok(new { success = true, message = "Reservation updated successfully." });
+                return Ok(ResponseFactory.SuccessResponse("Reservation updated successfully.",updated));
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { success = false, message = ex.Message });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ex.Message));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occurred: {ex.Message}");
-                return StatusCode(500, new { success = false, message = "An internal server error occurred.", error = ex.Message });
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
             }
         }
-
     }
 }

@@ -8,14 +8,19 @@
         .then((data) => {
             populateDropdown("Role", data.roles, selectedRole);
             populateDropdown("BusinessType", data.businessTypes, selectedBusinessType);
+        })
+        .catch((error) => {
+            console.error("Error fetching enums:", error);
         });
-
 
     function populateDropdown(id, options, selectedValue) {
         const dropdown = document.getElementById(id);
-        dropdown.innerHTML = `<option value="">Select ${id }</option>`;
+        dropdown.innerHTML = `<option value="">Select ${id}</option>`;
         options.forEach((option) => {
-            const isSelected = option.value == selectedValue ? "selected" : "";
+            const isSelected = String(option.value) === String(selectedValue) ? "selected" : "";
+            if (isSelected) {
+                console.log(`Setting selected value for ${id}: ${option.value}`);
+            }
             dropdown.innerHTML += `<option value="${option.value}" ${isSelected}>${option.text}</option>`;
         });
     }

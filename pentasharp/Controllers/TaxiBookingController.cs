@@ -36,14 +36,15 @@ namespace WebApplication1.Controllers
                 var companies = await _taxiBookingService.GetAllCompaniesAsync();
                 if (companies == null || !companies.Any())
                 {
-                    return Ok(new { success = false, message = "No companies found." });
+                    return Ok(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No companies found."));
                 }
+
                 return Ok(new { success = true, companies });
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return StatusCode(500, new { success = false, message = "Internal Server Error" });
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
             }
         }
 
@@ -52,7 +53,7 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new { success = false, message = "Invalid data" });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
 
             var request = new TaxiBookingRequest
             {
@@ -62,14 +63,14 @@ namespace WebApplication1.Controllers
                 BookingTime = model.BookingTime,
                 PassengerCount = model.PassengerCount,
                 UserId = model.UserId,
-                Status = ReservationStatus.Pending 
+                Status = ReservationStatus.Pending
             };
 
             var success = await _taxiBookingService.CreateBookingAsync(request);
             if (!success)
-                return BadRequest(new { success = false, message = "Booking creation failed." });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Booking creation failed."));
 
-            return Ok(new { success = true, message = "Booking created successfully" });
+            return Ok(ResponseFactory.SuccessResponse("Booking created successfully",success));
         }
     }
 }

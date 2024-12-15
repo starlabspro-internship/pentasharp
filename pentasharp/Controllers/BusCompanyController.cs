@@ -5,6 +5,7 @@ using pentasharp.Data;
 using pentasharp.Interfaces;
 using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
+using pentasharp.Models.Utilities;
 using pentasharp.ViewModel.Bus;
 using WebApplication1.Filters;
 
@@ -34,7 +35,7 @@ namespace WebApplication1.Controllers
             if (users != null)
                 return Ok(users);
 
-            return NotFound(new { success = false, message = "No users found." });
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
         [HttpPost("AddCompany")]
@@ -42,9 +43,11 @@ namespace WebApplication1.Controllers
         {
             var result = await _companyService.AddCompanyAsync(model);
             if (result)
-                return Ok(new { success = true, message = "Company added successfully." });
+            {
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
+            }
 
-            return BadRequest(new { success = false, message = "Invalid data provided." });
+            return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
         }
 
         [HttpPut("EditCompany/{id}")]
@@ -52,9 +55,9 @@ namespace WebApplication1.Controllers
         {
             var result = await _companyService.EditCompanyAsync(id, model);
             if (result)
-                return Ok(new { success = true, message = "Company updated successfully." });
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
 
-            return NotFound(new { success = false, message = "Company not found." });
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
         [HttpDelete("DeleteCompany/{id}")]
@@ -62,9 +65,9 @@ namespace WebApplication1.Controllers
         {
             var result = await _companyService.DeleteCompanyAsync(id);
             if (result)
-                return Ok(new { success = true, message = "Company and its buses deleted successfully." });
+                return Ok(ResponseFactory.SuccessResponse("Company and its buses deleted successfully.",result));
 
-            return NotFound(new { success = false, message = "Company not found." });
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
         [HttpGet("GetCompanies")]
@@ -79,9 +82,9 @@ namespace WebApplication1.Controllers
         {
             var user = await _companyService.GetBusCompanyUserAsync(companyId);
             if (user != null)
-                return Ok(new { success = true, data = user });
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, user));
 
-            return NotFound(new { success = false, message = "Bus Company not found." });
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
         private int? GetUserId()

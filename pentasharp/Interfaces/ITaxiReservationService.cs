@@ -50,5 +50,13 @@ namespace pentasharp.Interfaces
         /// <param name="userId">The ID of the user whose reservations are being retrieved.</param>
         /// <returns>A list of taxi reservations made by the specified user.</returns>
         Task<List<TaxiReservationRequest>> GetReservationsForUserAsync(int userId);
+
+        /// <summary>
+        /// Cancels a specific taxi reservation if it is in 'Pending' status.
+        /// </summary>
+        /// <param name="reservationId">The ID of the reservation to cancel.</param>
+        /// <param name="userId">The ID of the user attempting the cancellation.</param>
+        /// <returns>A boolean indicating whether the cancellation was successful.</returns>
+        Task<bool> CancelReservationAsync(int reservationId, int userId);
     }
 }

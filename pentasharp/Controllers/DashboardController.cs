@@ -8,6 +8,9 @@ using pentasharp.Interfaces;
 using pentasharp.ViewModel.Bus;
 using pentasharp.Models.TaxiRequest;
 using pentasharp.Services;
+using pentasharp.Models.Enums;
+using pentasharp.Models.Utilities;
+using System.Linq;
 
 namespace WebApplication1.Controllers
 {
@@ -15,17 +18,17 @@ namespace WebApplication1.Controllers
     [Route("Dashboard")]
     public class DashboardController : Controller
     {
-
         private readonly ITaxiCompanyService _taxiCompanyService;
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
 
-        public DashboardController( AppDbContext context, IMapper mapper,ITaxiCompanyService taxiCompanyService)
+        public DashboardController(AppDbContext context, IMapper mapper, ITaxiCompanyService taxiCompanyService)
         {
             _taxiCompanyService = taxiCompanyService;
             _context = context;
             _mapper = mapper;
         }
+
         public IActionResult Dashboard()
         {
             return View();
@@ -35,11 +38,16 @@ namespace WebApplication1.Controllers
         public IActionResult Bus()
         {
             var companies = _context.BusCompanies.ToList();
-
             var viewModel = new ManageBusCompanyViewModel
             {
                 BusCompanies = _mapper.Map<List<BusCompanyViewModel>>(companies),
             };
+
+            if (viewModel.BusCompanies == null || !viewModel.BusCompanies.Any())
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+            }
+
             return View(viewModel);
         }
 
@@ -51,6 +59,12 @@ namespace WebApplication1.Controllers
             {
                 TaxiCompanies = companies,
             };
+
+            if (viewModel.TaxiCompanies == null || !viewModel.TaxiCompanies.Any())
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+            }
+
             return View(viewModel);
         }
     }

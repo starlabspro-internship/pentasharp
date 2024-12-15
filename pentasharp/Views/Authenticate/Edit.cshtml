@@ -24,13 +24,13 @@
     </div>
     <div class="form-group">
         <label for="Role">Role</label>
-        <select id="Role" name="Role" class="form-control"  data-selected-value="@Model.Role">
+        <select id="Role" name="Role" class="form-control" data-selected-value="@(Model.Role.HasValue ? ((int)Model.Role).ToString() : "")">
             <option value="">Select Role</option>
         </select>
     </div>
     <div class="form-group">
         <label for="BusinessType">Business Type</label>
-        <select id="BusinessType" name="BusinessType" class="form-control" data-selected-value="@Model.BusinessType">
+        <select id="BusinessType" name="BusinessType" class="form-control" data-selected-value="@(Model.BusinessType.HasValue ? ((int)Model.BusinessType).ToString() : "")">
             <option value="">Select Business Type</option>
         </select>
     </div>

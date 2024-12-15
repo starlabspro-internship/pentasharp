@@ -5,6 +5,7 @@ using WebApplication1.Filters;
 using pentasharp.Data;
 using pentasharp.Services;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.Models.Utilities;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -29,11 +30,11 @@ namespace WebApplication1.Controllers
             {
                 var result = await _taxiCompanyService.AddCompanyAndAssignUserAsync(model);
                 if (result)
-                    return Ok(new { success = true, message = "Company added successfully." });
+                    return Ok(ResponseFactory.SuccessResponse("Company added successfully." ,result));
 
-                return BadRequest(new { success = false, message = "Invalid data provided or operation failed." });
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Invalid data provided or operation failed."));
             }
-            return BadRequest(new { success = false, message = "Invalid data provided." });
+            return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
         }
 
         [HttpGet("GetCompanies")]
@@ -56,7 +57,7 @@ namespace WebApplication1.Controllers
             var company = _taxiCompanyService.GetTaxiCompanyUser(companyId);
             if (company == null)
             {
-                return NotFound(new { success = false, message = "Taxi Company not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Taxi Company not found."));
             }
 
             return Ok(new { success = true, data = company });
@@ -68,10 +69,10 @@ namespace WebApplication1.Controllers
             var result = await _taxiCompanyService.EditCompanyAndAssignUserAsync(id, model);
             if (!result)
             {
-                return NotFound(new { success = false, message = "Company not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Company not found."));
             }
 
-            return Ok(new { success = true, message = "Company updated successfully." });
+            return Ok(ResponseFactory.SuccessResponse("Company updated successfully.",result));
         }
 
         [HttpDelete("DeleteCompany/{id}")]
@@ -80,10 +81,10 @@ namespace WebApplication1.Controllers
             var success = await _taxiCompanyService.DeleteCompanyAsync(id);
             if (!success)
             {
-                return NotFound(new { success = false, message = "Company not found." });
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Company not found."));
             }
 
-            return Ok(new { success = true, message = "Company and its taxis deleted successfully (soft delete)." });
+            return Ok(ResponseFactory.SuccessResponse("Company and its taxis deleted successfully (soft delete).", success));
         }
     }
 }
