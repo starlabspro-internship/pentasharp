@@ -17,6 +17,9 @@ namespace pentasharp.ViewModel.BusReservation
         /// </summary>
         public BusReservationStatus Status { get; set; }
 
+        /// <summary>
+        /// The time when the reservation was last updated.
+        /// </summary>
         public DateTime? UpdatedAt { get; set; } = DateTime.Now;
     }
 }

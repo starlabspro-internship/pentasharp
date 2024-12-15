@@ -1,5 +1,5 @@
 function loadBookings() {
-    fetch('/api/TaxiBooking/GetBookings')
+    fetch('/Business/TaxiManagement/GetBookings')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -41,7 +41,7 @@ function loadBookings() {
 }
 
 function openEditBookingModal(bookingId) {
-    fetch(`/api/TaxiBooking/GetBooking?id=${bookingId}`)
+    fetch(`/Business/TaxiManagement/GetBooking?id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -58,7 +58,7 @@ function openEditBookingModal(bookingId) {
 
                 driverSelect.innerHTML = `<option value="null">No Driver Assign</option>`;
 
-                fetch('/api/TaxiCompany/GetTaxis')
+                fetch('/Business/TaxiCompany/GetTaxis')
                     .then(response => response.json())
                     .then(drivers => {
                         drivers.forEach(driver => {
@@ -121,7 +121,7 @@ function saveBookingChanges() {
 
     console.log("Payload to server:", JSON.stringify(updatedBooking));
 
-    fetch('/api/TaxiBooking/UpdateBooking', {
+    fetch('/Business/TaxiManagement/UpdateBooking', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedBooking)

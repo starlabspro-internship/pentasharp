@@ -45,7 +45,10 @@
         /// </summary>
         public int AvailableSeats { get; set; }
 
-        public int BusCompanyId {  get; set; }
+        /// <summary>
+        /// Unique identifier for the bus company that owns this schedule.
+        /// </summary>
+        public int BusCompanyId { get; set; }
 
         /// <summary>
         /// Status of the schedule (e.g., Scheduled, Canceled).

@@ -24,6 +24,9 @@ namespace pentasharp.ViewModel.BusSchedul
         /// </summary>
         public string ToLocation { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The unique identifier of the bus company that owns this route.
+        /// </summary>
         public int? BusCompanyId { get; set; }
 
         /// <summary>

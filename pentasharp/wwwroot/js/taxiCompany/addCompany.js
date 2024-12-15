@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const refreshAll = () => {
         fetchEntities("/Admin/TaxiCompany/GetCompanies", renderCompanies);
         fetchEntities("/Business/TaxiCompany/GetTaxis", renderTaxis);
-        fetchEntities("/Business/TaxiCompany/GetDrivers", renderDrivers);
+        fetchEntities("/Business/TaxiDriver/GetDrivers", renderDrivers);
     };
 
     const attachListeners = () => {
@@ -188,7 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 modalTitle.textContent = "Edit Taxi";
                 const taxiId = button.dataset.id;
 
-                fetch(`/Business/TaxiCompany/GetAvailableDrivers/${taxiId}`)
+                fetch(`/Business/TaxiDriver/GetAvailableDrivers/${taxiId}`)
                     .then((response) => response.json())
                     .then((data) => {
                         if (!data.success) {
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const password = document.getElementById("password").value;
 
                     if (firstName && lastName && email) {
-                        saveEntity(`/Business/TaxiCompany/EditDriver/${button.dataset.id}`, "PUT", {
+                        saveEntity(`/Business/TaxiDriver/EditDriver/${button.dataset.id}`, "PUT", {
                             firstName,
                             lastName,
                             email,
@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".delete-driver").forEach((button) => {
             button.addEventListener("click", () => {
                 deleteCallback = () => {
-                    fetch(`/Business/TaxiCompany/DeleteDriver/${button.dataset.id}`, { method: "DELETE" })
+                    fetch(`/Business/TaxiDriver/DeleteDriver/${button.dataset.id}`, { method: "DELETE" })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("/Business/TaxiCompany/GetCompany")
                 .then((response) => response.json())
                 .then((company) => {
-                    fetch("/Business/TaxiCompany/GetAvailableDrivers")
+                    fetch("/Business/TaxiDriver/GetAvailableDrivers")
                         .then((response) => response.json())
                         .then((data) => {
                             if (!data.success) {
@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const password = document.getElementById("password").value;
 
                         if (firstName && lastName && email && password) {
-                            saveEntity("/Business/TaxiCompany/AddDriver", "POST", {
+                            saveEntity("/Business/TaxiDriver/AddDriver", "POST", {
                                 firstName,
                                 lastName,
                                 email,
@@ -473,22 +473,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    entitySelect.addEventListener("change", () => {
-        const isCompany = entitySelect.value === "companies";
-        const isTaxi = entitySelect.value === "taxis";
-        const isDriver = entitySelect.value === "drivers";
+    entitySelect.addEventListener("change", (e) => {
+        const value = e.target.value;
 
-        companiesSection.classList.toggle("d-none", !isCompany);
-        taxisSection.classList.toggle("d-none", !isTaxi);
-        driversSection.classList.toggle("d-none", !isDriver);
+        if (companiesSection) companiesSection.classList.toggle("d-none", value !== "companies");
+        if (taxisSection) taxisSection.classList.toggle("d-none", value !== "taxis");
+        if (driversSection) driversSection.classList.toggle("d-none", value !== "drivers");
 
-        if (isCompany) {
-            addEntityButton.textContent = "Add Company";
-        } else if (isTaxi) {
-            addEntityButton.textContent = "Add Taxi";
-        } else if (isDriver) {
-            addEntityButton.textContent = "Add Driver";
-        }
+        addEntityButton.textContent =
+            value === "companies" ? "Add Company" :
+                value === "taxis" ? "Add Taxi" : "Add Driver";
     });
 
     refreshAll();

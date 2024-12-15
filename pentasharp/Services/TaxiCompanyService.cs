@@ -1,9 +1,13 @@
 ﻿using pentasharp.Data;
 using pentasharp.Models.Entities;
-using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Models.TaxiRequest;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using pentasharp.Models.TaxiRequest;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.Services
 {
@@ -24,12 +28,40 @@ namespace pentasharp.Services
             return _mapper.Map<List<TaxiCompanyRequest>>(companies);
         }
 
+        public List<TaxiCompanyRequest> GetAllCompaniesWithTaxis()
+        {
+            var companies = _context.TaxiCompanies
+                                    .Include(c => c.Taxis)
+                                    .ToList();
+            return _mapper.Map<List<TaxiCompanyRequest>>(companies);
+        }
+
         public async Task<TaxiCompany> AddCompanyAsync(TaxiCompanyRequest model)
         {
             var company = _mapper.Map<TaxiCompany>(model);
             _context.TaxiCompanies.Add(company);
             await _context.SaveChangesAsync();
             return company;
+        }
+
+        public async Task<bool> AddCompanyAndAssignUserAsync(TaxiCompanyRequest model)
+        {
+            var company = await AddCompanyAsync(model);
+            if (company == null)
+                return false;
+
+            if (model.UserId != 0)
+            {
+                var user = await _context.Users.FindAsync(model.UserId);
+                if (user != null)
+                {
+                    user.CompanyId = company.TaxiCompanyId;
+                    user.Role = UserRole.Admin;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return true;
         }
 
         public TaxiCompany GetCompanyById(int id)
@@ -46,6 +78,26 @@ namespace pentasharp.Services
             _mapper.Map(model, company);
             _context.TaxiCompanies.Update(company);
             await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> EditCompanyAndAssignUserAsync(int id, TaxiCompanyRequest model)
+        {
+            var result = await EditCompanyAsync(id, model);
+            if (!result)
+                return false;
+
+            if (model.UserId != 0)
+            {
+                var user = await _context.Users.FindAsync(model.UserId);
+                if (user != null)
+                {
+                    user.CompanyId = id;
+                    user.Role = UserRole.Admin;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return true;
         }
 
@@ -70,6 +122,43 @@ namespace pentasharp.Services
             _context.Taxis.UpdateRange(company.Taxis);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public List<object> GetUnassignedTaxiCompanyUsers()
+        {
+            var users = _context.Users
+                .Where(user => user.BusinessType == BusinessType.TaxiCompany && user.CompanyId == null)
+                .Select(user => new
+                {
+                    user.UserId,
+                    user.FirstName,
+                    user.LastName
+                })
+                .ToList<object>();
+
+            return users;
+        }
+
+        public object GetTaxiCompanyUser(int companyId)
+        {
+            var company = _context.TaxiCompanies
+                .Where(tc => tc.TaxiCompanyId == companyId)
+                .Select(tc => new
+                {
+                    User = _context.Users
+                        .Where(u => u.CompanyId == companyId)
+                        .Where(user => user.BusinessType == BusinessType.TaxiCompany)
+                        .Select(u => new
+                        {
+                            u.UserId,
+                            u.FirstName,
+                            u.LastName
+                        })
+                        .FirstOrDefault()
+                })
+                .FirstOrDefault();
+
+            return company;
         }
     }
 }

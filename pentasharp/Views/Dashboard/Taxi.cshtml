@@ -11,74 +11,89 @@
     <div class="row">
         <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
             <select id="entitySelect" class="form-select w-25">
-                    @if (isAdmin)
-                    {
-                        <option value="companies" selected>Companies</option>
-                         <option value="drivers">Drivers</option>
-                        <option value="taxis" >Taxis</option>
-                    }
-                    else if (businessType == "TaxiCompany" && role == "Admin")
-                    {
-                        <option value="drivers">Drivers</option>
-                        <option value="taxis" selected>Taxis</option>
-                    }
+                @if (isAdmin)
+                {
+                    <option value="companies" disabled selected>Companies</option>
+                }
+                else if (businessType == "TaxiCompany" && role == "Admin")
+                {
+                    <option value="taxis" selected>Taxis</option>
+                    <option value="drivers">Drivers</option>
+                }
+                else
+                {
+                    <option value="none" disabled selected>No Access</option>
+                }
             </select>
-            <button id="addEntityButton" class="btn btn-primary">Add Company</button>
+            @if (isAdmin)
+            {
+                <button id="addEntityButton" class="btn btn-primary">Add Company</button>
+            }
+            else if (businessType == "TaxiCompany" && role == "Admin")
+            {
+                <button id="addEntityButton" class="btn btn-primary">Add Bus</button>
+            }
         </div>
-        <div class="col-12" id="companiesSection">
-            <div class="card shadow-lg p-4 rounded-4">
-                <h3 class="fw-bold text-secondary mb-3">Taxi Companies</h3>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Company Name</th>
-                                <th>Contact Info</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="companiesTableBody"></tbody>
-                    </table>
+        @if (isAdmin)
+        {
+            <div class="col-12" id="companiesSection">
+                <div class="card shadow-lg p-4 rounded-4">
+                    <h3 class="fw-bold text-secondary mb-3">Taxi Companies</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Company Name</th>
+                                    <th>Contact Info</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="companiesTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="taxisSection" class="d-none">
-            <div class="card shadow-lg p-4 rounded-4">
-                <h3 class="fw-bold text-secondary mb-3">Taxis</h3>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>License Plate</th>
-                                <th>Driver Name</th>
-                                <th>Company</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="taxisTableBody"></tbody>
-                    </table>
+        }
+        else if (businessType == "TaxiCompany" && role == "Admin")
+        {
+            <div id="taxisSection" class="">
+                <div class="card shadow-lg p-4 rounded-4">
+                    <h3 class="fw-bold text-secondary mb-3">Taxis</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>License Plate</th>
+                                    <th>Driver Name</th>
+                                    <th>Company</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taxisTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-12 d-none" id="driversSection">
-            <div class="card shadow-lg p-4 rounded-4">
-                <h3 class="fw-bold text-secondary mb-3">Drivers</h3>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>FirstName</th>
-                                <th>LastName</th>
-                                <th>Email</th>
-                                <th>Company</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="driversTableBody"></tbody>
-                    </table>
+            <div class="col-12 d-none" id="driversSection">
+                <div class="card shadow-lg p-4 rounded-4">
+                    <h3 class="fw-bold text-secondary mb-3">Drivers</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>FirstName</th>
+                                    <th>LastName</th>
+                                    <th>Email</th>
+                                    <th>Company</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="driversTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 

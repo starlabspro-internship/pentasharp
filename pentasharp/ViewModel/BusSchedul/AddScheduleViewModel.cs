@@ -48,6 +48,9 @@ namespace pentasharp.ViewModel.BusSchedul
         /// </summary>
         public int RouteId { get; set; }
 
+        /// <summary>
+        /// Unique identifier for the bus company that owns this schedule.
+        /// </summary>
         public int BusCompanyId { get; set; }
 
         /// <summary>

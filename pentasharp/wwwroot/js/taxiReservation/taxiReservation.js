@@ -77,7 +77,7 @@ function confirmReservation() {
         pickupLocation: document.getElementById('modalPickupLocation').textContent,
         dropoffLocation: document.getElementById('modalDropoffLocation').textContent,
         reservationDate: document.getElementById('modalReservationDate').textContent,
-        reservationTime: reservationTimeRaw.includes(":") ? reservationTimeRaw : `${reservationTimeRaw}:00`, // Ensure TimeSpan format
+        reservationTime: reservationTimeRaw.includes(":") ? reservationTimeRaw : `${reservationTimeRaw}:00`,
         passengerCount: parseInt(document.getElementById('modalPassengerCount').textContent)
     };
 

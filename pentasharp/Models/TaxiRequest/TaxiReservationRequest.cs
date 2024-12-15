@@ -69,6 +69,8 @@ namespace pentasharp.Models.TaxiRequest
 
         public string DriverName { get; set; }
 
+        public int TaxiId { get; set; }
+
         /// <summary>
         /// Gets or sets the fare.
         /// </summary>

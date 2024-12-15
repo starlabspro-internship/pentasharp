@@ -12,23 +12,6 @@ namespace pentasharp.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BusRoutes",
-                columns: table => new
-                {
-                    RouteId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FromLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ToLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    EstimatedDuration = table.Column<TimeSpan>(type: "time", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusRoutes", x => x.RouteId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -124,6 +107,30 @@ namespace pentasharp.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BusRoutes",
+                columns: table => new
+                {
+                    RouteId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FromLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ToLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    BusCompanyId = table.Column<int>(type: "int", nullable: false),
+                    EstimatedDuration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusRoutes", x => x.RouteId);
+                    table.ForeignKey(
+                        name: "FK_BusRoutes_BusCompanies_BusCompanyId",
+                        column: x => x.BusCompanyId,
+                        principalTable: "BusCompanies",
+                        principalColumn: "BusCompanyId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Taxis",
                 columns: table => new
                 {
@@ -168,11 +175,18 @@ namespace pentasharp.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     BusId = table.Column<int>(type: "int", nullable: false),
                     RouteId = table.Column<int>(type: "int", nullable: false),
+                    BusCompanyId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BusSchedules", x => x.ScheduleId);
+                    table.ForeignKey(
+                        name: "FK_BusSchedules_BusCompanies_BusCompanyId",
+                        column: x => x.BusCompanyId,
+                        principalTable: "BusCompanies",
+                        principalColumn: "BusCompanyId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BusSchedules_BusRoutes_RouteId",
                         column: x => x.RouteId,
@@ -287,11 +301,18 @@ namespace pentasharp.Migrations
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ScheduleId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
+                    BusCompanyId = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BusReservations", x => x.ReservationId);
+                    table.ForeignKey(
+                        name: "FK_BusReservations_BusCompanies_BusCompanyId",
+                        column: x => x.BusCompanyId,
+                        principalTable: "BusCompanies",
+                        principalColumn: "BusCompanyId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_BusReservations_BusSchedules_ScheduleId",
                         column: x => x.ScheduleId,
@@ -351,6 +372,11 @@ namespace pentasharp.Migrations
                 column: "BusCompanyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BusReservations_BusCompanyId",
+                table: "BusReservations",
+                column: "BusCompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BusReservations_ScheduleId",
                 table: "BusReservations",
                 column: "ScheduleId");
@@ -359,6 +385,16 @@ namespace pentasharp.Migrations
                 name: "IX_BusReservations_UserId",
                 table: "BusReservations",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusRoutes_BusCompanyId",
+                table: "BusRoutes",
+                column: "BusCompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BusSchedules_BusCompanyId",
+                table: "BusSchedules",
+                column: "BusCompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusSchedules_BusId",

@@ -121,15 +121,6 @@ namespace WebApplication1.Controllers
                 user.Role = model.Role.Value;
             }
 
-            if (user.Role == UserRole.Admin)
-            {
-                user.IsAdmin = true;
-            }
-            else
-            {
-                user.IsAdmin = false; 
-            }
-
             if (model.BusinessType.HasValue)
             {
                 user.BusinessType = model.BusinessType.Value;
