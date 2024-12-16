@@ -40,4 +40,4 @@ jobs:
 
       - name: Deploy to remote server via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no root@23.88.98.228 "cd /var/www/pentasharp && git pull && systemctl restart pentasharp.service"
+          ssh -o StrictHostKeyChecking=no root@5.75.148.60 "cd /var/www/pentasharp && git pull && systemctl restart pentasharp.service"
