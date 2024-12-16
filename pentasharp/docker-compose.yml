@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_container
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrongPassword123
+    ports:
+      - 1433:1433
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - app_network
+
+  # Your .NET application container (example)
+  your_dotnet_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - sqlserver
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  sql_data:
