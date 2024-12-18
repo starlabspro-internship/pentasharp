@@ -26,12 +26,7 @@ namespace pentasharp.Services
         {
             var companies = _context.TaxiCompanies.ToList();
 
-            if (companies == null || !companies.Any())
-            {
-                throw new KeyNotFoundException("No taxi companies found.");
-            }
-
-            return _mapper.Map<List<TaxiCompanyRequest>>(companies);
+            return _mapper.Map<List<TaxiCompanyRequest>>(companies ?? new List<TaxiCompany>());
         }
 
         public List<TaxiCompanyRequest> GetAllCompaniesWithTaxis()

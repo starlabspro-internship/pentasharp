@@ -51,11 +51,24 @@ namespace pentasharp.Interfaces
         /// </summary>
         Task<User> GetCurrentUserAsync(int userId);
 
+        /// <summary>
+        /// Sets the current user's session information.
+        /// </summary>
         void SetUserSession(User user);
+
+        /// <summary>
+        /// Clears the current user's session information.
+        /// </summary>
         void ClearUserSession();
 
+        /// <summary>
+        /// Retrieves the unique identifier of the current authenticated user from the session.
+        /// </summary>
         int? GetCurrentUserId();
 
+        /// <summary>
+        /// Retrieves the unique identifier of the current authenticated user's company from the session.
+        /// </summary>
         int? GetCurrentCompanyId();
     }
 }

@@ -19,23 +19,25 @@ namespace WebApplication1.Controllers
         private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly ILogger<BusCompanyController> _logger;
 
-        public BusCompanyController(IBusCompanyService companyService, IHttpContextAccessor httpContextAccessor, AppDbContext context, IMapper mapper)
+        public BusCompanyController(IBusCompanyService companyService, IHttpContextAccessor httpContextAccessor, AppDbContext context, IMapper mapper, ILogger<BusCompanyController> logger)
         {
             _companyService = companyService;
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("GetBusCompanyUsers")]
         public async Task<IActionResult> GetBusCompanyUsersAsync()
         {
             var users = await _companyService.GetBusCompanyUsersAsync();
-            if (users != null)
-                return Ok(users);
 
-            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+            _logger.LogInformation("Successfully retrieved bus company users.");
+
+            return Ok(users);
         }
 
         [HttpPost("AddCompany")]
@@ -44,9 +46,11 @@ namespace WebApplication1.Controllers
             var result = await _companyService.AddCompanyAsync(model);
             if (result)
             {
+                _logger.LogInformation("Successfully added company: {CompanyName}", model.CompanyName);
                 return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
             }
 
+            _logger.LogWarning("Failed to add company: {CompanyName}. Invalid data provided.", model.CompanyName);
             return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
         }
 
@@ -55,8 +59,12 @@ namespace WebApplication1.Controllers
         {
             var result = await _companyService.EditCompanyAsync(id, model);
             if (result)
+            {
+                _logger.LogInformation("Successfully edited company with ID: {CompanyId}", id);
                 return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
+            }
 
+            _logger.LogWarning("Failed to edit company with ID: {CompanyId}. Company not found.", id);
             return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
@@ -65,8 +73,12 @@ namespace WebApplication1.Controllers
         {
             var result = await _companyService.DeleteCompanyAsync(id);
             if (result)
-                return Ok(ResponseFactory.SuccessResponse("Company and its buses deleted successfully.",result));
+            {
+                _logger.LogInformation("Successfully deleted company with ID: {CompanyId}", id);
+                return Ok(ResponseFactory.SuccessResponse("Company and its buses deleted successfully.", result));
+            }
 
+            _logger.LogWarning("Failed to delete company with ID: {CompanyId}. Company not found.", id);
             return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
@@ -74,6 +86,9 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> GetCompaniesAsync()
         {
             var companies = await _companyService.GetCompaniesAsync();
+
+            _logger.LogInformation("Successfully retrieved {CompanyCount} companies.", companies.Count());
+
             return Ok(companies);
         }
 
@@ -84,19 +99,20 @@ namespace WebApplication1.Controllers
 
             if (response.Success)
             {
+                _logger.LogInformation("Successfully retrieved users for company with ID: {CompanyId}", companyId);
                 return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, response.Data));
             }
-            else
+
+            var errorMessage = response.Message.ToLower();
+
+            if (errorMessage.Contains("not found"))
             {
-                if (response.Message.Contains("not found", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, response.Message));
-                }
-                else
-                {
-                    return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidOperation, response.Message));
-                }
+                _logger.LogWarning("No users found for company with ID: {CompanyId}", companyId);
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, response.Message));
             }
+
+            _logger.LogWarning("Invalid operation while retrieving users for company with ID: {CompanyId}. Message: {Message}", companyId, response.Message);
+            return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidOperation, response.Message));
         }
     }
 } 

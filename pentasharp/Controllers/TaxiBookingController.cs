@@ -20,11 +20,13 @@ namespace WebApplication1.Controllers
     {
         private readonly ITaxiBookingService _taxiBookingService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<TaxiBookingController> _logger;
 
-        public TaxiBookingController(ITaxiBookingService taxiBookingService, IHttpContextAccessor httpContextAccessor)
+        public TaxiBookingController(ITaxiBookingService taxiBookingService, IHttpContextAccessor httpContextAccessor, ILogger<TaxiBookingController> logger)
         {
             _taxiBookingService = taxiBookingService;
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -53,24 +55,21 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
-
-            var request = new TaxiBookingRequest
             {
-                TaxiCompanyId = model.TaxiCompanyId,
-                PickupLocation = model.PickupLocation,
-                DropoffLocation = model.DropoffLocation,
-                BookingTime = model.BookingTime,
-                PassengerCount = model.PassengerCount,
-                UserId = model.UserId,
-                Status = ReservationStatus.Pending
-            };
+                _logger.LogWarning("Invalid booking data provided.");
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
+            }
 
-            var success = await _taxiBookingService.CreateBookingAsync(request);
+            var success = await _taxiBookingService.CreateBookingAsync(model);
+
             if (!success)
+            {
+                _logger.LogWarning("Booking creation failed for user with ID: {UserId}", model.UserId);
                 return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Booking creation failed."));
+            }
 
-            return Ok(ResponseFactory.SuccessResponse("Booking created successfully",success));
+            _logger.LogInformation("Booking created successfully for user with ID: {UserId}", model.UserId);
+            return Ok(ResponseFactory.SuccessResponse("Booking created successfully", success));
         }
     }
 }

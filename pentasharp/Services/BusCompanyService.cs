@@ -15,12 +15,14 @@ namespace pentasharp.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAuthenticateService _authService;
+        private readonly ILogger<BusCompanyService> _logger;
 
-        public BusCompanyService(AppDbContext context, IMapper mapper, IAuthenticateService authService)
+        public BusCompanyService(AppDbContext context, IMapper mapper, IAuthenticateService authService, ILogger<BusCompanyService> logger)
         {
             _context = context;
             _mapper = mapper;
             _authService = authService;
+            _logger = logger;
         }
 
         public async Task<bool> AddCompanyAsync(BusCompanyViewModel model)
@@ -138,7 +140,7 @@ namespace pentasharp.Services
 
         public async Task<List<object>> GetBusCompanyUsersAsync()
         {
-            return await _context.Users
+            var users = await _context.Users
                 .Where(user => user.BusinessType == BusinessType.BusCompany)
                 .Where(user => user.CompanyId == null)
                 .Select(user => new
@@ -148,7 +150,16 @@ namespace pentasharp.Services
                     user.LastName
                 })
                 .ToListAsync<object>();
+
+            if (users == null || !users.Any())
+            {
+                _logger.LogInformation("No bus company users were found.");
+                return null;
+            }
+
+            return users;
         }
+
 
 
         public async Task<object> GetCompanyByUserIdAsync()
@@ -176,12 +187,7 @@ namespace pentasharp.Services
         {
             var companies = _context.BusCompanies.ToList();
 
-            if (companies == null || !companies.Any())
-            {
-                throw new KeyNotFoundException("No bus companies found.");
-            }
-
-            return _mapper.Map<List<BusCompanyViewModel>>(companies);
+            return _mapper.Map<List<BusCompanyViewModel>>(companies ?? new List<BusCompany>());
         }
     }
 }

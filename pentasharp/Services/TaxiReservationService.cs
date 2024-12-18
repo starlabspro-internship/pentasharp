@@ -110,7 +110,7 @@ namespace pentasharp.Services
                 foreach (var reservationDto in reservationInfo)
                 {
                     var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
-                    reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
+                    reservationDto.PassengerName = $"{reservationEntity?.User?.FirstName} {reservationEntity?.User?.LastName}".Trim() ?? "Unknown";
                     reservationDto.Driver = reservationEntity?.Taxi != null
                         ? $"{reservationEntity.Taxi.DriverId} - {reservationEntity.Taxi.LicensePlate}"
                         : "Unassigned";

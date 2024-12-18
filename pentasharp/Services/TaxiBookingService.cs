@@ -38,22 +38,33 @@ namespace pentasharp.Services
             return _mapper.Map<List<TaxiCompanyViewModel>>(companies);
         }
 
-        public async Task<bool> CreateBookingAsync(TaxiBookingRequest request)
+        public async Task<bool> CreateBookingAsync(CreateBookingViewModel model)
         {
+            _logger.LogInformation("Starting booking creation process for user ID: {UserId}", model.UserId);
+
             var taxiBooking = new TaxiBookings
             {
-                TaxiCompanyId = request.TaxiCompanyId,
-                PickupLocation = request.PickupLocation,
-                DropoffLocation = request.DropoffLocation,
-                BookingTime = request.BookingTime,
-                PassengerCount = request.PassengerCount,
-                UserId = request.UserId,
-                Status = request.Status
+                TaxiCompanyId = model.TaxiCompanyId,
+                PickupLocation = model.PickupLocation,
+                DropoffLocation = model.DropoffLocation,
+                BookingTime = model.BookingTime,
+                PassengerCount = model.PassengerCount,
+                UserId = model.UserId,
+                Status = ReservationStatus.Pending
             };
 
-            _context.TaxiBookings.Add(taxiBooking);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.TaxiBookings.Add(taxiBooking);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Booking successfully saved to the database for user ID: {UserId}", model.UserId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while creating a booking for user ID: {UserId}", model.UserId);
+                return false;
+            }
         }
 
         public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync()

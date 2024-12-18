@@ -45,6 +45,9 @@ namespace pentasharp.Interfaces
         /// </summary>
         Task<object> GetCompanyByUserIdAsync();
 
+        /// <summary>
+        /// Retrieves a list of all bus companies.
+        /// </summary>
         List<BusCompanyViewModel> GetAllBusCompanies();
     }
 }

@@ -37,6 +37,9 @@ namespace pentasharp.Services
         /// </summary>
         Task<List<DriverRequest>> GetAvailableDriversAsync(int? taxiId = null);
 
+        /// <summary>
+        /// Retrieves the details of the currently authenticated taxi company.
+        /// </summary>
         TaxiCompany GetCompanyDetails();
     }
 }

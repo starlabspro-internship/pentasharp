@@ -35,40 +35,26 @@ namespace WebApplication1.Controllers
         [HttpGet("Bus")]
         public IActionResult Bus()
         {
-            try
+            var busCompanies = _busCompanyService.GetAllBusCompanies();
+            var viewModel = new ManageBusCompanyViewModel
             {
-                var busCompanies = _busCompanyService.GetAllBusCompanies();
-                var viewModel = new ManageBusCompanyViewModel
-                {
-                    BusCompanies = busCompanies
-                };
+                BusCompanies = busCompanies
+            };
 
-                return View(viewModel);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ex.Message));
-            }
+            return View(viewModel);
         }
 
         [HttpGet("Taxi")]
         public IActionResult Taxi()
         {
-            try
-            {
-                var taxiCompanies = _taxiCompanyService.GetAllCompanies();
+            var taxiCompanies = _taxiCompanyService.GetAllCompanies();
 
-                var viewModel = new ManageTaxiCompanyRequest
-                {
-                    TaxiCompanies = taxiCompanies
-                };
-
-                return View(viewModel);
-            }
-            catch (KeyNotFoundException ex)
+            var viewModel = new ManageTaxiCompanyRequest
             {
-                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ex.Message));
-            }
+                TaxiCompanies = taxiCompanies
+            };
+
+            return View(viewModel);
         }
     }
 }
