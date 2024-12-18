@@ -350,68 +350,77 @@
                             <h1 class="display-5 mb-4">What Our Customers Are Saying</h1>
                         </div>
 
-                        <!-- Review Slider -->
-                        <div class="container py-5">
-                            <!-- Check if there are reviews in the model -->
-                            @if (Model != null && Model.Any())
-                            {
-                                <div id="reviewCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+                <!-- Review Slider -->
+                <div class="container py-5">
+                    <!-- Check if there are reviews in the model -->
+                    @if (Model != null && Model.Any())
+                    {
+                        <div id="reviewCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
 
-                                    <!-- Indicators (optional) -->
-                                    <div class="carousel-indicators">
-                                        @for (int i = 0; i < (int)Math.Ceiling((double)Model.Count() / 3); i++)
-                                        {
-                                            <button type="button" data-bs-target="#reviewCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
-                                        }
-                                    </div>
+                            <!-- Indicators (optional) -->
+                            <div class="carousel-indicators">
+                                @for (int i = 0; i < (int)Math.Ceiling((double)Model.Count() / 3); i++)
+                                {
+                                    <button type="button" data-bs-target="#reviewCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
+                                }
+                            </div>
 
-                                    <!-- Carousel Items -->
-                                    <div class="carousel-inner">
-                                        @for (int i = 0; i < Model.Count(); i += 3)
-                                        {
-                                            <div class="carousel-item @(i == 0 ? "active" : "")">
-                                                <div class="row">
-                                                    @for (int j = i; j < i + 3 && j < Model.Count(); j++)
-                                                    {
-                                                        var review = Model[j];
-                                                        <div class="col-md-4">
-                                                            <div class="review-item bg-light p-4 rounded h-100">
-                                                                <h5 class="mb-2">@review.UserName</h5>
-                                                                <p class="text-muted">@review.Content</p> <!-- Display review content -->
-                                                                <div class="star-rating">
-                                                                    @for (int k = 0; k < review.Rating; k++)
-                                                                    {
-                                                                        <i class="fas fa-star text-warning"></i>
-                                                                    }
-                                                                    @for (int k = review.Rating; k < 5; k++)
-                                                                    {
-                                                                        <i class="far fa-star text-warning"></i>
-                                                                    }
-                                                                </div>
-                                                            </div>
+                            <!-- Carousel Items -->
+                            <div class="carousel-inner">
+                                @for (int i = 0; i < Model.Count(); i += 3)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <div class="row">
+                                            @for (int j = i; j < i + 3 && j < Model.Count(); j++)
+                                            {
+                                                var review = Model[j];
+                                                <div class="col-md-4">
+                                                    <div class="review-item bg-light p-4 rounded h-100">
+                                                        <h5 class="mb-2">@review.UserName</h5>
+
+                                                        <!-- Limit review text height -->
+                                                        <p class="text-muted review-content" id="review-content-@j">
+                                                            @review.Content
+                                                        </p>
+
+                                                        <!-- View Full Review button -->
+                                                        <button class="btn btn-link view-full-btn" data-target="#review-content-@j">View Full Review</button>
+
+                                                        <!-- Star rating -->
+                                                        <div class="star-rating">
+                                                            @for (int k = 0; k < review.Rating; k++)
+                                                            {
+                                                                <i class="fas fa-star text-warning"></i>
+                                                            }
+                                                            @for (int k = review.Rating; k < 5; k++)
+                                                            {
+                                                                <i class="far fa-star text-warning"></i>
+                                                            }
                                                         </div>
-                                                    }
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        }
+                                            }
+                                        </div>
                                     </div>
+                                }
+                            </div>
 
-                                    <!-- Carousel Controls -->
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
-                                </div>
-                            }
-                            else
-                            {
-                                <p>No reviews available.</p>  <!-- If no reviews, display this message -->
-                            }
+                            <!-- Carousel Controls -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
                         </div>
+                    }
+                    else
+                    {
+                        <p>No reviews available.</p>  <!-- If no reviews, display this message -->
+                    }
+                </div>
 
                 <div class="text-center mt-4">
                     <a class="btn btn-primary border-secondary rounded-pill text-white py-3 px-5" asp-action="SubmitReview" asp-controller="Reviews">
@@ -424,4 +433,52 @@
         </div>
     </div>
 </div>
+<style>
+    .review-content {
+        height: 60px; /* Limit visible content height */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+    }
 
+        .review-content.expanded {
+            height: auto; /* Remove height restriction to show full content */
+            -webkit-line-clamp: unset;
+        }
+
+    .view-full-btn {
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+        .view-full-btn:hover {
+            text-decoration: underline;
+        }
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const viewButtons = document.querySelectorAll('.view-full-btn');
+
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const reviewContent = document.querySelector(this.getAttribute('data-target'));
+
+                if (reviewContent.classList.contains('expanded')) {
+                    reviewContent.classList.remove('expanded');
+                    this.textContent = 'View Full Review';
+                } else {
+                    reviewContent.classList.add('expanded');
+                    this.textContent = 'View Less';
+                }
+            });
+        });
+    });
+</script>

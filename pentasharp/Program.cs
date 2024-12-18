@@ -25,7 +25,7 @@ namespace WebApplication1
             builder.Services.AddAutoMapper(typeof(TaxiReservationProfile));
             builder.Services.AddScoped<ITaxiReservationService, TaxiReservationService>();
             builder.Services.AddScoped<ITaxiBookingService, TaxiBookingService>();
-
+            builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddDbContext<AppDbContext>(options =>

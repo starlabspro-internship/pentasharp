@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
+using pentasharp.Interfaces;
 
 namespace pentasharp.Controllers
 {
@@ -12,11 +13,13 @@ namespace pentasharp.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IReviewService _reviewService;
 
-        public ReviewsController(AppDbContext context, IHttpContextAccessor httpContextAccessor)
+        public ReviewsController(AppDbContext context, IHttpContextAccessor httpContextAccessor, IReviewService reviewService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _reviewService = reviewService;
         }
 
         public async Task<IActionResult> Index()
@@ -31,24 +34,13 @@ namespace pentasharp.Controllers
         {
             if (ModelState.IsValid)
             {
-                string userName = "Anonymous";
-
                 var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+                var result = await _reviewService.SubmitReviewAsync(review, userId);
 
-                if (userId.HasValue)
-                {
-                    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId.Value);
-                    userName = user?.FirstName ?? userName; 
-                    review.UserId = userId.Value;
-                }
-
-                review.UserName = string.IsNullOrEmpty(review.UserName) ? userName : review.UserName;
-
-                _context.Add(review);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Index", "Home");
+                if (result)
+                    return RedirectToAction("Index", "Home");
             }
+
             return View("~/Views/Home/Index.cshtml", review);
         }
 
