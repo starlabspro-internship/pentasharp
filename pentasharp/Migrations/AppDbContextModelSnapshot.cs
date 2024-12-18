@@ -22,6 +22,38 @@ namespace pentasharp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("pentasharp.Models.Entities.BaseReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reviews");
+
+                    b.HasDiscriminator<string>("ReviewType").HasValue("BaseReview");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("pentasharp.Models.Entities.BusCompany", b =>
                 {
                     b.Property<int>("BusCompanyId")
@@ -519,6 +551,20 @@ namespace pentasharp.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("pentasharp.Models.Entities.UserReview", b =>
+                {
+                    b.HasBaseType("pentasharp.Models.Entities.BaseReview");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("UserReview");
                 });
 
             modelBuilder.Entity("pentasharp.Models.Entities.BusReservations", b =>

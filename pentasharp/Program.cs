@@ -65,12 +65,13 @@ namespace WebApplication1
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthorization();
+         
             app.UseRouting();
 
             app.UseSession();
 
-            app.UseAuthorization();
+      
 
             app.MapControllerRoute(
                 name: "default",

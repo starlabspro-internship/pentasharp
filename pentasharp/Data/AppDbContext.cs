@@ -20,6 +20,9 @@ namespace pentasharp.Data
         public DbSet<Buses> Buses { get; set; }
         public DbSet<BusRoutes> BusRoutes { get; set; }
         public DbSet<Notifications> Notifications { get; set; }
+
+        public DbSet<BaseReview> Reviews { get; set; }
+        public DbSet<UserReview> UserReviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -65,6 +68,14 @@ namespace pentasharp.Data
 
             modelBuilder.Entity<Notifications>()
                  .HasQueryFilter(n => !n.TaxiBooking.TaxiCompany.IsDeleted);
+
+            // Configure inheritance - Table-per-Hierarchy (TPH)
+            modelBuilder.Entity<BaseReview>()
+                .HasDiscriminator<string>("ReviewType")
+                .HasValue<BaseReview>("BaseReview")
+                .HasValue<UserReview>("UserReview");
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
