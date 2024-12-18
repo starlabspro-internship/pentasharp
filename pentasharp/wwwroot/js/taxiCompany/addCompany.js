@@ -18,7 +18,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fetchEntities = (url, renderFunction) => {
         fetch(url)
-            .then((response) => response.json())
+            .then(async (response) => {
+                if (!response.ok) {
+                    const contentType = response.headers.get("Content-Type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "An error occurred.");
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error: ${response.status} - ${errorText}`);
+                    }
+                }
+                return response.json();
+            })
             .then((data) => renderFunction(data))
             .catch((error) => {
                 console.error(`Error fetching from ${url}:`, error);
@@ -92,9 +104,15 @@ document.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify(data),
         })
             .then(async (response) => {
+                const contentType = response.headers.get("Content-Type");
                 if (!response.ok) {
-                    const errorResponse = await response.text();
-                    throw new Error(errorResponse);
+                    if (contentType && contentType.includes("application/json")) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "An error occurred.");
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error: ${response.status} - ${errorText}`);
+                    }
                 }
                 return response.json();
             })
@@ -108,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch((error) => {
                 console.error("Error saving entity:", error);
-                alert("An error occurred while saving the entity. Please check the console for details.");
+                alert(`An error occurred while saving the entity: ${error.message}`);
             });
     };
 

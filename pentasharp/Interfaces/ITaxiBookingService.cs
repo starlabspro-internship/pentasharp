@@ -28,7 +28,7 @@ namespace pentasharp.Interfaces
         /// Retrieves all taxi bookings.
         /// </summary>
         /// <returns>A list of <see cref="TaxiBookingViewModel"/> representing all bookings.</returns>
-        Task<List<TaxiBookingViewModel>> GetAllBookingsAsync(int userId);
+        Task<List<TaxiBookingViewModel>> GetAllBookingsAsync();
 
         /// <summary>
         /// Retrieves a taxi booking by its ID.
@@ -49,7 +49,7 @@ namespace pentasharp.Interfaces
         /// </summary>
         /// <param name="userId">The ID of the user whose reservations are being retrieved.</param>
         /// <returns>A list of taxi reservations made by the specified user.</returns>
-        Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync(int userId);
+        Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync();
 
         /// <summary>
         /// Cancels a user's taxi booking if it is in a pending state.
@@ -57,6 +57,6 @@ namespace pentasharp.Interfaces
         /// <param name="bookingId">The ID of the booking to be canceled.</param>
         /// <param name="userId">The ID of the user requesting the cancellation.</param>
         /// <returns>A boolean indicating whether the cancellation was successful.</returns>
-        Task<bool> CancelBookingAsync(int bookingId, int userId);
+        Task<bool> CancelBookingAsync(int bookingId);
     }
 }

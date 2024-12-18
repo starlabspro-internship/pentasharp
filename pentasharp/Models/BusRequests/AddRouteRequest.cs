@@ -20,6 +20,9 @@
         /// </summary>
         public string ToLocation { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Unique identifier of the bus company managing the reservation.
+        /// </summary>
         public int? BusCompanyId { get; set; }
 
         /// <summary>

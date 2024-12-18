@@ -29,20 +29,10 @@ namespace WebApplication1.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private int? GetCompanyId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("CompanyId");
-        }
-
         [HttpGet("GetReservations")]
         public async Task<IActionResult> GetReservations()
         {
-            var companyId = GetCompanyId();
-
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
-
-            var reservations = await _busReservationService.GetReservationsAsync(companyId.Value);
+            var reservations = await _busReservationService.GetReservationsAsync();
 
             if (!reservations.Any())
                 return NotFound(ResponseFactory.CreateResponse<object>(

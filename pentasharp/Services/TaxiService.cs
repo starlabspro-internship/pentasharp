@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using pentasharp.ViewModel.Taxi;
 using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.Interfaces;
 
 namespace pentasharp.Services
 {
@@ -13,19 +14,28 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthenticateService _authService;
 
-        public TaxiService(AppDbContext context, IMapper mapper)
+        public TaxiService(AppDbContext context, IMapper mapper,IAuthenticateService service)
         {
             _context = context;
             _mapper = mapper;
+            _authService = service;
         }
 
-        public async Task<List<TaxiRequest>> GetTaxisAsync(int companyId)
+        public async Task<List<TaxiRequest>> GetTaxisAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var taxis = _context.Taxis
                 .Include(t => t.TaxiCompany)
                 .Include(t => t.Driver)
-                .Where(t => t.TaxiCompanyId == companyId && !t.IsDeleted)
+                .Where(t => t.TaxiCompanyId == companyId.Value && !t.IsDeleted)
                 .ToList();
 
             var viewModel = taxis.Select(t => new TaxiRequest
@@ -86,11 +96,17 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<List<DriverRequest>> GetAvailableDriversAsync(int companyId, int? taxiId = null)
+        public async Task<List<DriverRequest>> GetAvailableDriversAsync(int? taxiId = null)
         {
 
+            var companyId = _authService.GetCurrentCompanyId();
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var assignedDriverIds = await _context.Taxis
-                .Where(t => t.TaxiCompanyId == companyId && !t.IsDeleted && (taxiId == null || t.TaxiId != taxiId))
+                .Where(t => t.TaxiCompanyId == companyId.Value && !t.IsDeleted && (taxiId == null || t.TaxiId != taxiId))
                 .Select(t => t.DriverId)
                 .ToListAsync();
 
@@ -110,6 +126,22 @@ namespace pentasharp.Services
                                  }).ToListAsync();
 
             return drivers;
+        }
+
+        public TaxiCompany GetCompanyDetails()
+        {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
+            var companyDetails = _context.TaxiCompanies
+                .Include(tc => tc.User)
+                .FirstOrDefault(tc => tc.TaxiCompanyId == companyId.Value);
+
+            return companyDetails;
         }
     }
 }

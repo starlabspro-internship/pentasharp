@@ -11,39 +11,48 @@ namespace pentasharp.Services
     public class BusReservationService : IBusReservationService
     {
         private readonly AppDbContext _context;
+        private readonly IAuthenticateService _authService;
 
-        public BusReservationService(AppDbContext context)
+        public BusReservationService(AppDbContext context, IAuthenticateService authService)
         {
             _context = context;
+            _authService = authService;
         }
 
-        public async Task<List<object>> GetReservationsAsync(int companyId)
+        public async Task<List<object>> GetReservationsAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var reservations = await _context.BusReservations
-                .Where(r => r.Schedule != null && r.Schedule.Route != null && r.Schedule.Bus != null && r.BusCompanyId == companyId)
+                .Where(r => r.Schedule != null && r.Schedule.Route != null && r.Schedule.Bus != null && r.BusCompanyId == companyId.Value)
                 .Select(r => new
                 {
-                    ReservationId = r.ReservationId,
-                    ReservationDate = r.ReservationDate,
-                    NumberOfSeats = r.NumberOfSeats,
-                    TotalAmount = r.TotalAmount,
-                    PaymentStatus = r.PaymentStatus,
-                    Status = r.Status,
+                    r.ReservationId,
+                    r.ReservationDate,
+                    r.NumberOfSeats,
+                    r.TotalAmount,
+                    r.PaymentStatus,
+                    r.Status,
                     User = new
                     {
-                        FirstName = r.User.FirstName,
-                        LastName = r.User.LastName
+                        r.User.FirstName,
+                        r.User.LastName
                     },
                     Schedule = new
                     {
-                        ScheduleId = r.Schedule.ScheduleId,
-                        DepartureTime = r.Schedule.DepartureTime,
-                        ArrivalTime = r.Schedule.ArrivalTime,
-                        Price = r.Schedule.Price,
-                        AvailableSeats = r.Schedule.AvailableSeats,
-                        BusNumber = r.Schedule.Bus.BusNumber,
-                        FromLocation = r.Schedule.Route.FromLocation,
-                        ToLocation = r.Schedule.Route.ToLocation
+                        r.Schedule.ScheduleId,
+                        r.Schedule.DepartureTime,
+                        r.Schedule.ArrivalTime,
+                        r.Schedule.Price,
+                        r.Schedule.AvailableSeats,
+                        r.Schedule.Bus.BusNumber,
+                        r.Schedule.Route.FromLocation,
+                        r.Schedule.Route.ToLocation
                     }
                 })
                 .ToListAsync();

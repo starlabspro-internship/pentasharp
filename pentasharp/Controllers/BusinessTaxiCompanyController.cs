@@ -6,6 +6,7 @@ using pentasharp.Data;
 using pentasharp.Services;
 using pentasharp.Models.TaxiRequest;
 using pentasharp.Models.Utilities;
+using System.ComponentModel.Design;
 
 namespace WebApplication1.Controllers
 {
@@ -32,58 +33,18 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompany")]
         public IActionResult GetCompany()
         {
-            var userId = GetCompanyId();
-            if (!userId.HasValue)
+            var company = _taxiService.GetCompanyDetails();
+            if (company == null)
             {
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No associated taxi company found for this user."));
             }
 
-            var user = _context.Users
-                 .Where(u => u.UserId == userId.Value && u.BusinessType == BusinessType.TaxiCompany)
-                 .FirstOrDefault();
-            if (user == null)
-            {
-                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
-            }
-
-            if (user.BusinessType == BusinessType.TaxiCompany)
-            {
-                var company = _context.TaxiCompanies
-                    .FirstOrDefault(c => c.UserId == userId.Value);
-
-                if (company == null)
-                {
-                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No associated taxi company found for this user."));
-                }
-
-                return Ok(company);
-            }
-            else
-            {
-                return Ok("User is not associated with Taxi Company.");
-            }
+            return Ok(company);
         }
 
         [HttpPost("AddTaxi")]
         public async Task<IActionResult> AddTaxi([FromBody] AddTaxiRequest model)
         {
-            var userId = GetCompanyId();
-            if (!userId.HasValue)
-            {
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
-            }
-
-            bool isDriverAssigned = await _context.Taxis.AnyAsync(t => t.DriverId == model.DriverId && model.DriverId != null && !t.IsDeleted);
-            if (isDriverAssigned)
-            {
-                return Conflict(ResponseFactory.ErrorResponse(ResponseCodes.Conflict, "Driver is already assigned to another taxi."));
-            }
-
             var taxi = await _taxiService.AddTaxiAsync(model);
             return Ok(ResponseFactory.SuccessResponse("Taxi added successfully.",taxi));
         }
@@ -91,34 +52,8 @@ namespace WebApplication1.Controllers
         [HttpGet("GetTaxis")]
         public async Task<IActionResult> GetTaxis()
         {
-            try
-            {
-                var userId = GetCompanyId();
-                if (!userId.HasValue)
-                {
-                    return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-                }
-
-                var user = await _context.Users.FindAsync(userId.Value);
-                if (user == null)
-                {
-                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
-                }
-
-                if (!user.CompanyId.HasValue)
-                {
-                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "The logged-in user has no associated company."));
-                }
-
-                var companyId = user.CompanyId.Value;
-                var taxis = await _taxiService.GetTaxisAsync(companyId);
-
-                return Ok(taxis);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
-            }
+            var taxis = await _taxiService.GetTaxisAsync();
+            return Ok(taxis);
         }
 
         [HttpPut("EditTaxi/{id}")]
@@ -143,11 +78,6 @@ namespace WebApplication1.Controllers
             }
 
             return Ok(ResponseFactory.SuccessResponse("Taxi deleted successfully.", success));
-        }
-
-        private int? GetCompanyId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("UserId");
         }
     }
 }

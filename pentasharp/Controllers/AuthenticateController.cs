@@ -50,20 +50,6 @@ namespace WebApplication1.Controllers
 
             var user = await _userService.RegisterAsync(model);
 
-            var session = _httpContextAccessor.HttpContext.Session;
-            session.SetInt32("UserId", user.UserId);
-            session.SetString("FirstName", user.FirstName);
-            var userRole = user.Role.ToString();
-            session.SetString("UserRole", userRole);
-            session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
-            var businessType = user.BusinessType.ToString();
-            session.SetString("BusinessType", businessType);
-
-            if (user.CompanyId.HasValue)
-            {
-                session.SetInt32("CompanyId", user.CompanyId.Value);
-            }
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -172,24 +158,10 @@ namespace WebApplication1.Controllers
                 return View(model);
             }
 
-            var session = _httpContextAccessor.HttpContext.Session;
-            session.SetInt32("UserId", user.UserId);
-            session.SetString("FirstName", user.FirstName);
-            var userRole = user.Role.ToString();
-            session.SetString("UserRole", userRole);
-            session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
-            var businessType = user.BusinessType.ToString();
-            session.SetString("BusinessType", businessType);
-
-            if (user.CompanyId.HasValue)
-            {
-                session.SetInt32("CompanyId", user.CompanyId.Value);
-            }
-
             _logger.LogInformation("User {Email} logged in successfully.", model.Email);
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                return Json(ResponseFactory.SuccessResponse("Login successful.",user));
+                return Json(ResponseFactory.SuccessResponse("Login successful.", user));
 
             return RedirectToAction("Index", "Home");
         }
@@ -197,9 +169,7 @@ namespace WebApplication1.Controllers
         [HttpGet("Logout")]
         public IActionResult Logout()
         {
-            var session = _httpContextAccessor.HttpContext.Session;
-            session.Clear();
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete("UserId");
+            _userService.ClearUserSession();
 
             _logger.LogInformation("User logged out successfully.");
 
@@ -209,7 +179,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCurrentUser")]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+            var userId = _userService.GetCurrentUserId();
 
             if (!userId.HasValue)
             {

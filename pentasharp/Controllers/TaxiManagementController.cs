@@ -42,15 +42,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBookings")]
         public async Task<IActionResult> GetBookings()
         {
-            var session = _httpContextAccessor.HttpContext.Session;
-            var userId = session.GetInt32("UserId");
-
-            if (userId == null)
-            {
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, "User is not logged in."));
-            }
-
-            var bookings = await _taxiBookingService.GetAllBookingsAsync(userId.Value);
+            var bookings = await _taxiBookingService.GetAllBookingsAsync();
 
             return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, bookings));
         }
@@ -85,15 +77,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                var session = _httpContextAccessor.HttpContext.Session;
-                var userId = session.GetInt32("UserId");
-
-                if (userId == null)
-                {
-                    return Unauthorized(new { success = false, message = "User is not logged in." });
-                }
-
-                var reservations = await _taxiReservationService.GetReservationsAsync(userId.Value);
+                var reservations = await _taxiReservationService.GetReservationsAsync();
                 return Ok(new { success = true, reservations });
             }
             catch (Exception ex)

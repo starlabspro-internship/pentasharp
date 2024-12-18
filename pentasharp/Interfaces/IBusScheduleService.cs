@@ -8,10 +8,6 @@ namespace pentasharp.Interfaces
     /// </summary>
     public interface IBusScheduleService
     {
-        /// <summary>
-        /// Checks whether the currently logged-in user is associated with the given bus company.
-        /// </summary>
-        Task<bool> ValidateCompanyUser(int companyId);
 
         /// <summary>
         /// Determines if a given route already exists.
@@ -21,41 +17,41 @@ namespace pentasharp.Interfaces
         /// <summary>
         /// Adds a new route for the specified company.
         /// </summary>
-        Task AddRoute(AddRouteViewModel model, int hours, int minutes, int companyId);
+        Task<bool> AddRoute(AddRouteViewModel model, int hours, int minutes);
 
         /// <summary>
         /// Retrieves all routes for the specified company.
         /// </summary>
-        Task<List<AddRouteViewModel>> GetRoutes(int companyId);
+        Task<List<AddRouteViewModel>> GetRoutes();
 
         /// <summary>
         /// Edits the details of an existing route for the specified company.
         /// </summary>
-        Task EditRoute(int routeId, AddRouteViewModel model, int hours, int minutes, int companyId);
+        Task<bool> EditRoute(int routeId, AddRouteViewModel model, int hours, int minutes);
 
         /// <summary>
         /// Deletes an existing route for the specified company.
         /// </summary>
-        Task DeleteRoute(int routeId, int companyId);
+        Task<bool> DeleteRoute(int routeId);
 
         /// <summary>
         /// Adds a new schedule to a specified company.
         /// </summary>
-        Task AddSchedule(AddScheduleViewModel model, int companyId);
+        Task<bool> AddSchedule(AddScheduleViewModel model);
 
         /// <summary>
         /// Retrieves all schedules associated with the specified company.
         /// </summary>
-        Task<List<object>> GetSchedules(int companyId);
+        Task<List<object>> GetSchedules();
 
         /// <summary>
         /// Edits the details of an existing schedule for the specified company.
         /// </summary>
-        Task EditSchedule(int scheduleId, AddScheduleViewModel model, int companyId);
+        Task<bool> EditSchedule(int scheduleId, AddScheduleViewModel model);
 
         /// <summary>
         /// Deletes an existing schedule for the specified company.
         /// </summary>
-        Task DeleteSchedule(int scheduleId, int companyId);
+        Task<bool> DeleteSchedule(int scheduleId);
     }
 }

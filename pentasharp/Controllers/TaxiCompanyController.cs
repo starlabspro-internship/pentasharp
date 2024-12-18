@@ -8,6 +8,7 @@ using pentasharp.Models.TaxiRequest;
 using pentasharp.Models.Utilities;
 using System.Threading.Tasks;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WebApplication1.Controllers
 {
@@ -41,14 +42,26 @@ namespace WebApplication1.Controllers
         public IActionResult GetCompanies()
         {
             var viewModel = _taxiCompanyService.GetAllCompaniesWithTaxis();
+
+            if (viewModel == null)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Taxi Companies not found."));
+            }
+
             return Ok(viewModel);
         }
 
         [HttpGet("GetTaxiCompanyUsers")]
         public IActionResult GetTaxiCompanyUsers()
         {
-            var users = _taxiCompanyService.GetUnassignedTaxiCompanyUsers();
-            return Ok(users);
+            var taxiCompanyUser = _taxiCompanyService.GetUnassignedTaxiCompanyUsers();
+
+            if (taxiCompanyUser == null)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Users in Taxi Company not found."));
+            }
+
+            return Ok(taxiCompanyUser);
         }
 
         [HttpGet("GetTaxiCompanyUser/{companyId}")]

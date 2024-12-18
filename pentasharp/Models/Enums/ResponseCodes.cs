@@ -8,6 +8,7 @@
         InternalServerError,
         NotFound,
         Unauthorized,
-        Forbidden
+        Forbidden,
+        InvalidOperation 
     }
 }

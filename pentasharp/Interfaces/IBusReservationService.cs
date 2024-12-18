@@ -12,7 +12,7 @@ namespace pentasharp.Interfaces
         /// <summary>
         /// Retrieves all reservations for a specified company.
         /// </summary>
-        Task<List<object>> GetReservationsAsync(int companyId);
+        Task<List<object>> GetReservationsAsync();
 
         /// <summary>
         /// Confirms a pending reservation.

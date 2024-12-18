@@ -156,13 +156,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const response = await fetch(`/Admin/BusCompany/GetBusCompanyUser/${id}`);
         const result = await response.json();
+        console.log("result", result);
 
         if (!result.success) {
             alert(result.message || "Failed to fetch assigned user details.");
             return;
         }
 
-        const user = result.data.user;
+        const user = result.data;
 
         console.log("user", user);
 

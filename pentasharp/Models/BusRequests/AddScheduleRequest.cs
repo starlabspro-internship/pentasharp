@@ -43,6 +43,9 @@ namespace pentasharp.Models.BusRequests
         /// </summary>
         public int RouteId { get; set; }
 
+        /// <summary>
+        /// Unique identifier of the bus company managing the reservation.
+        /// </summary>
         public int BusCompanyId { get; set; }
 
         /// <summary>

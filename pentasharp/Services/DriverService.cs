@@ -1,13 +1,16 @@
-﻿using pentasharp.Data;
+﻿using pentasharp.Interfaces;
+using pentasharp.Models.TaxiRequest;
 using pentasharp.Models.Entities;
-using pentasharp.ViewModel.Authenticate;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System;
+using pentasharp.Data;
 using pentasharp.Models.Enums;
-using pentasharp.ViewModel.TaxiModels;
-using pentasharp.Models.TaxiRequest;
 
 namespace pentasharp.Services
 {
@@ -15,40 +18,70 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthenticateService _authService;
 
-        public DriverService(AppDbContext context, IMapper mapper)
+        public DriverService(AppDbContext context, IMapper mapper, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
+            _authService = authService;
         }
 
-        public async Task<User> AddDriverAsync(RegisterDriverRequest model, int companyId)
+        public async Task<User> AddDriverAsync(RegisterDriverRequest model)
         {
-            var newUser = new User
+            var companyId = _authService.GetCurrentCompanyId();
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
+            var company = await _context.TaxiCompanies.FirstOrDefaultAsync(c => c.TaxiCompanyId == companyId.Value);
+            if (company == null)
+            {
+                throw new InvalidOperationException("No associated taxi company found for this user.");
+            }
+
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == model.Email && !u.IsDeleted);
+            if (existingUser != null)
+            {
+                throw new InvalidOperationException("A user with this email already exists.");
+            }
+
+            var newDriver = new User
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
                 PasswordHash = HashPassword(model.Password),
-                CompanyId = companyId,
+                CompanyId = companyId.Value,
                 Role = UserRole.Driver,
                 IsAdmin = false,
-                BusinessType = BusinessType.TaxiCompany
+                BusinessType = BusinessType.TaxiCompany,
+                IsDeleted = false
             };
 
-            _context.Users.Add(newUser);
+            _context.Users.Add(newDriver);
             await _context.SaveChangesAsync();
-            return newUser;
+            return newDriver;
         }
 
-        public List<DriverRequest> GetDrivers(int companyId)
+        public List<DriverRequest> GetDrivers()
         {
-            var drivers = (from u in _context.Users
+            var companyId = _authService.GetCurrentCompanyId();
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
+            var filteredUsers = _context.Users
+                .Where(u => u.CompanyId == companyId.Value
+                            && u.Role == UserRole.Driver
+                            && u.BusinessType == BusinessType.TaxiCompany
+                            && !u.IsDeleted);
+
+            var drivers = (from u in filteredUsers
                            join c in _context.TaxiCompanies on u.CompanyId equals c.TaxiCompanyId
-                           where u.CompanyId == companyId
-                                 && u.Role == UserRole.Driver
-                                 && u.BusinessType == BusinessType.TaxiCompany
-                                 && !u.IsDeleted
                            select new DriverRequest
                            {
                                UserId = u.UserId,
@@ -63,13 +96,25 @@ namespace pentasharp.Services
 
         public async Task<bool> EditDriverAsync(int id, EditDriverRequest model)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null || user.IsDeleted || user.Role != UserRole.Driver)
+            var companyId = _authService.GetCurrentCompanyId();
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id
+                                                                    && u.CompanyId == companyId.Value
+                                                                    && u.Role == UserRole.Driver
+                                                                    && !u.IsDeleted);
+            if (user == null)
+            {
                 return false;
+            }
 
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.Email = model.Email;
+
             if (!string.IsNullOrEmpty(model.Password))
             {
                 user.PasswordHash = HashPassword(model.Password);
@@ -82,9 +127,20 @@ namespace pentasharp.Services
 
         public async Task<bool> DeleteDriverAsync(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null || user.IsDeleted || user.Role != UserRole.Driver)
+            var companyId = _authService.GetCurrentCompanyId();
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id
+                                                                    && u.CompanyId == companyId.Value
+                                                                    && u.Role == UserRole.Driver
+                                                                    && !u.IsDeleted);
+            if (user == null)
+            {
                 return false;
+            }
 
             user.IsDeleted = true;
             _context.Users.Update(user);

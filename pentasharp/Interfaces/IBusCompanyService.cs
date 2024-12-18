@@ -1,4 +1,5 @@
-﻿using pentasharp.ViewModel.Bus;
+﻿using pentasharp.Models.DTOs;
+using pentasharp.ViewModel.Bus;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace pentasharp.Interfaces
         /// <summary>
         /// Retrieves the user associated with a specific bus company.
         /// </summary>
-        Task<object> GetBusCompanyUserAsync(int companyId);
+        Task<StandardApiResponse<object>> GetBusCompanyUserAsync(int companyId);
 
         /// <summary>
         /// Retrieves a list of users that belong to bus companies.
@@ -42,6 +43,8 @@ namespace pentasharp.Interfaces
         /// <summary>
         /// Retrieves a company by a specific user identifier.
         /// </summary>
-        Task<object> GetCompanyByUserIdAsync(int userId);
+        Task<object> GetCompanyByUserIdAsync();
+
+        List<BusCompanyViewModel> GetAllBusCompanies();
     }
 }

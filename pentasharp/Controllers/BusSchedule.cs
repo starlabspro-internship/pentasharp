@@ -14,12 +14,10 @@ namespace WebApplication1.Controllers
     public class BusScheduleController : Controller
     {
         private readonly IBusScheduleService _busScheduleService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BusScheduleController(IBusScheduleService busScheduleService, IHttpContextAccessor httpContextAccessor)
+        public BusScheduleController(IBusScheduleService busScheduleService)
         {
             _busScheduleService = busScheduleService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult BusScheduleManagement() => View();
@@ -30,102 +28,155 @@ namespace WebApplication1.Controllers
         [HttpPost("AddRoute")]
         public async Task<IActionResult> AddRoute([FromBody] AddRouteViewModel model, int hours, int minutes)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Invalid route data provided."));
+            }
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+            try
+            {
+                var isAdded = await _busScheduleService.AddRoute(model, hours, minutes);
 
-            await _busScheduleService.AddRoute(model, hours, minutes, companyId.Value);
+                if (!isAdded)
+                {
+                    return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "Failed to add the route."));
+                }
 
-            return Ok(ResponseFactory.SuccessResponse("Route added successfully.", model));
+                return Ok(ResponseFactory.SuccessResponse("Route added successfully.", model));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while adding the route."));
+            }
         }
+
 
         [HttpGet("GetRoutes")]
         public async Task<IActionResult> GetRoutes()
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            try
+            {
+                var routes = await _busScheduleService.GetRoutes();
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+                if (routes == null || !routes.Any())
+                {
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No routes found."));
+                }
 
-            var routes = await _busScheduleService.GetRoutes(companyId.Value);
-            return Ok(routes);
+                return Ok(routes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while retrieving routes."));
+            }
         }
 
         [HttpPut("EditRoute/{id}")]
         public async Task<IActionResult> EditRoute(int id, [FromBody] AddRouteViewModel model, int hours, int minutes)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Invalid route data provided."));
+            }
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+            try
+            {
+                var isUpdated = await _busScheduleService.EditRoute(id, model, hours, minutes);
 
-            await _busScheduleService.EditRoute(id, model, hours, minutes, companyId.Value);
+                if (!isUpdated)
+                {
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, $"Route with ID {id} not found or update failed."));
+                }
 
-            return Ok(ResponseFactory.SuccessResponse("Route updated successfully.", model));
+                return Ok(ResponseFactory.SuccessResponse("Route updated successfully.", model));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while updating the route."));
+            }
         }
 
         [HttpDelete("DeleteRoute/{id}")]
         public async Task<IActionResult> DeleteRoute(int id)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            try
+            {
+                var isDeleted = await _busScheduleService.DeleteRoute(id);
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+                if (!isDeleted)
+                {
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, $"Route with ID {id} not found or could not be deleted."));
+                }
 
-            await _busScheduleService.DeleteRoute(id, companyId.Value);
-
-            return Ok(ResponseFactory.SuccessResponse("Route deleted successfully.",id));
+                return Ok(ResponseFactory.SuccessResponse("Route deleted successfully.", id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while deleting the route."));
+            }
         }
+
 
         [HttpPost("AddSchedule")]
         public async Task<IActionResult> AddSchedule([FromBody] AddScheduleViewModel model)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Invalid schedule data provided."));
+            }
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+            try
+            {
+                var result = await _busScheduleService.AddSchedule(model);
 
-            await _busScheduleService.AddSchedule(model, companyId.Value);
+                if (!result)
+                {
+                    return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "Failed to add schedule."));
+                }
 
-            return Ok(ResponseFactory.SuccessResponse("Schedule added successfully.",model));
+                return Ok(ResponseFactory.SuccessResponse("Schedule added successfully.", model));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while adding the schedule."));
+            }
         }
 
         [HttpGet("GetSchedules")]
         public async Task<IActionResult> GetSchedules()
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            try
+            {
+                var schedules = await _busScheduleService.GetSchedules();
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+                if (schedules == null || !schedules.Any())
+                {
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No schedules found."));
+                }
 
-            var schedules = await _busScheduleService.GetSchedules(companyId.Value);
-            return Ok(schedules);
+                return Ok(schedules);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, "An error occurred while retrieving schedules."));
+            }
         }
+
 
         [HttpPut("EditSchedule/{id}")]
         public async Task<IActionResult> EditSchedule(int id, [FromBody] AddScheduleViewModel model)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Invalid schedule data provided."));
+            }
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
+            var isUpdated = await _busScheduleService.EditSchedule(id, model);
 
-            await _busScheduleService.EditSchedule(id, model, companyId.Value);
+            if (!isUpdated)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, $"Schedule with ID {id} not found or update failed."));
+            }
 
             return Ok(ResponseFactory.SuccessResponse("Schedule updated successfully.", model));
         }
@@ -133,21 +184,14 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteSchedule/{id}")]
         public async Task<IActionResult> DeleteSchedule(int id)
         {
-            var companyId = GetCompanyId();
-            if (!companyId.HasValue)
-                return Unauthorized(ResponseFactory.UnauthorizedResponse());
+            var isDeleted = await _busScheduleService.DeleteSchedule(id);
 
-            if (!await _busScheduleService.ValidateCompanyUser(companyId.Value))
-                return Unauthorized(ResponseFactory.ForbiddenResponse());
-
-            await _busScheduleService.DeleteSchedule(id, companyId.Value);
+            if (!isDeleted)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Schedule not found or already deleted."));
+            }
 
             return Ok(ResponseFactory.SuccessResponse("Schedule deleted successfully.", id));
-        }
-
-        private int? GetCompanyId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("CompanyId");
         }
     }
 }

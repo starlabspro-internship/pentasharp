@@ -9,6 +9,7 @@ using pentasharp.Models.Enums;
 using pentasharp.Models.TaxiRequest;
 using pentasharp.ViewModel.TaxiModels;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Threading.Tasks;
 
 namespace pentasharp.Services
@@ -18,12 +19,14 @@ namespace pentasharp.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<TaxiReservationService> _logger;
+        private readonly IAuthenticateService _authService;
 
-        public TaxiBookingService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger)
+        public TaxiBookingService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _authService = authService;
         }
 
         public async Task<List<TaxiCompanyViewModel>> GetAllCompaniesAsync()
@@ -53,13 +56,10 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync(int userId)
+        public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync()
         {
 
-            var companyId = await _context.Users
-                .Where(u => u.UserId == userId)
-                .Select(u => u.CompanyId)
-                .FirstOrDefaultAsync();
+            var companyId = _authService.GetCurrentCompanyId();
 
             if (companyId == null)
                 return new List<TaxiBookingViewModel>(); 
@@ -69,7 +69,7 @@ namespace pentasharp.Services
                 .Include(b => b.Taxi)
                 .ThenInclude(t => t.Driver)
                 .Include(b => b.TaxiCompany)
-                .Where(b => b.TaxiCompanyId == companyId) 
+                .Where(b => b.TaxiCompanyId == companyId.Value) 
                 .ToListAsync();
 
             return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
@@ -122,49 +122,58 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync(int userId)
+        public async Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                _logger.LogWarning("Company ID is null or not found.");
+                throw new KeyNotFoundException("Company ID not found.");
+            }
+
             try
             {
-                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
-                if (!userExists)
-                {
-                    _logger.LogWarning("User with ID {UserId} not found", userId);
-                    throw new KeyNotFoundException($"User with ID {userId} not found.");
-                }
-
                 var bookings = await _context.TaxiBookings
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
                     .Include(r => r.TaxiCompany)
-                    .Where(r => r.UserId == userId)
+                    .Where(r => r.TaxiCompanyId == companyId.Value)
                     .ToListAsync();
+
+                if (!bookings.Any()) 
+                {
+                    _logger.LogWarning("No bookings found for company with ID {CompanyId}.", companyId.Value);
+                    throw new KeyNotFoundException($"No bookings found for company with ID {companyId.Value}.");
+                }
 
                 return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching bookings for user {UserId}", userId);
+                _logger.LogError(ex, "Error occurred while fetching bookings for company with ID {CompanyId}.", companyId.Value);
                 throw;
             }
         }
 
-        public async Task<bool> CancelBookingAsync(int bookingId, int userId)
+        public async Task<bool> CancelBookingAsync(int bookingId)
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                _logger.LogWarning("Company ID is null or not found.");
+                throw new KeyNotFoundException("Company ID not found.");
+            }
+
             try
             {
-                var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
-                if (!userExists)
-                {
-                    _logger.LogWarning("User with ID {UserId} not found.", userId);
-                    return false; 
-                }
                 var booking = await _context.TaxiBookings
-                    .FirstOrDefaultAsync(b => b.BookingId == bookingId && b.UserId == userId && b.Status == ReservationStatus.Pending);
+                    .FirstOrDefaultAsync(b => b.BookingId == bookingId && b.TaxiCompanyId == companyId && b.Status == ReservationStatus.Pending);
 
                 if (booking == null)
                 {
-                    _logger.LogWarning("Booking with ID {BookingId} not found, does not belong to user {UserId}, or is not pending", bookingId, userId);
+                    _logger.LogWarning("Booking with ID {BookingId} not found, does not belong to user {UserId}, or is not pending", bookingId);
                     return false;
                 }
 
@@ -180,6 +189,5 @@ namespace pentasharp.Services
                 throw;
             }
         }
-
     }
 }

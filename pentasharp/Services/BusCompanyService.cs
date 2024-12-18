@@ -5,6 +5,8 @@ using pentasharp.Models.Entities;
 using pentasharp.Models.Enums;
 using pentasharp.ViewModel.Bus;
 using Microsoft.EntityFrameworkCore;
+using pentasharp.Models.DTOs;
+using pentasharp.Models.Utilities;
 
 namespace pentasharp.Services
 {
@@ -12,11 +14,13 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthenticateService _authService;
 
-        public BusCompanyService(AppDbContext context, IMapper mapper)
+        public BusCompanyService(AppDbContext context, IMapper mapper, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
+            _authService = authService;
         }
 
         public async Task<bool> AddCompanyAsync(BusCompanyViewModel model)
@@ -82,26 +86,54 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<object> GetBusCompanyUserAsync(int companyId)
+        public async Task<StandardApiResponse<object>> GetBusCompanyUserAsync(int companyId)
         {
-            var companyUser = await _context.BusCompanies
-                .Where(tc => tc.BusCompanyId == companyId)
-                .Select(tc => new
-                {
-                    User = _context.Users
-                        .Where(u => u.CompanyId == companyId)
-                        .Where(c => c.BusinessType == BusinessType.BusCompany)
-                        .Select(u => new
-                        {
-                            u.UserId,
-                            u.FirstName,
-                            u.LastName
-                        })
-                        .FirstOrDefault()
-                })
-                .FirstOrDefaultAsync();
+            try
+            {
+                var companyUser = await _context.BusCompanies
+                    .Where(tc => tc.BusCompanyId == companyId)
+                    .Select(tc => new
+                    {
+                        User = _context.Users
+                            .Where(u => u.CompanyId == companyId)
+                            .Where(c => c.BusinessType == BusinessType.BusCompany)
+                            .Select(u => new
+                            {
+                                u.UserId,
+                                u.FirstName,
+                                u.LastName
+                            })
+                            .FirstOrDefault()
+                    })
+                    .FirstOrDefaultAsync();
 
-            return companyUser;
+                if (companyUser?.User == null)
+                {
+
+                    return new StandardApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "User not found for the specified Bus Company.",
+                        Data = null
+                    };
+                }
+
+                return new StandardApiResponse<object>
+                {
+                    Success = true,
+                    Message = "User retrieved successfully.",
+                    Data = companyUser.User
+                };
+            }
+            catch (Exception ex)
+            {
+                return new StandardApiResponse<object>
+                {
+                    Success = false,
+                    Message = "An error occurred while retrieving the user.",
+                    Data = null
+                };
+            }
         }
 
         public async Task<List<object>> GetBusCompanyUsersAsync()
@@ -119,10 +151,17 @@ namespace pentasharp.Services
         }
 
 
-        public async Task<object> GetCompanyByUserIdAsync(int userId)
+        public async Task<object> GetCompanyByUserIdAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var company = await _context.BusCompanies
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.BusCompanyId == companyId.Value);
 
             if (company == null) return null;
 
@@ -131,6 +170,18 @@ namespace pentasharp.Services
                 company.BusCompanyId,
                 company.CompanyName
             };
+        }
+
+        public List<BusCompanyViewModel> GetAllBusCompanies()
+        {
+            var companies = _context.BusCompanies.ToList();
+
+            if (companies == null || !companies.Any())
+            {
+                throw new KeyNotFoundException("No bus companies found.");
+            }
+
+            return _mapper.Map<List<BusCompanyViewModel>>(companies);
         }
     }
 }

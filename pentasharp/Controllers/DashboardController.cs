@@ -18,15 +18,13 @@ namespace WebApplication1.Controllers
     [Route("Dashboard")]
     public class DashboardController : Controller
     {
+        private readonly IBusCompanyService _busCompanyService;
         private readonly ITaxiCompanyService _taxiCompanyService;
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
 
-        public DashboardController(AppDbContext context, IMapper mapper, ITaxiCompanyService taxiCompanyService)
+        public DashboardController(ITaxiCompanyService taxiCompanyService, IBusCompanyService busCompanyService)
         {
             _taxiCompanyService = taxiCompanyService;
-            _context = context;
-            _mapper = mapper;
+            _busCompanyService = busCompanyService;
         }
 
         public IActionResult Dashboard()
@@ -37,35 +35,40 @@ namespace WebApplication1.Controllers
         [HttpGet("Bus")]
         public IActionResult Bus()
         {
-            var companies = _context.BusCompanies.ToList();
-            var viewModel = new ManageBusCompanyViewModel
+            try
             {
-                BusCompanies = _mapper.Map<List<BusCompanyViewModel>>(companies),
-            };
+                var busCompanies = _busCompanyService.GetAllBusCompanies();
+                var viewModel = new ManageBusCompanyViewModel
+                {
+                    BusCompanies = busCompanies
+                };
 
-            if (viewModel.BusCompanies == null || !viewModel.BusCompanies.Any())
-            {
-                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+                return View(viewModel);
             }
-
-            return View(viewModel);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ex.Message));
+            }
         }
 
         [HttpGet("Taxi")]
         public IActionResult Taxi()
         {
-            var companies = _taxiCompanyService.GetAllCompanies();
-            var viewModel = new ManageTaxiCompanyRequest
+            try
             {
-                TaxiCompanies = companies,
-            };
+                var taxiCompanies = _taxiCompanyService.GetAllCompanies();
 
-            if (viewModel.TaxiCompanies == null || !viewModel.TaxiCompanies.Any())
-            {
-                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+                var viewModel = new ManageTaxiCompanyRequest
+                {
+                    TaxiCompanies = taxiCompanies
+                };
+
+                return View(viewModel);
             }
-
-            return View(viewModel);
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ex.Message));
+            }
         }
     }
 }

@@ -37,11 +37,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetCompany")]
         public async Task<IActionResult> GetCompanyAsync()
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-
-            var company = await _companyService.GetCompanyByUserIdAsync(userId.Value);
+            var company = await _companyService.GetCompanyByUserIdAsync();
             if (company != null)
 
                 return Ok(company);
@@ -52,11 +48,7 @@ namespace WebApplication1.Controllers
         [HttpPost("AddBus")]
         public async Task<IActionResult> AddBusAsync([FromBody] AddBusViewModel model)
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-
-            var result = await _busService.AddBusAsync(model, userId.Value);
+            var result = await _busService.AddBusAsync(model);
             if (result)
                 return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
 
@@ -66,11 +58,7 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBuses")]
         public async Task<IActionResult> GetBusesAsync()
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-
-            var buses = await _busService.GetBusesAsync(userId.Value);
+            var buses = await _busService.GetBusesAsync();
             if (buses != null)
                 return Ok(buses);
 
@@ -80,11 +68,7 @@ namespace WebApplication1.Controllers
         [HttpPut("EditBus/{id}")]
         public async Task<IActionResult> EditBusAsync(int id, [FromBody] EditBusViewModel model)
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-
-            var result = await _busService.EditBusAsync(id, model, userId.Value);
+            var result = await _busService.EditBusAsync(id, model);
             if (result)
                 return Ok(ResponseFactory.SuccessResponse("Bus updated successfully.",result));
 
@@ -94,20 +78,11 @@ namespace WebApplication1.Controllers
         [HttpDelete("DeleteBus/{id}")]
         public async Task<IActionResult> DeleteBusAsync(int id)
         {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, ResponseMessages.Unauthorized));
-
-            var result = await _busService.DeleteBusAsync(id, userId.Value);
+            var result = await _busService.DeleteBusAsync(id);
             if (result)
                 return Ok(ResponseFactory.SuccessResponse("Bus deleted successfully.", result));
 
             return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "Bus not found."));
-        }
-
-        private int? GetUserId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("UserId");
         }
     }
 }

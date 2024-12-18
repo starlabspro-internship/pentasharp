@@ -15,7 +15,7 @@ namespace pentasharp.Services
         /// <summary>
         /// Retrieves a list of taxis associated with a specific taxi company.
         /// </summary>
-        Task<List<TaxiRequest>> GetTaxisAsync(int companyId);
+        Task<List<TaxiRequest>> GetTaxisAsync();
 
         /// <summary>
         /// Adds a new taxi to the system.
@@ -35,6 +35,8 @@ namespace pentasharp.Services
         /// <summary>
         /// Retrieves a list of available drivers for a specific taxi company and optionally excludes a driver currently assigned to a specific taxi.
         /// </summary>
-        Task<List<DriverRequest>> GetAvailableDriversAsync(int companyId, int? taxiId = null);
+        Task<List<DriverRequest>> GetAvailableDriversAsync(int? taxiId = null);
+
+        TaxiCompany GetCompanyDetails();
     }
 }

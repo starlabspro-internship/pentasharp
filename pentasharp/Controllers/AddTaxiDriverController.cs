@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using pentasharp.Models.Enums;
 using WebApplication1.Filters;
-using pentasharp.Data;
 using pentasharp.Services;
 using pentasharp.Models.TaxiRequest;
+using pentasharp.Interfaces;
+using pentasharp.ViewModel.TaxiModels;
+using pentasharp.Models.Utilities;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1.Controllers
 {
@@ -13,19 +16,16 @@ namespace WebApplication1.Controllers
     {
         private readonly ITaxiService _taxiService;
         private readonly IDriverService _driverService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly AppDbContext _context;
+        private readonly IAuthenticateService _authService;
 
         public AddTaxiDriverController(
             ITaxiService taxiService,
             IDriverService driverService,
-            IHttpContextAccessor httpContextAccessor,
-            AppDbContext context)
+            IAuthenticateService authService)
         {
             _taxiService = taxiService;
             _driverService = driverService;
-            _httpContextAccessor = httpContextAccessor;
-            _context = context;
+            _authService = authService;
         }
 
         [HttpPost("AddDriver")]
@@ -36,108 +36,105 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { success = false, message = "Invalid data provided." });
             }
 
-            var userId = GetCompanyId();
-            if (!userId.HasValue)
+            try
             {
-                return Unauthorized("No user is logged in.");
+                var newDriver = await _driverService.AddDriverAsync(model);
+                return Ok(new { success = true, message = "Driver added successfully.", driverId = newDriver.UserId });
             }
-
-            var user = await _context.Users.FindAsync(userId.Value);
-            if (user == null)
+            catch (UnauthorizedAccessException ex)
             {
-                return NotFound("User not found.");
+                return Unauthorized(new { success = false, message = ex.Message });
             }
-
-            var company = await _context.TaxiCompanies.FirstOrDefaultAsync(c => c.UserId == user.UserId);
-            if (company == null)
+            catch (InvalidOperationException ex)
             {
-                return NotFound("No associated taxi company found for this user.");
+                return BadRequest(new { success = false, message = ex.Message });
             }
-
-            var newDriver = await _driverService.AddDriverAsync(model, company.TaxiCompanyId);
-            return Ok(new { success = true, message = "Driver added successfully." });
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
+            }
         }
 
         [HttpGet("GetDrivers")]
         public IActionResult GetDrivers()
         {
-            var userId = GetCompanyId();
-            if (!userId.HasValue)
+            try
             {
-                return Unauthorized("No user is logged in.");
+                var drivers = _driverService.GetDrivers();
+                return Ok(drivers);
             }
-
-            var user = _context.Users
-                  .Where(u => u.UserId == userId.Value && u.BusinessType == BusinessType.TaxiCompany)
-                  .FirstOrDefault();
-
-            if (user == null)
+            catch (UnauthorizedAccessException ex)
             {
-                return NotFound("User not found.");
+                return Unauthorized(new { success = false, message = ex.Message });
             }
-
-            var company = _context.TaxiCompanies.FirstOrDefault(c => c.UserId == user.UserId);
-            if (company == null)
+            catch (Exception)
             {
-                return NotFound("No associated taxi company found for this user.");
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
             }
-
-            var drivers = _driverService.GetDrivers(company.TaxiCompanyId);
-            return Ok(drivers);
         }
 
         [HttpGet("GetAvailableDrivers/{taxiId?}")]
         public async Task<IActionResult> GetAvailableDrivers(int? taxiId = null)
         {
-            var userId = GetCompanyId();
-            if (!userId.HasValue)
+            try
             {
-                return Unauthorized(new { success = false, code = ApiStatusEnum.UNAUTHORIZED, message = "No user is logged in." });
+                var drivers = await _taxiService.GetAvailableDriversAsync(taxiId);
+                return Ok(new { success = true, drivers });
             }
-
-            var user = await _context.Users.FindAsync(userId.Value);
-            if (user == null)
+            catch (UnauthorizedAccessException ex)
             {
-                return NotFound(new { success = false, code = ResponseCodes.NotFound, message = "User not found." });
+                return Unauthorized(new { success = false, code = ApiStatusEnum.UNAUTHORIZED, message = ex.Message });
             }
-
-            var company = await _context.TaxiCompanies.FirstOrDefaultAsync(c => c.UserId == user.UserId);
-            if (company == null)
+            catch (Exception)
             {
-                return NotFound(new { success = false, code = ResponseCodes.NotFound, message = "No associated taxi company found for this user." });
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
             }
-
-            var drivers = await _taxiService.GetAvailableDriversAsync(company.TaxiCompanyId, taxiId);
-            return Ok(new { success = true, drivers });
         }
 
         [HttpPut("EditDriver/{id}")]
         public async Task<IActionResult> EditDriver(int id, [FromBody] EditDriverRequest model)
         {
-            var success = await _driverService.EditDriverAsync(id, model);
-            if (!success)
+            try
             {
-                return NotFound(new { success = false, message = "Driver not found." });
-            }
+                var success = await _driverService.EditDriverAsync(id, model);
+                if (!success)
+                {
+                    return NotFound(new { success = false, message = "Driver not found or does not belong to your company." });
+                }
 
-            return Ok(new { success = true, message = "Driver updated successfully." });
+                return Ok(new { success = true, message = "Driver updated successfully." });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
+            }
         }
 
         [HttpDelete("DeleteDriver/{id}")]
         public async Task<IActionResult> DeleteDriver(int id)
         {
-            var success = await _driverService.DeleteDriverAsync(id);
-            if (!success)
+            try
             {
-                return NotFound(new { success = false, message = "Driver not found." });
+                var success = await _driverService.DeleteDriverAsync(id);
+                if (!success)
+                {
+                    return NotFound(new { success = false, message = "Driver not found or does not belong to your company." });
+                }
+
+                return Ok(new { success = true, message = "Driver deleted successfully." });
             }
-
-            return Ok(new { success = true, message = "Driver deleted successfully." });
-        }
-
-        private int? GetCompanyId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("UserId");
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "An unexpected error occurred." });
+            }
         }
     }
 }

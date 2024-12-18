@@ -1,5 +1,7 @@
 ﻿using pentasharp.Models.DTOs;
 using pentasharp.Models.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace pentasharp.Models.Utilities
 {
@@ -50,10 +52,21 @@ namespace pentasharp.Models.Utilities
                 ResponseCodes.Forbidden => ResponseMessages.Forbidden,
                 ResponseCodes.NotFound => ResponseMessages.NotFound,
                 ResponseCodes.Conflict => ResponseMessages.Conflict,
+                ResponseCodes.InvalidOperation => ResponseMessages.InvalidOperation,
                 _ => ResponseMessages.InternalServerError
             };
 
             return ErrorResponse(code, defaultMessage);
+        }
+
+        public static StandardApiResponse<object> NotFoundResponse(string message = null)
+        {
+            return ErrorResponse(ResponseCodes.NotFound, string.IsNullOrEmpty(message) ? ResponseMessages.NotFound : message);
+        }
+
+        public static StandardApiResponse<object> InvalidOperationResponse(string message = null)
+        {
+            return ErrorResponse(ResponseCodes.InvalidOperation, string.IsNullOrEmpty(message) ? ResponseMessages.InvalidOperation : message);
         }
     }
 }

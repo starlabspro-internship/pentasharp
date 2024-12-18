@@ -27,7 +27,7 @@ namespace pentasharp.Interfaces
         /// Retrieves a list of all taxi reservations.
         /// </summary>
         /// <returns>The model representing a list of taxi reservations.</returns>
-        Task<List<TaxiReservationRequest>> GetReservationsAsync(int userId);
+        Task<List<TaxiReservationRequest>> GetReservationsAsync();
 
         /// <summary>
         /// Retrieves a list of taxis for a specific taxi company.

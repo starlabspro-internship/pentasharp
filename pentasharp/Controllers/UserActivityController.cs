@@ -70,27 +70,18 @@ namespace pentasharp.Controllers
         [HttpGet("MyBookings")]
         public async Task<IActionResult> MyBookings()
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
-
-            if (!userId.HasValue)
-            {
-                _logger.LogWarning("User ID not found in session.");
-                return View("Error", new { message = "User not found in session. Please log in again." });
-            }
-
+           
             try
             {
-                var bookings = await _taxiBookingService.GetBookingsForUserAsync(userId.Value);
+                var bookings = await _taxiBookingService.GetBookingsForUserAsync();
                 return View("MyBookings", bookings);
             }
             catch (KeyNotFoundException ex)
             {
-                _logger.LogWarning(ex, "User with ID {UserId} not found", userId);
                 return View("Error", new { message = "User not found." });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving bookings for user {UserId}", userId);
                 return View("Error", new { message = "An error occurred while retrieving your bookings." });
             }
         }
@@ -99,20 +90,12 @@ namespace pentasharp.Controllers
         [HttpPost("CancelBooking/{id}")]
         public async Task<IActionResult> CancelBooking(int id)
         {
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
-
-            if (!userId.HasValue)
-            {
-                return Unauthorized();
-            }
-
             try
             {
-                var success = await _taxiBookingService.CancelBookingAsync(id, userId.Value);
+                var success = await _taxiBookingService.CancelBookingAsync(id);
 
                 if (!success)
                 {
-                    _logger.LogWarning("Booking with ID {BookingId} not found, does not belong to user {UserId}, or is not pending", id, userId);
                     return BadRequest(new { message = "Booking not found, does not belong to you, or is not pending." });
                 }
 

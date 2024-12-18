@@ -80,16 +80,23 @@ namespace WebApplication1.Controllers
         [HttpGet("GetBusCompanyUser/{companyId}")]
         public async Task<IActionResult> GetBusCompanyUserAsync(int companyId)
         {
-            var user = await _companyService.GetBusCompanyUserAsync(companyId);
-            if (user != null)
-                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, user));
+            var response = await _companyService.GetBusCompanyUserAsync(companyId);
 
-            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
-        }
-
-        private int? GetUserId()
-        {
-            return _httpContextAccessor.HttpContext?.Session?.GetInt32("UserId");
+            if (response.Success)
+            {
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, response.Data));
+            }
+            else
+            {
+                if (response.Message.Contains("not found", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, response.Message));
+                }
+                else
+                {
+                    return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidOperation, response.Message));
+                }
+            }
         }
     }
 } 

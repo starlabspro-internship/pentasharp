@@ -50,5 +50,12 @@ namespace pentasharp.Interfaces
         /// Retrieves the current authenticated user's details based on their unique identifier.
         /// </summary>
         Task<User> GetCurrentUserAsync(int userId);
+
+        void SetUserSession(User user);
+        void ClearUserSession();
+
+        int? GetCurrentUserId();
+
+        int? GetCurrentCompanyId();
     }
 }

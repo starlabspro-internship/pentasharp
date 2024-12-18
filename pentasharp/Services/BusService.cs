@@ -12,16 +12,25 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthenticateService _authService;
 
-        public BusService(AppDbContext context, IMapper mapper)
+        public BusService(AppDbContext context, IMapper mapper, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
+            _authService = authService;
         }
 
-        public async Task<bool> AddBusAsync(AddBusViewModel model, int userId)
+        public async Task<bool> AddBusAsync(AddBusViewModel model)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId && u.BusinessType == BusinessType.BusCompany);
+            var userId = _authService.GetCurrentUserId();
+
+            if (!userId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in.");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId.Value && u.BusinessType == BusinessType.BusCompany);
             if (user == null) return false;
 
             var bus = _mapper.Map<Buses>(model);
@@ -30,13 +39,18 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<List<BusViewModel>> GetBusesAsync(int userId)
+        public async Task<List<BusViewModel>> GetBusesAsync()
         {
-            var company = await _context.BusCompanies.FirstOrDefaultAsync(c => c.UserId == userId);
-            if (company == null) return null;
+
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
 
             var buses = await _context.Buses
-                .Where(b => b.BusCompanyId == company.BusCompanyId)
+                .Where(b => b.BusCompanyId == companyId.Value)
                 .Include(b => b.BusCompany)
                 .ToListAsync();
 
@@ -50,10 +64,17 @@ namespace pentasharp.Services
             }).ToList();
         }
 
-        public async Task<bool> EditBusAsync(int id, EditBusViewModel model, int userId)
+        public async Task<bool> EditBusAsync(int id, EditBusViewModel model)
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var bus = await _context.Buses.Include(b => b.BusCompany).FirstOrDefaultAsync(b => b.BusId == id);
-            if (bus == null || bus.BusCompany.UserId != userId) return false;
+            if (bus == null || bus.BusCompany.BusCompanyId != companyId.Value) return false;
 
             bus.BusNumber = model.BusNumber;
             bus.Capacity = model.Capacity;
@@ -62,10 +83,17 @@ namespace pentasharp.Services
             return true;
         }
 
-        public async Task<bool> DeleteBusAsync(int id, int userId)
+        public async Task<bool> DeleteBusAsync(int id)
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             var bus = await _context.Buses.Include(b => b.BusCompany).FirstOrDefaultAsync(b => b.BusId == id);
-            if (bus == null || bus.BusCompany.UserId != userId) return false;
+            if (bus == null || bus.BusCompany.BusCompanyId != companyId.Value) return false;
 
             _context.Buses.Remove(bus);
             await _context.SaveChangesAsync();

@@ -17,12 +17,36 @@ namespace pentasharp.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthenticateService(AppDbContext context, IMapper mapper)
+        public AuthenticateService(AppDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-            _mapper = mapper; 
-        } 
+            _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public void SetUserSession(User user)
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            session.SetInt32("UserId", user.UserId);
+            session.SetString("FirstName", user.FirstName);
+            session.SetString("UserRole", user.Role.ToString());
+            session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+            session.SetString("BusinessType", user.BusinessType.ToString());
+
+            if (user.CompanyId.HasValue)
+            {
+                session.SetInt32("CompanyId", user.CompanyId.Value);
+            }
+        }
+
+        public void ClearUserSession()
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            session.Clear();
+            _httpContextAccessor.HttpContext.Response.Cookies.Delete("UserId");
+        }
 
         public async Task<User> RegisterAsync(RegisterViewModel model)
         {
@@ -31,6 +55,8 @@ namespace pentasharp.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            SetUserSession(user);
 
             return user;
         }
@@ -44,6 +70,8 @@ namespace pentasharp.Services
 
             if (user.PasswordHash != HashPassword(password))
                 return null;
+
+            SetUserSession(user);
 
             return user;
         }
@@ -113,6 +141,16 @@ namespace pentasharp.Services
         public async Task<User> GetCurrentUserAsync(int userId)
         {
             return await _context.Users.FindAsync(userId);
+        }
+
+        public int? GetCurrentUserId()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+        }
+
+        public int? GetCurrentCompanyId()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetInt32("CompanyId");
         }
 
         private string HashPassword(string password)

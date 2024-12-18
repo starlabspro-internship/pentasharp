@@ -46,10 +46,19 @@ namespace pentasharp.Models.Entities
         /// </summary>
         public ICollection<Buses> Buses { get; set; } = new List<Buses>();
 
+        /// <summary>
+        /// Gets or sets the collection of bus routes associated with this bus company.
+        /// </summary>
         public ICollection<BusRoutes> BusRoutes { get; set; } = new List<BusRoutes>();
 
+        /// <summary>
+        /// Gets or sets the collection of bus schedules associated with this bus company.
+        /// </summary>
         public ICollection<BusSchedule> BusSchedules { get; set; } = new List<BusSchedule>();
 
+        /// <summary>
+        /// Gets or sets the collection of bus reservations associated with this bus company.
+        /// </summary>
         public ICollection<BusReservations> BusReservations { get; set; } = new List<BusReservations>();
 
         /// <summary>

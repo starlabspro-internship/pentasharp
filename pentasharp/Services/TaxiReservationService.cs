@@ -19,12 +19,14 @@ namespace pentasharp.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<TaxiReservationService> _logger;
+        private readonly IAuthenticateService _authService;
 
-        public TaxiReservationService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger)
+        public TaxiReservationService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _authService = authService;
         }
 
         public async Task<IEnumerable<TaxiCompanyRequest>> SearchAvailableTaxisAsync()
@@ -84,29 +86,23 @@ namespace pentasharp.Services
             }
         }
 
-        public async Task<List<TaxiReservationRequest>> GetReservationsAsync(int userId)
+        public async Task<List<TaxiReservationRequest>> GetReservationsAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             try
             {
-                _logger.LogInformation("Fetching reservations for user ID: {UserId}", userId);
-
-                var companyId = await _context.Users
-                    .Where(u => u.UserId == userId)
-                    .Select(u => u.CompanyId)
-                    .FirstOrDefaultAsync();
-
-                if (companyId == null)
-                {
-                    _logger.LogWarning("No company found for user ID: {UserId}", userId);
-                    return new List<TaxiReservationRequest>();
-                }
-
                 var reservations = await _context.TaxiReservations
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
                     .ThenInclude(t => t.Driver)
                     .Include(r => r.TaxiCompany)
-                    .Where(r => r.TaxiCompanyId == companyId)
+                    .Where(r => r.TaxiCompanyId == companyId.Value)
                     .ToListAsync();
 
                 var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);

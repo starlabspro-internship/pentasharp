@@ -34,7 +34,15 @@ namespace pentasharp.Models.BusRequests
         /// </summary>
         public int UserId { get; set; }
 
+        /// <summary>
+        /// Unique identifier of the bus company managing the reservation.
+        /// </summary>
         public int BusCompanyId { get; set; }
+
+        /// <summary>
+        /// The date and time when the reservation was created.
+        /// Defaults to the current date and time.
+        /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         /// <summary>
