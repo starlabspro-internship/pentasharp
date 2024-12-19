@@ -1,11 +1,12 @@
 let reservations = [];
 function fetchReservations() {
-    fetch('/api/TaxiReservation/GetReservations')  
+    fetch('/Business/TaxiManagement/GetReservations')  
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 reservations = data.reservations;
                 populateReservationTable(reservations); 
+                console.log("reservations1",reservations)
             } else {
                 console.error("Error fetching reservations:", data.message);
                 alert("Error fetching reservations: " + data.message);
@@ -21,6 +22,8 @@ function populateReservationTable(reservations) {
     const reservationList = document.getElementById('reservationList');
     reservationList.innerHTML = '';  
 
+    console.log("reservations2", reservations);
+
     reservations.forEach((reservation, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -29,7 +32,7 @@ function populateReservationTable(reservations) {
             <td>${reservation.dropoffLocation}</td>
             <td>${reservation.reservationDate} ${reservation.reservationTime}</td>
             <td><span class="badge ${getStatusClass(reservation.status)}">${reservation.status}</span></td>
-            <td>${reservation.driver || 'Unassigned'}</td>
+            <td>${reservation.driverName || 'Unassigned'}</td>
             <td>
                 <button class="btn btn-sm btn-outline-info" onclick="openEditReservationModal(${index})">Edit</button>
             </td>
@@ -59,6 +62,7 @@ function convertTo24HourFormat(time) {
 }
 function openEditReservationModal(index) {
     const reservation = reservations[index];
+    console.log("rescomplet",reservation)
     const taxiCompanyId = reservation.taxiCompanyId;
 
     document.getElementById('editReservationId').value = reservation.reservationId;
@@ -66,17 +70,17 @@ function openEditReservationModal(index) {
     document.getElementById('editPickupLocation').value = reservation.pickupLocation;
     document.getElementById('editDropoffLocation').value = reservation.dropoffLocation;
 
-    const reservationDate = reservation.reservationDate.split('T')[0]; 
+    const reservationDate = reservation.reservationDate.split('T')[0];
     document.getElementById('editReservationDate').value = reservationDate;
 
-    const formattedTime = convertTo24HourFormat(reservation.reservationTime); 
+    const formattedTime = convertTo24HourFormat(reservation.reservationTime);
     document.getElementById('editReservationTime').value = formattedTime;
 
     document.getElementById('editStatus').value = reservation.status;
     document.getElementById('editDriver').value = reservation.driver || '';
     document.getElementById('editFare').value = reservation.fare || '';
 
-    fetch(`/api/TaxiReservation/GetTaxisByTaxiCompany?taxiCompanyId=${taxiCompanyId}`)
+    fetch(`/Business/TaxiManagement/GetTaxisByTaxiCompany?taxiCompanyId=${taxiCompanyId}`)
         .then(response => response.json())
         .then(data => {
             console.log("Fetched taxis:", data);
@@ -87,11 +91,16 @@ function openEditReservationModal(index) {
                 option.value = taxi.taxiId;
                 option.textContent = `${taxi.driverName} - ${taxi.licensePlate}`;
                 driverSelect.appendChild(option);
-            });
 
-            if (reservation.taxiId) {
-                driverSelect.value = reservation.taxiId;
-            }
+
+                console.log("taxiid", taxi.taxiId)
+
+                if (taxi.taxiId === reservation.taxiId) {
+
+                    driverSelect.value = taxi.taxiId;
+                    console.log("driverSelected", driverSelect.value);
+                }
+            });
         })
         .catch(error => console.error("Error fetching drivers:", error));
 
@@ -139,7 +148,7 @@ function saveReservationChanges() {
         reservationDate: reservationDateTime 
     });
  
-    fetch(`/api/TaxiReservation/UpdateReservation/${reservationId}`, {
+    fetch(`/Business/TaxiManagement/UpdateReservation/${reservationId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -158,9 +167,9 @@ function saveReservationChanges() {
             return response.json();
         })
         .then(data => {
-            alert('Reservation updated successfully');
             fetchReservations();
-            closeModal('editReservationModal');
+            bootstrap.Modal.getInstance(document.getElementById('editReservationModal')).hide();
+
         })
         .catch(error => {
             console.error('Error updating reservation:', error);
@@ -182,10 +191,5 @@ function combineDateAndTime(date, time) {
 
     return dateTime.toISOString(); 
 }
-function closeModal(modalId) {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
-    modal.hide();
-}
-
 
 document.addEventListener('DOMContentLoaded', fetchReservations);

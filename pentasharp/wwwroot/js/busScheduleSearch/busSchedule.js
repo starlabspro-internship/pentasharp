@@ -12,6 +12,7 @@
     let currentPrice = 0;
     let selectedScheduleId = null;
     let userId = null;
+    let selectedCompanyId = null;
 
     const departureDropdown = document.createElement("ul");
     const arrivalDropdown = document.createElement("ul");
@@ -74,7 +75,7 @@
                 departureDropdown.classList.remove("show");
                 return;
             }
-            fetchSuggestions(`/api/BusSchedule/GetFromLocationSuggestions?query=${query}`, departureInput, departureDropdown, "departure location");
+            fetchSuggestions(`/api/SearchSchedule/GetFromLocationSuggestions?query=${query}`, departureInput, departureDropdown, "departure location");
         }, 300)
     );
 
@@ -88,7 +89,7 @@
                 return;
             }
             fetchSuggestions(
-                `/api/BusSchedule/GetToLocationSuggestions?fromLocation=${fromLocation}&query=${query}`,
+                `/api/SearchSchedule/GetToLocationSuggestions?fromLocation=${fromLocation}&query=${query}`,
                 arrivalInput,
                 arrivalDropdown,
                 "arrival location"
@@ -124,61 +125,58 @@
             return;
         }
 
-        fetch(`/api/BusSchedule/SearchSchedules?from=${from}&to=${to}&date=${date}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch schedules.');
-                }
-                return response.json();
-            })
-            .then(schedules => {
+        fetch(`/api/SearchSchedule/SearchSchedules?from=${from}&to=${to}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
                 busScheduleContainer.innerHTML = '';
 
-                if (!schedules || schedules.length === 0) {
-                    busScheduleContainer.innerHTML = `<p class="text-center">No schedules found for the route <b>${from}</b> to <b>${to}</b> on <b>${new Date(date).toLocaleDateString()}</b>.</p>`;
+                if (!data.success) {
+                    busScheduleContainer.innerHTML = `<p class="text-center text-danger">${data.message || "No schedules found."}</p>`;
                     resultView.style.display = 'block';
                     resultView.style.opacity = 1;
                     return;
                 }
 
+                const schedules = data.data;
+
                 schedules.forEach(schedule => {
                     const scheduleCard = `
-                        <div class="schedule-card">
-                            <div class="row align-items-center">
-                                <div class="col-5 d-flex align-items-start">
-                                    <div class="me-3 text-center">
-                                        <p class="mb-1 text-danger fw-bold">${new Date(schedule.departureTime).toLocaleTimeString()}</p>
-                                        <span class="text-muted small">${schedule.fromLocation}</span>
-                                    </div>
-                                    <div class="d-flex flex-column align-items-center mx-3">
-                                        <span class="text-danger"><i class="fas fa-circle"></i></span>
-                                        <div style="width: 2px; height: 40px; background-color: #dcdcdc;"></div>
-                                        <span class="text-secondary"><i class="fas fa-map-marker-alt"></i></span>
-                                    </div>
-                                    <div class="ms-3 text-center">
-                                        <p class="mb-1 text-dark fw-bold">${new Date(schedule.arrivalTime).toLocaleTimeString()}</p>
-                                        <span class="text-muted small">${schedule.toLocation}</span>
-                                    </div>
+                    <div key="${schedule.busCompanyId}" class="schedule-card">
+                        <div class="row align-items-center">
+                            <div class="col-5 d-flex align-items-start">
+                                <div class="me-3 text-center">
+                                    <p class="mb-1 text-danger fw-bold">${new Date(schedule.departureTime).toLocaleTimeString()}</p>
+                                    <span class="text-muted small">${schedule.fromLocation}</span>
                                 </div>
-                                <div class="col-7 d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-bus-alt text-secondary me-2"></i>
-                                        <span class="fw-bold text-dark">${schedule.busNumber}</span>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span class="text-danger fw-bold fs-5">${schedule.price}\u20AC</span>
-                                    </div>
-                                    <div>
-                                        <button class="btn btn-primary rounded-pill px-3 py-1" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#bookingModal" 
-                                            onclick="openBookingModal('${schedule.fromLocation}', '${schedule.toLocation}', '${schedule.availableSeats}', '${schedule.status}', ${schedule.price}, ${schedule.scheduleId})">
-                                            Book Now
-                                        </button>
-                                    </div>
+                                <div class="d-flex flex-column align-items-center mx-3">
+                                    <span class="text-danger"><i class="fas fa-circle"></i></span>
+                                    <div style="width: 2px; height: 40px; background-color: #dcdcdc;"></div>
+                                    <span class="text-secondary"><i class="fas fa-map-marker-alt"></i></span>
+                                </div>
+                                <div class="ms-3 text-center">
+                                    <p class="mb-1 text-dark fw-bold">${new Date(schedule.arrivalTime).toLocaleTimeString()}</p>
+                                    <span class="text-muted small">${schedule.toLocation}</span>
                                 </div>
                             </div>
-                        </div>`;
+                            <div class="col-7 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-bus-alt text-secondary me-2"></i>
+                                    <span class="fw-bold text-dark">${schedule.busNumber}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="text-danger fw-bold fs-5">${schedule.price}\u20AC</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary rounded-pill px-3 py-1" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#bookingModal" 
+                                        onclick="openBookingModal('${schedule.fromLocation}', '${schedule.toLocation}', '${schedule.availableSeats}', '${schedule.status}', ${schedule.price}, ${schedule.scheduleId}, ${schedule.busCompanyId})">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
                     busScheduleContainer.insertAdjacentHTML('beforeend', scheduleCard);
                 });
 
@@ -188,7 +186,7 @@
                 }, 0);
             })
             .catch(error => {
-                busScheduleContainer.innerHTML = '<p class="text-center text-danger">No schedules available for your request.</p>';
+                busScheduleContainer.innerHTML = '<p class="text-center text-danger">An error occurred while fetching schedules.</p>';
                 resultView.style.display = 'block';
                 resultView.style.opacity = 1;
             });
@@ -200,7 +198,7 @@
         totalAmountInput.value = totalAmount > 0 ? `${totalAmount}\u20AC` : '';
     });
 
-    window.openBookingModal = function (departure, arrival, availableSeats, status, price, scheduleId) {
+    window.openBookingModal = function (departure, arrival, availableSeats, status, price, scheduleId, busCompanyId) {
         document.getElementById('modalDeparture').textContent = departure;
         document.getElementById('modalArrival').textContent = arrival;
         document.getElementById('modalSeats').textContent = availableSeats;
@@ -210,6 +208,9 @@
         document.getElementById('totalAmount').value = '';
         currentPrice = price;
         selectedScheduleId = scheduleId;
+        selectedCompanyId = busCompanyId;
+
+        console.log("bus", selectedCompanyId);
 
         const now = new Date();
         reservationDateInput.value = now.toISOString();
@@ -246,9 +247,12 @@
             TotalAmount: totalAmount,
             ScheduleId: selectedScheduleId,
             UserId: userId,
+            BusCompanyId: selectedCompanyId
         };
 
-        fetch("/api/BusSchedule/AddReservation", {
+        console.log("bus", data);
+
+        fetch("/api/SearchSchedule/AddReservation", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -257,15 +261,30 @@
         })
             .then(response => response.json())
             .then(result => {
+                const confirmationAlert = document.getElementById("AwaitingConfirmation");
+
                 if (result.success) {
-                    document.getElementById("bookingModal").classList.remove("show");
-                    location.reload();
+                    confirmationAlert.className = "alert alert-success mt-3 text-center";
+                    confirmationAlert.textContent = "Your booking will be confirmed by management, and you will be notified.";
+
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById("bookingModal"));
+                        modal.hide();
+
+                        setTimeout(() => {
+                            confirmationAlert.className = "alert d-none mt-3 text-center";
+                            confirmationAlert.textContent = "";
+                        }, 3000);
+                    }, 3000);
                 } else {
-                    alert("Failed to add reservation. Please try again.");
+                    confirmationAlert.className = "alert alert-danger mt-3 text-center";
+                    confirmationAlert.textContent = result.message || "Failed to add reservation. Please try again.";
                 }
             })
             .catch(() => {
-                alert("An error occurred while adding the reservation.");
+                const confirmationAlert = document.getElementById("AwaitingConfirmation");
+                confirmationAlert.className = "alert alert-danger mt-3 text-center";
+                confirmationAlert.textContent = "An error occurred while adding the reservation.";
             });
     });
 });

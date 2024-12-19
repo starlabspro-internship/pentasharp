@@ -5,7 +5,7 @@ using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
-    [ServiceFilter(typeof(AdminOnlyFilter))]
+    [TypeFilter(typeof(BusinessOnlyFilter), Arguments = new object[] { "TaxiCompany" })]
     public class TaxiDriverController : Controller
     {
         public IActionResult TaxiDriver()

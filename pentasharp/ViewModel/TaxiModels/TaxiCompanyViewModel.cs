@@ -22,6 +22,8 @@ namespace pentasharp.ViewModel.TaxiModels
         /// </summary>
         public string ContactInfo { get; set; }
 
+        public int UserId { get; set; }
+
         /// <summary>
         /// Gets or sets the date and time when the taxi company was created.
         /// </summary>

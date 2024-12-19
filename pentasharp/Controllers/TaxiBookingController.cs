@@ -19,18 +19,35 @@ namespace WebApplication1.Controllers
     public class TaxiBookingController : Controller
     {
         private readonly ITaxiBookingService _taxiBookingService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<TaxiBookingController> _logger;
 
-        public TaxiBookingController(ITaxiBookingService taxiBookingService)
+        public TaxiBookingController(ITaxiBookingService taxiBookingService, IHttpContextAccessor httpContextAccessor, ILogger<TaxiBookingController> logger)
         {
             _taxiBookingService = taxiBookingService;
+            _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         [AllowAnonymous]
         [HttpPost("SearchAvailableTaxis")]
         public async Task<IActionResult> GetCompanies()
         {
-            var companies = await _taxiBookingService.GetAllCompaniesAsync();
-            return Ok(new { success = true, companies });
+            try
+            {
+                var companies = await _taxiBookingService.GetAllCompaniesAsync();
+                if (companies == null || !companies.Any())
+                {
+                    return Ok(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "No companies found."));
+                }
+
+                return Ok(new { success = true, companies });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, ResponseFactory.ErrorResponse(ResponseCodes.InternalServerError, ResponseMessages.InternalServerError));
+            }
         }
 
         [ServiceFilter(typeof(LoginRequiredFilter))]
@@ -38,77 +55,21 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> CreateBooking([FromBody] CreateBookingViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new { success = false, message = "Invalid data" });
-
-            var request = new TaxiBookingRequest
             {
-                TaxiCompanyId = model.TaxiCompanyId,
-                PickupLocation = model.PickupLocation,
-                DropoffLocation = model.DropoffLocation,
-                BookingTime = model.BookingTime,
-                PassengerCount = model.PassengerCount,
-                UserId = model.UserId,
-                Status = ReservationStatus.Pending 
-            };
-
-            var success = await _taxiBookingService.CreateBookingAsync(request);
-            if (!success)
-                return BadRequest(new { success = false, message = "Booking creation failed." });
-
-            return Ok(new { success = true, message = "Booking created successfully" });
-        }
-
-
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [HttpGet("GetBookings")]
-        public async Task<IActionResult> GetBookings()
-        {
-            var bookings = await _taxiBookingService.GetAllBookingsAsync();
-            return Ok(new StandardApiResponse<List<TaxiBookingViewModel>>
-            {
-                Success = true,
-                Message = ResponseMessages.Success,
-                Code = ResponseCodes.Success,
-                Data = bookings
-            });
-        }
-
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [HttpGet("GetBooking")]
-        public async Task<IActionResult> GetBookingById(int id)
-        {
-            var booking = await _taxiBookingService.GetBookingByIdAsync(id);
-            if (booking == null)
-            {
-                return NotFound(new StandardApiResponse<string>
-                {
-                    Success = false,
-                    Message = ResponseMessages.NotFound,
-                    Code = ResponseCodes.NotFound
-                });
+                _logger.LogWarning("Invalid booking data provided.");
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
             }
 
-            return Ok(new StandardApiResponse<TaxiBookingViewModel>
-            {
-                Success = true,
-                Message = ResponseMessages.Success,
-                Code = ResponseCodes.Success,
-                Data = booking
-            });
-        }
+            var success = await _taxiBookingService.CreateBookingAsync(model);
 
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-        [HttpPut("UpdateBooking")]
-        public async Task<IActionResult> UpdateBooking([FromBody] EditTaxiBookingViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new { success = false, message = "Invalid data." });
-
-            var success = await _taxiBookingService.UpdateBookingAsync(model);
             if (!success)
-                return NotFound(new { success = false, message = "Booking not found." });
+            {
+                _logger.LogWarning("Booking creation failed for user with ID: {UserId}", model.UserId);
+                return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, "Booking creation failed."));
+            }
 
-            return Ok(new { success = true, message = "Booking updated successfully." });
+            _logger.LogInformation("Booking created successfully for user with ID: {UserId}", model.UserId);
+            return Ok(ResponseFactory.SuccessResponse("Booking created successfully", success));
         }
     }
 }

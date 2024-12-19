@@ -15,9 +15,16 @@
         /// Gets or sets the contact information for the bus company.
         /// </summary>
         public string ContactInfo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the user who owns the bus company.
+        /// </summary>
+        public int UserId { get; set; }
+
         /// <summary>
         /// Gets or sets the date and time when the bus company was created.
         /// </summary>
+        /// 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

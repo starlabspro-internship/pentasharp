@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModel\TaxiBooking\**" />
+    <Content Remove="ViewModel\TaxiBooking\**" />
+    <EmbeddedResource Remove="ViewModel\TaxiBooking\**" />
+    <None Remove="ViewModel\TaxiBooking\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\js\taxiDashboard\rgmn0gvy.rts~" />
   </ItemGroup>
 
@@ -23,7 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="ViewModel\TaxiBooking\" />
   </ItemGroup>
 
 </Project>
