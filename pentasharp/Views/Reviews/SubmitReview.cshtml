@@ -1,0 +1,164 @@
+﻿@model pentasharp.Models.Entities.UserReview
+
+@{
+    var firstName = Context.Session.GetString("FirstName") ?? "Anonymous";
+}
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="review-form bg-white p-4 rounded shadow">
+        <h3 class="text-center mb-4" style="color: #e83e8c;">Leave a Review</h3>
+
+        <form asp-action="SubmitReview" method="post">
+            <!-- Review Content -->
+            <div class="form-group mb-3">
+                <label for="Content" class="form-label fw-bold">Your Review</label>
+                <textarea class="form-control" id="Content" name="Content" rows="4" placeholder="Share your thoughts..." required></textarea>
+            </div>
+
+            <!-- Star Rating -->
+            <div class="form-group mb-3">
+                <label class="form-label fw-bold">Rating</label>
+                <div class="star-rating d-flex justify-content-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="fas fa-star star-icon" data-value="@i"></i>
+                    }
+                </div>
+                <input type="hidden" id="Rating" name="Rating" value="0" />
+            </div>
+
+            <!-- Username Selection -->
+            <div class="form-group mb-3">
+                <label for="UserName" class="form-label fw-bold">Choose your Username</label>
+                <select id="UserName" name="UserName" class="form-select">
+                    <option value="Anonymous">Anonymous</option>
+                    <option value="@firstName">@firstName</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 py-2">Submit Review</button>
+        </form>
+    </div>
+</div>
+<style>
+body {
+    background-color: #f8f9fa;
+}
+
+.review-form {
+    max-width: 500px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.review-form h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    color: #333;
+}
+
+.review-form .form-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.review-form .form-control {
+    border-radius: 8px;
+}
+
+.review-form textarea.form-control {
+    resize: none;
+    border: 1px solid #ddd;
+}
+
+.review-form select.form-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.review-form button[type="submit"] {
+    background-color: #6c63ff;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 16px;
+        }
+
+    .review-heading {
+        color: #e83e8c; /* Bootstrap's pink color */
+        font-weight: bold;
+    }
+
+.review-form button[type="submit"]:hover {
+    background-color: #5549f0;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(108, 99, 255, 0.2);
+}
+
+    /* Star Rating Hover Effect */
+    .star-icon {
+        font-size: 30px;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .star-icon.active,
+        .star-icon:hover,
+        .star-icon.hovered {
+            color: #ffc107;
+        }
+
+        /* Active states for rating */
+        .star-icon.active {
+            color: #ffc107 !important;
+        }
+
+        /* Hover Effect */
+        .star-icon.hovered {
+            color: #ffc107 !important;
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star-icon');
+        const ratingInput = document.getElementById('Rating');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function () {
+                const ratingValue = this.getAttribute('data-value');
+
+                // Remove active class from all stars
+                stars.forEach(s => s.classList.remove('active'));
+
+                // Add active class to all stars up to the clicked one
+                for (let i = 0; i < ratingValue; i++) {
+                    stars[i].classList.add('active');
+                }
+
+                // Update the hidden input with the selected rating
+                ratingInput.value = ratingValue;
+            });
+
+            // Add hover effect for each star
+            star.addEventListener('mouseover', function () {
+                const ratingValue = this.getAttribute('data-value');
+
+                // Highlight stars up to the hovered one
+                stars.forEach(s => s.classList.remove('hovered'));
+                for (let i = 0; i < ratingValue; i++) {
+                    stars[i].classList.add('hovered');
+                }
+            });
+
+            // Remove hover effect when mouse leaves the stars
+            star.addEventListener('mouseout', function () {
+                stars.forEach(s => s.classList.remove('hovered'));
+            });
+        });
+    });
+</script>
