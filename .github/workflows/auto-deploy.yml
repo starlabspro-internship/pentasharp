@@ -40,10 +40,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use SSH private key stored in GitHub secrets
 
+      - name: Set ASPNETCORE_ENVIRONMENT to Production
+        run: |
+          echo "ASPNETCORE_ENVIRONMENT=Production" >> $GITHUB_ENV  # Set environment variable for the deployment job
+
       - name: Deploy to remote server via SSH
         run: |
           ssh -o StrictHostKeyChecking=no root@5.75.148.60 << 'EOF'
-            cd /var/www/pentasharp/pentasharp  # Navigate to the project directory on the server
+            cd /var/www/pentasharp  # Navigate to the project directory on the server
             git pull  # Pull the latest changes from the repository
             systemctl restart pentasharp.service  # Restart the service to apply the changes
           EOF
