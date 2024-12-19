@@ -3,35 +3,53 @@ name: Build and Deploy .NET Project
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on pushes to the 'main' branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the build
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Checkout the repository's code
+
       - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v3  # Set up the .NET SDK
         with:
-          dotnet-version: '8.0'
+          dotnet-version: '8.0'  # Specify the desired .NET version
+
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore  # Restore the project's dependencies
+
       - name: Build the project
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release  # Build the project in Release mode
+
       - name: Run tests
-        run: dotnet test
+        run: dotnet test  # Run the project's tests to ensure everything is working
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: build
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the deployment
+    needs: build  # Ensure the build job completes successfully before deploying
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Checkout the repository's code again for the deploy job
+
       - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.5.3  # Set up SSH agent to deploy via SSH
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use SSH private key stored in GitHub secrets
+
+      - name: Set ASPNETCORE_ENVIRONMENT to Production
+        run: |
+          echo "ASPNETCORE_ENVIRONMENT=Production" >> $GITHUB_ENV  # Set environment variable for the deployment job
+
       - name: Deploy to remote server via SSH
         run: |
-          ssh -o StrictHostKeyChecking=no root@5.75.148.60 "cd /var/www/pentasharp && git pull && systemctl restart pentasharp.service || { echo 'Deployment failed'; exit 1; }"
+          ssh -o StrictHostKeyChecking=no root@5.75.148.60 << 'EOF'
+            cd /var/www/pentasharp  # Navigate to the project directory on the server
+            git pull  # Pull the latest changes from the repository
+            systemctl restart pentasharp.service  # Restart the service to apply the changes
+          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Ensure the SSH key is used for the SSH connection

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using pentasharp.Data;
 using System.Diagnostics;
 using WebApplication1.Models;
 
@@ -7,15 +9,19 @@ namespace WebApplication1.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger,AppDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index() 
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var reviews = await _context.UserReviews.AsNoTracking().ToListAsync();
+
+            return View(reviews);
         }
 
         public IActionResult Services()

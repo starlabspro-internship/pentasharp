@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<pentasharp.Models.Entities.UserReview>
+@{
     Layout = "_Layout";
     ViewData["Title"] = "Transport Services";
 }
@@ -260,33 +261,14 @@
                         <p class="mb-3">
                             Explore detailed bus schedules to plan your travel with ease.
                         </p>
-                        <a href="./BusSchedule.html"
-                           class="btn btn-secondary rounded-pill"
-                           href="#">
+                        <a asp-controller="Bus" asp-action="BusSchedules"
+                           class="btn btn-secondary rounded-pill">
                             View the schedule<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-                 data-wow-delay="0.3s">
-                <div class="feature-item text-center p-4">
-                    <div class="feature-icon p-3 mb-4">
-                        <i class="fas fa-bus fa-4x text-primary"></i>
-                    </div>
-                    <div class="feature-content d-flex flex-column">
-                        <h5 class="mb-3">Bus Ticket Reservations</h5>
-                        <p class="mb-3">
-                            Reserve seats easily on your preferred bus routes.
-                        </p>
-                        <a href="./ReserveBus.html"
-                           class="btn btn-secondary rounded-pill"
-                           href="#">
-                            Reserve seats<i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+          
             <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
                  data-wow-delay="0.5s">
                 <div class="feature-item text-center p-4">
@@ -298,9 +280,9 @@
                         <p class="mb-3">
                             Book a taxi quickly and conveniently for any destination.
                         </p>
-                        <a href="./TaxiBooking.html"
+                        <a asp-controller="Taxi" asp-action="TaxiBooking"
                            class="btn btn-secondary rounded-pill"
-                           href="#">
+                         >
                             Book a taxi<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -317,9 +299,9 @@
                         <p class="mb-3">
                             Make advance reservations for taxis at your convenience.
                         </p>
-                        <a href="./TaxiReservation.html"
+                        <a asp-controller="Taxi" asp-action="TaxiReservation"
                            class="btn btn-secondary rounded-pill"
-                           href="#">
+                        >
                             Reserve a taxi<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -328,118 +310,156 @@
             <div class="col-12">
                 <a class="btn btn-primary border-secondary rounded-pill py-3 px-5 wow fadeInUp"
                    data-wow-delay="0.1s"
-                   href="#">More Features</a>
+                   asp-controller="Home" asp-action="Services">More Features</a>
             </div>
         </div>
     </div>
 </div>
 <!-- Features End -->
 <!-- Testimonial Start -->
-<div class="container-fluid testimonial overflow-hidden pb-5">
-    <div class="container py-5">
-        <div class="section-title text-center mb-5 wow fadeInUp"
-             data-wow-delay="0.1s">
-            <div class="sub-style">
-                <h5 class="sub-title text-primary px-3">OUR CLIENTS RIVIEWS</h5>
+
+        <div class="container-fluid py-5">
+            <div class="container">
+                <h2 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">All Reviews</h2>
+
+                <div class="container-fluid py-5" id="reviews-section">
+                    <div class="container py-5">
+                        <div class="section-title text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="sub-style">
+                                <h5 class="sub-title text-primary px-3">Customer Reviews</h5>
+                            </div>
+                            <h1 class="display-5 mb-4">What Our Customers Are Saying</h1>
+                        </div>
+
+                <!-- Review Slider -->
+                <div class="container py-5">
+                    <!-- Check if there are reviews in the model -->
+                    @if (Model != null && Model.Any())
+                    {
+                        <div id="reviewCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+
+                            <!-- Indicators (optional) -->
+                            <div class="carousel-indicators">
+                                @for (int i = 0; i < (int)Math.Ceiling((double)Model.Count() / 3); i++)
+                                {
+                                    <button type="button" data-bs-target="#reviewCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" aria-label="Slide @(i + 1)"></button>
+                                }
+                            </div>
+
+                            <!-- Carousel Items -->
+                            <div class="carousel-inner">
+                                @for (int i = 0; i < Model.Count(); i += 3)
+                                {
+                                    <div class="carousel-item @(i == 0 ? "active" : "")">
+                                        <div class="row">
+                                            @for (int j = i; j < i + 3 && j < Model.Count(); j++)
+                                            {
+                                                var review = Model[j];
+                                                <div class="col-md-4">
+                                                    <div class="review-item bg-light p-4 rounded h-100">
+                                                        <h5 class="mb-2">@review.UserName</h5>
+
+                                                        <!-- Limit review text height -->
+                                                        <p class="text-muted review-content" id="review-content-@j">
+                                                            @review.Content
+                                                        </p>
+
+                                                        <!-- View Full Review button -->
+                                                        <button class="btn btn-link view-full-btn" data-target="#review-content-@j">View Full Review</button>
+
+                                                        <!-- Star rating -->
+                                                        <div class="star-rating">
+                                                            @for (int k = 0; k < review.Rating; k++)
+                                                            {
+                                                                <i class="fas fa-star text-warning"></i>
+                                                            }
+                                                            @for (int k = review.Rating; k < 5; k++)
+                                                            {
+                                                                <i class="far fa-star text-warning"></i>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Carousel Controls -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#reviewCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#reviewCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No reviews available.</p>  <!-- If no reviews, display this message -->
+                    }
+                </div>
+
+                <div class="text-center mt-4">
+                    <a class="btn btn-primary border-secondary rounded-pill text-white py-3 px-5" asp-action="SubmitReview" asp-controller="Reviews">
+                        Add New Review
+                    </a>
+                      
+                </div>
             </div>
-            <h1 class="display-5 mb-4">What Our Clients Say</h1>
-            <p class="mb-0">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
-                deleniti amet at atque sequi quibusdam cumque itaque repudiandae
-                temporibus, eius nam mollitia voluptas maxime veniam necessitatibus
-                saepe in ab? Repellat!
-            </p>
         </div>
-        <div class="owl-carousel testimonial-carousel wow zoomInDown"
-             data-wow-delay="0.2s">
-            <div class="testimonial-item">
-                <div class="testimonial-content p-4 mb-5">
-                    <p class="fs-5 mb-0">
-                        I can easily check the bus schedules through Pentasharp’s
-                        user-friendly interface. Whether I’m planning a future trip or
-                        need to know when my bus will arrive, it’s all right at my
-                        fingertips!
-                    </p>
-                    <div class="d-flex justify-content-end">
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <div class="rounded-circle me-4"
-                         style="width: 100px; height: 100px">
-                        <img class="img-fluid rounded-circle"
-                             src="img/testimonial-1.jpg"
-                             alt="img" />
-                    </div>
-                    <div class="my-auto">
-                        <h5>Person Name</h5>
-                        <p class="mb-0">Frequent Traveler</p>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-item">
-                <div class="testimonial-content p-4 mb-5">
-                    <p class="fs-5 mb-0">
-                        As a taxi service provider, Pentasharp has streamlined our
-                        booking process. Real-time updates, easy cancellations, and a
-                        user-friendly interface have improved our customer satisfaction
-                        and efficiency.
-                    </p>
-                    <div class="d-flex justify-content-end">
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <div class="rounded-circle me-4"
-                         style="width: 100px; height: 100px">
-                        <img class="img-fluid rounded-circle"
-                             src="img/testimonial-2.jpg"
-                             alt="img" />
-                    </div>
-                    <div class="my-auto">
-                        <h5>Person Name</h5>
-                        <p class="mb-0">Taxi Service Operator</p>
-                    </div>
-                </div>
-            </div>
-            <div class="testimonial-item">
-                <div class="testimonial-content p-4 mb-5">
-                    <p class="fs-5 mb-0">
-                        Booking a taxi through Pentasharp is a breeze. The app’s
-                        seamless interface allows me to reserve a ride instantly, and I
-                        always know when the taxi will arrive. It’s perfect for busy
-                        days when I need to plan my travel.
-                    </p>
-                    <div class="d-flex justify-content-end">
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                        <i class="fas fa-star text-secondary"></i>
-                    </div>
-                </div>
-                <div class="d-flex">
-                    <div class="rounded-circle me-4"
-                         style="width: 100px; height: 100px">
-                        <img class="img-fluid rounded-circle"
-                             src="img/testimonial-3.jpg"
-                             alt="img" />
-                    </div>
-                    <div class="my-auto">
-                        <h5>Person Name</h5>
-                        <p class="mb-0">Regular commuter</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+<style>
+    .review-content {
+        height: 60px; /* Limit visible content height */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+    }
 
+        .review-content.expanded {
+            height: auto; /* Remove height restriction to show full content */
+            -webkit-line-clamp: unset;
+        }
+
+    .view-full-btn {
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+        .view-full-btn:hover {
+            text-decoration: underline;
+        }
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const viewButtons = document.querySelectorAll('.view-full-btn');
+
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const reviewContent = document.querySelector(this.getAttribute('data-target'));
+
+                if (reviewContent.classList.contains('expanded')) {
+                    reviewContent.classList.remove('expanded');
+                    this.textContent = 'View Full Review';
+                } else {
+                    reviewContent.classList.add('expanded');
+                    this.textContent = 'View Less';
+                }
+            });
+        });
+    });
+</script>

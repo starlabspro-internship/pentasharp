@@ -36,6 +36,19 @@ namespace WebApplication1
             builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 
 
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+
+            builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
+            builder.Services.AddScoped<ITaxiService, TaxiService>();
+            builder.Services.AddScoped<IDriverService, DriverService>();
+            builder.Services.AddScoped<IBusCompanyService, BusCompanyService>();
+            builder.Services.AddScoped<IBusService, BusService>();
+            builder.Services.AddScoped<IBusScheduleService, BusScheduleService>();
+            builder.Services.AddScoped<ISearchBusScheduleService, SearchBusScheduleService>();
+            builder.Services.AddScoped<IBusReservationService, BusReservationService>();
+            builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
+
+
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -83,12 +96,13 @@ namespace WebApplication1
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthorization();
+         
             app.UseRouting();
 
             app.UseSession();
 
-            app.UseAuthorization();
+      
 
             app.MapControllerRoute(
                 name: "default",
