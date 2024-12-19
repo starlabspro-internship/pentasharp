@@ -49,11 +49,7 @@
                 </div>
             </div>
             <div class="col-lg-4 text-center text-lg-end">
-                <div class="d-inline-flex align-items-center" style="height: 45px">
-                    <a href="#" class="text-muted me-2">Help</a><small> / </small>
-                    <a href="#" class="text-muted mx-2">Support</a><small> / </small>
-                    <a href="#" class="text-muted ms-2">Contact</a>
-                </div>
+            
             </div>
         </div>
     </div>
@@ -118,22 +114,18 @@
                     <div class="footer-item d-flex flex-column">
                         <h4 class="text-secondary mb-4">Opening Time</h4>
                         <div class="mb-3">
-                            <h6 class="text-muted mb-0">Mon - Friday:</h6>
+                                <h6 class="text-muted mb-0">Mon - Sunday:</h6>
                             <p class="text-white mb-0">24/24</p>
                         </div>
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-0">Sat - Sunday:</h6>
-                            <p class="text-white mb-0">24/24</p>
-                        </div>
+                    
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6 col-xl-3">
                     <div class="footer-item d-flex flex-column">
                         <h4 class="text-secondary mb-4">Our Services</h4>
-                        <a href="~/Home/BusSchedule"><i class="fas fa-angle-right me-2"></i> Bus Schedules</a>
-                        <a href="~/Home/ReserveBus"><i class="fas fa-angle-right me-2"></i> Bus Ticket</a>
-                        <a href="~/Home/TaxiBooking"><i class="fas fa-angle-right me-2"></i> Taxi Booking</a>
-                        <a href="~/Home/TaxiReservation"><i class="fas fa-angle-right me-2"></i> Taxi Reservation</a>
+                            <a asp-controller="Bus" asp-action="BusSchedules"><i class="fas fa-angle-right me-2"></i> Bus Schedules/Tickets</a>
+                            <a asp-controller="Taxi" asp-action="TaxiBooking"><i class="fas fa-angle-right me-2"></i> Taxi Booking</a>
+                            <a asp-controller="Taxi" asp-action="TaxiReservation"><i class="fas fa-angle-right me-2"></i> Taxi Reservation</a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6 col-xl-3">
@@ -141,8 +133,8 @@
                         <h4 class="text-secondary mb-4">Pentasharp 5#</h4>
                         <p class="text-white mb-3">Your Reliable Ride!</p>
                         <div class="position-relative mx-auto rounded-pill">
-                            <input class="form-control border-0 rounded-pill w-100 py-3 ps-4 pe-5" type="text" placeholder="Enter your email" />
-                            <button type="button" class="btn btn-primary rounded-pill position-absolute top-0 end-0 py-2 mt-2 me-2">SignUp</button>
+
+                                <a asp-controller="Authenticate" asp-action="Register"> <button type="button" class="btn btn-primary rounded-pill position-absolute top-0 end-0 py-2 mt-2 me-2">SignUp</button></a>
                         </div>
                     </div>
                 </div>
