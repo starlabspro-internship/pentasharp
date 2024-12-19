@@ -91,15 +91,7 @@
             </div>
             <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
                  id="navbar">
-                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                    <div class="input-group">
-                        <span class="input-group-text text-body">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
-                        <input type="text"
-                               class="form-control"
-                               placeholder="Type here..." />
-                    </div>
+             
                 </div>
                 <ul class="navbar-nav justify-content-end">
                     <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
@@ -228,7 +220,7 @@
                 <div class="row align-items-center justify-content-lg-between">
                     <div class="col-lg-6 mb-lg-0 mb-4">
                         <div class="copyright text-center text-sm text-muted text-lg-start">
-                            © @DateTime.Now.Year, made with <i class="fa fa-heart"></i> by <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Pentasharp</a>.
+                            © @DateTime.Now.Year, made with <i class="fa fa-heart"></i> by <a  class="font-weight-bold" target="_blank">Pentasharp</a>.
                         </div>
                     </div>
                 </div>
@@ -325,13 +317,13 @@
 
         gradientStroke1.addColorStop(1, "rgba(203,12,159,0.2)");
         gradientStroke1.addColorStop(0.2, "rgba(72,72,176,0.0)");
-        gradientStroke1.addColorStop(0, "rgba(203,12,159,0)"); //purple colors
+        gradientStroke1.addColorStop(0, "rgba(203,12,159,0)"); 
 
         var gradientStroke2 = ctx2.createLinearGradient(0, 230, 0, 50);
 
         gradientStroke2.addColorStop(1, "rgba(20,23,39,0.2)");
         gradientStroke2.addColorStop(0.2, "rgba(72,72,176,0.0)");
-        gradientStroke2.addColorStop(0, "rgba(20,23,39,0)"); //purple colors
+        gradientStroke2.addColorStop(0, "rgba(20,23,39,0)"); 
 
         new Chart(ctx2, {
             type: "line",
