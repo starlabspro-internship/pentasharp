@@ -25,6 +25,9 @@ namespace WebApplication1
             builder.Services.AddAutoMapper(typeof(TaxiReservationProfile));
             builder.Services.AddScoped<ITaxiReservationService, TaxiReservationService>();
             builder.Services.AddScoped<ITaxiBookingService, TaxiBookingService>();
+
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+
             builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
             builder.Services.AddScoped<ITaxiService, TaxiService>();
             builder.Services.AddScoped<IDriverService, DriverService>();
@@ -83,12 +86,13 @@ namespace WebApplication1
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthorization();
+         
             app.UseRouting();
 
             app.UseSession();
 
-            app.UseAuthorization();
+      
 
             app.MapControllerRoute(
                 name: "default",
