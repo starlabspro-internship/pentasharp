@@ -25,9 +25,9 @@ namespace WebApplication1
             builder.Services.AddAutoMapper(typeof(TaxiReservationProfile));
             builder.Services.AddScoped<ITaxiReservationService, TaxiReservationService>();
             builder.Services.AddScoped<ITaxiBookingService, TaxiBookingService>();
-<<<<<<< HEAD
+
             builder.Services.AddScoped<IReviewService, ReviewService>();
-=======
+
             builder.Services.AddScoped<ITaxiCompanyService, TaxiCompanyService>();
             builder.Services.AddScoped<ITaxiService, TaxiService>();
             builder.Services.AddScoped<IDriverService, DriverService>();
@@ -39,7 +39,6 @@ namespace WebApplication1
             builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 
 
->>>>>>> 571585b22bd3fae3a40ea6078eafa505dbb13da7
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddDbContext<AppDbContext>(options =>

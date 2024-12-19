@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var reviews = await _context.UserReviews.ToListAsync();
+            var reviews = await _context.UserReviews.AsNoTracking().ToListAsync();
 
             return View(reviews);
         }
