@@ -261,33 +261,14 @@
                         <p class="mb-3">
                             Explore detailed bus schedules to plan your travel with ease.
                         </p>
-                        <a href="./BusSchedule.html"
-                           class="btn btn-secondary rounded-pill"
-                           href="#">
+                        <a asp-controller="Bus" asp-action="BusSchedules"
+                           class="btn btn-secondary rounded-pill">
                             View the schedule<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
-                 data-wow-delay="0.3s">
-                <div class="feature-item text-center p-4">
-                    <div class="feature-icon p-3 mb-4">
-                        <i class="fas fa-bus fa-4x text-primary"></i>
-                    </div>
-                    <div class="feature-content d-flex flex-column">
-                        <h5 class="mb-3">Bus Ticket Reservations</h5>
-                        <p class="mb-3">
-                            Reserve seats easily on your preferred bus routes.
-                        </p>
-                        <a href="./ReserveBus.html"
-                           class="btn btn-secondary rounded-pill"
-                           href="#">
-                            Reserve seats<i class="fas fa-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+          
             <div class="col-md-6 col-lg-6 col-xl-3 wow fadeInUp"
                  data-wow-delay="0.5s">
                 <div class="feature-item text-center p-4">
@@ -299,9 +280,9 @@
                         <p class="mb-3">
                             Book a taxi quickly and conveniently for any destination.
                         </p>
-                        <a href="./TaxiBooking.html"
+                        <a asp-controller="Taxi" asp-action="TaxiBooking"
                            class="btn btn-secondary rounded-pill"
-                           href="#">
+                         >
                             Book a taxi<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -318,9 +299,9 @@
                         <p class="mb-3">
                             Make advance reservations for taxis at your convenience.
                         </p>
-                        <a href="./TaxiReservation.html"
+                        <a asp-controller="Taxi" asp-action="TaxiReservation"
                            class="btn btn-secondary rounded-pill"
-                           href="#">
+                        >
                             Reserve a taxi<i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -329,7 +310,7 @@
             <div class="col-12">
                 <a class="btn btn-primary border-secondary rounded-pill py-3 px-5 wow fadeInUp"
                    data-wow-delay="0.1s"
-                   href="#">More Features</a>
+                   asp-controller="Home" asp-action="Services">More Features</a>
             </div>
         </div>
     </div>
