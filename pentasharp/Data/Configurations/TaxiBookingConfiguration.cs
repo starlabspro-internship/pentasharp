@@ -53,7 +53,7 @@ namespace pentasharp.Data.Configurations
                 .IsRequired();
 
             builder.Property(tb => tb.TaxiId)
-                .IsRequired(false); 
+                .IsRequired(false);
 
             builder.Property(tb => tb.Status)
                 .IsRequired();
@@ -70,6 +70,21 @@ namespace pentasharp.Data.Configurations
 
         private void ConfigureRelationships(EntityTypeBuilder<TaxiBookings> builder)
         {
+            builder.HasOne(tb => tb.TaxiCompany)
+                .WithMany(tc => tc.TaxiBookings)
+                .HasForeignKey(tb => tb.TaxiCompanyId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.HasOne(tb => tb.Taxi)
+                .WithMany(t => t.TaxiBookings)
+                .HasForeignKey(tb => tb.TaxiId)
+                .OnDelete(DeleteBehavior.SetNull); 
+
+            builder.HasOne(tb => tb.User)
+                .WithMany(u => u.TaxiBookings)
+                .HasForeignKey(tb => tb.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(tb => tb.Notifications)
                 .WithOne(n => n.TaxiBooking)
                 .HasForeignKey(n => n.BookingId)

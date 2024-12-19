@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace pentasharp.Models.Entities
 {
@@ -26,6 +27,16 @@ namespace pentasharp.Models.Entities
         [Required]
         [MaxLength(100)]
         public string ToLocation { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the unique identifier for the associated bus company.
+        /// </summary>
+        public int BusCompanyId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the bus company associated with this bus.
+        /// </summary>
+        public BusCompany BusCompany { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the estimated duration for the bus route.

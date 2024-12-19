@@ -24,12 +24,18 @@ namespace pentasharp.Services
 
             if (userId.HasValue)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId.Value);
-                userName = user?.FirstName ?? userName;
-                review.UserId = userId.Value;
+                var user = await _context.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.UserId == userId.Value);
+
+                if (user != null)
+                {
+                    userName = user.FirstName;
+                    review.UserId = userId.Value;
+                }
             }
 
-            review.UserName = string.IsNullOrEmpty(review.UserName) ? userName : review.UserName;
+            review.UserName ??= userName;
 
             _context.Add(review);
             await _context.SaveChangesAsync();

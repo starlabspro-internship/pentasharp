@@ -5,6 +5,7 @@ namespace pentasharp.Models.Enums
     public enum UserRole
     {
         User,
-        Admin
+        Admin,
+        Driver
     }
 }

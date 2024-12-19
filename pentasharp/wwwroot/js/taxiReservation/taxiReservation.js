@@ -4,6 +4,7 @@ function fetchCurrentUser() {
     return fetch('/Authenticate/GetCurrentUser')
         .then(response => response.json())
         .then(data => {
+            console.log("curr",data.data.userId)
             currentUser = {
                 userId: data.data.userId,
                 name: `${data.data.firstName} ${data.data.lastName}`
@@ -76,7 +77,7 @@ function confirmReservation() {
         pickupLocation: document.getElementById('modalPickupLocation').textContent,
         dropoffLocation: document.getElementById('modalDropoffLocation').textContent,
         reservationDate: document.getElementById('modalReservationDate').textContent,
-        reservationTime: reservationTimeRaw.includes(":") ? reservationTimeRaw : `${reservationTimeRaw}:00`, // Ensure TimeSpan format
+        reservationTime: reservationTimeRaw.includes(":") ? reservationTimeRaw : `${reservationTimeRaw}:00`,
         passengerCount: parseInt(document.getElementById('modalPassengerCount').textContent)
     };
 
@@ -99,9 +100,15 @@ function confirmReservation() {
         })
         .then(data => {
             if (data.success) {
-                alert('Reservation confirmed successfully!');
-                const reservationModal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
-                reservationModal.hide();
+                const messageElement = document.getElementById('confirmationMessage');
+                if (messageElement) {
+                    messageElement.textContent = "Your reservation will be confirmed by management and you will be notified.";
+                    messageElement.style.display = "block";
+                }
+                setTimeout(() => {
+                    const reservationModal = bootstrap.Modal.getInstance(document.getElementById('reservationModal'));
+                    reservationModal.hide();
+                }, 2000);
             } else {
                 console.error('Error:', data.errors);
                 alert('Failed to confirm reservation. Check errors in the console.');

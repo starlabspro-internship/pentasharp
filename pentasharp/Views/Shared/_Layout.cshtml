@@ -2,6 +2,7 @@
     var isLoggedIn = ViewContext.HttpContext.Session.GetString("UserId") != null;
     var userName = ViewContext.HttpContext.Session.GetString("FirstName");
     var isAdmin = ViewContext.HttpContext.Session.GetString("IsAdmin") == "true";
+    var role = ViewContext.HttpContext.Session.GetString("UserRole");
 
     var hideNavbarAndFooter = ViewContext.RouteData.Values["action"]?.ToString().Equals("Login", StringComparison.OrdinalIgnoreCase) == true ||
                               ViewContext.RouteData.Values["action"]?.ToString().Equals("Register", StringComparison.OrdinalIgnoreCase) == true;
@@ -76,7 +77,7 @@
                             <a asp-controller="Home" asp-action="UserActivity" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "UserActivity" ? "active" : "")">User-Activity</a>
                         }
 
-                        @if (isAdmin)
+                        @if (isAdmin || role == "Admin" || role =="Driver" )
                         {
                     <a asp-controller="Dashboard" asp-action="Dashboard" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
                         }

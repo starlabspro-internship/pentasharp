@@ -19,12 +19,14 @@ namespace pentasharp.Services
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<TaxiReservationService> _logger;
+        private readonly IAuthenticateService _authService;
 
-        public TaxiReservationService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger)
+        public TaxiReservationService(AppDbContext context, IMapper mapper, ILogger<TaxiReservationService> logger, IAuthenticateService authService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _authService = authService;
         }
 
         public async Task<IEnumerable<TaxiCompanyRequest>> SearchAvailableTaxisAsync()
@@ -86,13 +88,21 @@ namespace pentasharp.Services
 
         public async Task<List<TaxiReservationRequest>> GetReservationsAsync()
         {
+            var companyId = _authService.GetCurrentCompanyId();
+
+            if (!companyId.HasValue)
+            {
+                throw new UnauthorizedAccessException("No user is logged in or no associated company found.");
+            }
+
             try
             {
-                _logger.LogInformation("Fetching all taxi reservations.");
                 var reservations = await _context.TaxiReservations
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
+                    .ThenInclude(t => t.Driver)
                     .Include(r => r.TaxiCompany)
+                    .Where(r => r.TaxiCompanyId == companyId.Value)
                     .ToListAsync();
 
                 var reservationInfo = _mapper.Map<List<TaxiReservationRequest>>(reservations);
@@ -100,18 +110,18 @@ namespace pentasharp.Services
                 foreach (var reservationDto in reservationInfo)
                 {
                     var reservationEntity = reservations.FirstOrDefault(r => r.ReservationId == reservationDto.ReservationId);
-                    reservationDto.PassengerName = reservationEntity?.User?.FirstName ?? "Unknown";
+                    reservationDto.PassengerName = $"{reservationEntity?.User?.FirstName} {reservationEntity?.User?.LastName}".Trim() ?? "Unknown";
                     reservationDto.Driver = reservationEntity?.Taxi != null
-                        ? $"{reservationEntity.Taxi.DriverName} - {reservationEntity.Taxi.LicensePlate}"
+                        ? $"{reservationEntity.Taxi.DriverId} - {reservationEntity.Taxi.LicensePlate}"
                         : "Unassigned";
                 }
 
-                _logger.LogInformation("Successfully fetched {Count} reservations.", reservationInfo.Count);
+                _logger.LogInformation("Successfully fetched {Count} reservations for company ID: {CompanyId}", reservationInfo.Count, companyId);
                 return reservationInfo;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching reservations in {methodName}.", nameof(GetReservationsAsync));
+                _logger.LogError(ex, "Error occurred while fetching reservations in {MethodName}.", nameof(GetReservationsAsync));
                 throw;
             }
         }
@@ -122,6 +132,7 @@ namespace pentasharp.Services
             {
                 _logger.LogInformation("Fetching taxis for taxi company ID {TaxiCompanyId}.", taxiCompanyId);
                 var taxis = await _context.Taxis
+                    .Include(t => t.Driver)
                     .Where(t => t.TaxiCompanyId == taxiCompanyId)
                     .ToListAsync();
 

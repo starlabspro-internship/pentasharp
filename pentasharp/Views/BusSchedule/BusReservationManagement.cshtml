@@ -16,22 +16,7 @@
 
     <div id="confirmReservationSection">
         <div class="list-group">
-            <div class="list-group-item d-flex align-items-center justify-content-between shadow-sm p-3 mb-2 rounded" style="background-color: #fdfdfe;">
-                <div class="schedule-details">
-                    <h6 class="mb-1 fw-bold text-dark">Route: Placeholder Route</h6>
-                    <small class="text-muted">Bus Number: <b>Placeholder</b> | Schedule ID: <b>Placeholder</b></small><br />
-                    <small class="text-muted">Departure: <b>Placeholder</b> | Arrival: <b>Placeholder</b> | Seats: <b>Placeholder</b></small><br />
-                    <small class="text-muted">Price: <b>Placeholder</b> | Status: <span class="badge bg-warning text-dark">Placeholder</span></small>
-                </div>
-                <div class="action-buttons d-flex flex-column align-items-center">
-                    <button class="btn btn-success btn-sm mb-2 d-flex align-items-center justify-content-center">
-                        <i class="fas fa-check me-2"></i> Confirm
-                    </button>
-                    <button class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
-                        <i class="fas fa-times me-2"></i> Cancel
-                    </button>
-                </div>
-            </div>
+            
         </div>
     </div>
 
@@ -58,6 +43,37 @@
         </div>
     </div>
 </div>
+
+<style>
+    .reservation-card {
+        border-radius: 10px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .reservation-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .reservation-details p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .badge {
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #confirmSection {
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+</style>
 
 @section Scripts {
     <script src="~/js/busSchedule/busReservationManagement.js"></script>

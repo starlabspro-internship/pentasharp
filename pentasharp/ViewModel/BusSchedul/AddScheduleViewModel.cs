@@ -49,6 +49,11 @@ namespace pentasharp.ViewModel.BusSchedul
         public int RouteId { get; set; }
 
         /// <summary>
+        /// Unique identifier for the bus company that owns this schedule.
+        /// </summary>
+        public int BusCompanyId { get; set; }
+
+        /// <summary>
         /// Status of the bus schedule (Scheduled, Canceled, etc.).
         /// </summary>
         public BusScheduleStatus Status { get; set; } = BusScheduleStatus.Scheduled;

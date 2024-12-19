@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var businessType = ViewContext.HttpContext.Session.GetString("BusinessType"); 
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -35,38 +39,63 @@
                         <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "TaxiDriver" ? "active" : "")">
-                    <a class="nav-link" asp-controller="TaxiDriver" asp-action="TaxiDriver">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-taxi text-primary"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Taxi Driver</span>
-                    </a>
-                </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyBus" ? "active" : "")">
-                    <a class="nav-link" asp-controller="BusCompany" asp-action="Add">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-bus text-primary"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Add Company & Bus</span>
-                    </a>
-                </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyTaxi" ? "active" : "")">
-                    <a class="nav-link" asp-controller="TaxiCompany" asp-action="Add">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-taxi text-primary"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Add Company & Taxi</span>
-                    </a>
-                </li>
-                <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "UserList" ? "active" : "")">
-                    <a class="nav-link" asp-controller="Authenticate" asp-action="UserList">
-                        <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="fas fa-users text-primary"></i>
-                        </div>
-                        <span class="nav-link-text ms-1">Users</span>
-                    </a>
-                </li>
+                @if (businessType == "BusCompany")
+                {
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyBus" ? "active" : "")">
+                        <a class="nav-link" asp-controller="Dashboard" asp-action="Bus">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-bus text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Add Bus</span>
+                        </a>
+                    </li>
+                }
+                else if (businessType == "TaxiCompany")
+                {
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyTaxi" ? "active" : "")">
+                        <a class="nav-link" asp-controller="Dashboard" asp-action="Taxi">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-taxi text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Add Taxi && Driver</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "TaxiDriver" ? "active" : "")">
+                        <a class="nav-link" asp-controller="TaxiDriver" asp-action="TaxiDriver">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-taxi text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Taxi Driver</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyBus" ? "active" : "")">
+                        <a class="nav-link" asp-controller="Dashboard" asp-action="Bus">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-bus text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Add Bus Company</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyTaxi" ? "active" : "")">
+                        <a class="nav-link" asp-controller="Dashboard" asp-action="Taxi">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-taxi text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Add Taxi Company</span>
+                        </a>
+                    </li>
+                    <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "UserList" ? "active" : "")">
+                        <a class="nav-link" asp-controller="Authenticate" asp-action="UserList">
+                            <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-users text-primary"></i>
+                            </div>
+                            <span class="nav-link-text ms-1">Users</span>
+                        </a>
+                    </li>
+                }
                 <li class="nav-item">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">
                         <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

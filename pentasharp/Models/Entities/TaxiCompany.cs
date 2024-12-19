@@ -4,37 +4,49 @@ using System.ComponentModel.DataAnnotations;
 
 namespace pentasharp.Models.Entities
 {
+    /// <summary>
+    /// Represents a taxi company, including its details and associated taxis.
+    /// </summary>
     public class TaxiCompany
     {
         /// <summary>
-        /// Gets or sets the unique identifier for the taxi company.
+        /// Unique identifier for the taxi company.
         /// </summary>
         [Key]
         public int TaxiCompanyId { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the taxi company.
+        /// Name of the taxi company.
         /// </summary>
         public string CompanyName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the contact information for the taxi company.
+        /// Contact information for the taxi company.
         /// </summary>
         public string ContactInfo { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the date and time when the taxi company was created.
+        /// Identifier of the user who owns or manages the taxi company.
+        /// </summary>
+        public int UserId { get; set; }
+
+        /// <summary>
+        /// Date and time when the taxi company was created.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Gets or sets the date and time when the taxi company was last updated.
-        /// Nullable to allow for no updates.
+        /// Date and time when the taxi company was last updated. Nullable if no updates have been made.
         /// </summary>
         public DateTime? UpdatedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of taxis associated with the taxi company.
+        /// Collection of taxi bookings associated with the taxi company.
+        /// </summary>
+        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
+
+        /// <summary>
+        /// Collection of taxis associated with the taxi company.
         /// </summary>
         public ICollection<Taxi> Taxis { get; set; } = new List<Taxi>();
 
@@ -44,13 +56,13 @@ namespace pentasharp.Models.Entities
         public ICollection<TaxiReservations> TaxiReservations { get; set; } = new List<TaxiReservations>();
 
         /// <summary>
-        /// The collection of taxi bookings associated with the taxi company.
-        /// </summary>
-        public ICollection<TaxiBookings> TaxiBookings { get; set; } = new List<TaxiBookings>();
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the taxi company is marked as deleted.
+        /// Indicates whether the taxi company is marked as deleted.
         /// </summary>
         public bool IsDeleted { get; set; }
+
+        /// <summary>
+        /// User who owns or manages the taxi company.
+        /// </summary>
+        public User User { get; set; } = null!;
     }
 }

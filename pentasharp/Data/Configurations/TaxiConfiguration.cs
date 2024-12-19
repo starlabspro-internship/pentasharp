@@ -29,9 +29,8 @@ namespace pentasharp.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
-            builder.Property(t => t.DriverName)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.Property(t => t.DriverId)
+                .IsRequired(false);
 
             builder.Property(t => t.Status)
                 .IsRequired();
@@ -41,12 +40,20 @@ namespace pentasharp.Data.Configurations
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(t => t.UpdatedAt);
+
+            builder.Property(t => t.IsDeleted)
+                .IsRequired()
+                .HasDefaultValue(false);
         }
 
         private void ConfigureIndexes(EntityTypeBuilder<Taxi> builder)
         {
             builder.HasIndex(t => t.LicensePlate)
                 .IsUnique();
+
+            builder.HasIndex(t => t.DriverId)
+                .IsUnique()
+                .HasFilter("[DriverId] IS NOT NULL");
         }
 
         private void ConfigureDefaults(EntityTypeBuilder<Taxi> builder)
@@ -70,6 +77,11 @@ namespace pentasharp.Data.Configurations
             builder.HasMany(t => t.TaxiBookings)
                 .WithOne(tb => tb.Taxi)
                 .HasForeignKey(tb => tb.TaxiId);
+
+            builder.HasOne(t => t.Driver)
+                .WithMany()
+                .HasForeignKey(t => t.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -14,32 +14,47 @@ function HandleSearch(event) {
             bookingTime: new Date().toISOString()
         })
     })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success && Array.isArray(data.companies)) {
                 ResultsContainer.replaceChildren();
-                data.companies.forEach(company => {
-                    const companyCard = `
-                    <div class="container my-3" style="max-width: 600px;">
-                        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                            <div class="row g-0 align-items-center">
-                                <div class="col-4 bg-light d-flex align-items-center justify-content-center p-3">
-                                    <i class="fas fa-taxi fa-3x text-warning"></i>
-                                </div>
-                                <div class="col-5 px-4 py-3">
-                                    <h5 class="fw-bold text-primary mb-1">${company.companyName}</h5>
-                                    <p class="text-muted mb-2">${company.companyName}</p>
-                                    <p class="mb-0"><i class="fas fa-user-friends me-2 text-secondary"></i>Up to 3 passengers</p>
-                                </div>
-                                <div class="col-3 text-end pe-4">
-                                    <button class="btn btn-primary rounded-pill px-4 py-2" onclick="OpenBookingModal('${company.companyName}', '${company.taxiCompanyId}')">Select</button>
-                                </div>
+                if (data.companies.length === 0) {
+                    ResultsContainer.innerHTML = '<p>No companies available for your search.</p>';
+                } else {
+                    data.companies.forEach(company => {
+                        const companyCard = `
+                <div class="container my-3" style="max-width: 600px;">
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="row g-0 align-items-center">
+                            <div class="col-4 bg-light d-flex align-items-center justify-content-center p-3">
+                                <i class="fas fa-taxi fa-3x text-warning"></i>
+                            </div>
+                            <div class="col-5 px-4 py-3">
+                                <h5 class="fw-bold text-primary mb-1">${company.companyName}</h5>
+                                <p class="text-muted mb-2">${company.companyName}</p>
+                                <p class="mb-0"><i class="fas fa-user-friends me-2 text-secondary"></i>Up to 3 passengers</p>
+                            </div>
+                            <div class="col-3 text-end pe-4">
+                                <button class="btn btn-primary rounded-pill px-4 py-2" onclick="OpenBookingModal('${company.companyName}', '${company.taxiCompanyId}')">Select</button>
                             </div>
                         </div>
-                    </div>`;
-                    ResultsContainer.insertAdjacentHTML('beforeend', companyCard);
-                });
+                    </div>
+                </div>`;
+                        ResultsContainer.insertAdjacentHTML('beforeend', companyCard);
+                    });
+                }
+            } else {
+                ResultsContainer.innerHTML = '<p>No companies found.</p>';
             }
+        })
+        .catch(error => {
+            console.error('Error fetching companies:', error);
+            ResultsContainer.innerHTML = '<p>An error occurred while fetching companies. Please try again later.</p>';
         });
 }
 

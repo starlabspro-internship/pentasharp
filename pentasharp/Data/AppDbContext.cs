@@ -48,6 +48,9 @@ namespace pentasharp.Data
             modelBuilder.Entity<Buses>()
                 .HasQueryFilter(b => !b.BusCompany.IsDeleted);
 
+            modelBuilder.Entity<BusRoutes>()
+                .HasQueryFilter(b => !b.BusCompany.IsDeleted);
+
             modelBuilder.Entity<TaxiCompany>()
                .HasQueryFilter(tc => !tc.IsDeleted);
 

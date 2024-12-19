@@ -32,6 +32,9 @@ namespace pentasharp.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(256);
 
+            builder.Property(tr => tr.UserId)
+                .IsRequired();
+
             builder.Property(tc => tc.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
@@ -45,18 +48,17 @@ namespace pentasharp.Data.Configurations
                 .IsUnique();
         }
 
-        private void ConfigureDefaults(EntityTypeBuilder<TaxiCompany> builder)
-        {
-            builder.Property(tc => tc.CreatedAt)
-                .HasDefaultValueSql("GETUTCDATE()");
-        }
-
         private void ConfigureRelationships(EntityTypeBuilder<TaxiCompany> builder)
         {
-            builder.HasMany(tc => tc.Taxis)
-                .WithOne(t => t.TaxiCompany)
-                .HasForeignKey(t => t.TaxiCompanyId)
+            builder.HasOne(tc => tc.User) 
+                .WithMany() 
+                .HasForeignKey(tc => tc.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(tc => tc.Taxis)
+              .WithOne(t => t.TaxiCompany)
+              .HasForeignKey(t => t.TaxiCompanyId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(tc => tc.TaxiBookings)
                 .WithOne(tb => tb.TaxiCompany)
@@ -67,6 +69,12 @@ namespace pentasharp.Data.Configurations
                 .WithOne(tr => tr.TaxiCompany)
                 .HasForeignKey(tr => tr.TaxiCompanyId)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+
+        private void ConfigureDefaults(EntityTypeBuilder<TaxiCompany> builder)
+        {
+            builder.Property(tc => tc.CreatedAt)
+                .HasDefaultValueSql("GETUTCDATE()");
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.ViewModel.Authenticate
 {
@@ -50,5 +51,10 @@ namespace pentasharp.ViewModel.Authenticate
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public bool IsAdmin { get; set; } = false;
+
+        public UserRole? Role { get; set; }
+        public BusinessType BusinessType { get; set; } = BusinessType.None;
     }
 }

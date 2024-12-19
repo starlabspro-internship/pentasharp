@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
 
 namespace pentasharp.Data.Configurations
 {
@@ -43,6 +44,9 @@ namespace pentasharp.Data.Configurations
             builder.Property(u => u.Role)
                 .IsRequired();
 
+            builder.Property(u => u.CompanyId)
+               .IsRequired(false);
+
             builder.Property(u => u.IsAdmin)
                 .HasDefaultValue(false);
 
@@ -82,7 +86,12 @@ namespace pentasharp.Data.Configurations
             builder.HasMany(u => u.Notifications)
                 .WithOne(n => n.User)
                 .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasForeignKey(n => n.UserId);
+
+            builder.Property(u => u.BusinessType)
+                 .IsRequired()
+                 .HasDefaultValue(BusinessType.None);
         }
     }
 }
