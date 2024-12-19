@@ -24,14 +24,14 @@ namespace pentasharp.ViewModel.TaxiModels
         /// <summary>
         /// Gets or sets the driver's name.
         /// </summary>
-        public string DriverName { get; set; }
+        public int? DriverId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the taxi company.
         /// </summary>
         public int TaxiCompanyId { get; set; }
 
-        /// <summary>
+        /// <summary>s
         /// Gets or sets the date and time when the taxi information was last updated.
         /// </summary>
         public DateTime UpdatedAt { get; set; }

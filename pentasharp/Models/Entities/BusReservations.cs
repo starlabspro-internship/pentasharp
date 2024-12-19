@@ -63,6 +63,16 @@ namespace pentasharp.Models.Entities
         public int UserId { get; set; }
 
         /// <summary>
+        /// The nullable unique identifier for the associated bus company.
+        /// </summary>
+        public int? BusCompanyId { get; set; }
+
+        /// <summary>
+        /// The bus company associated with this entity.
+        /// </summary>
+        public BusCompany BusCompany { get; set; } = null!;
+
+        /// <summary>
         /// Gets or sets the current status of the reservation.
         /// </summary>
         [Required]

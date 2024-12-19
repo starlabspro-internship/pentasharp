@@ -11,12 +11,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const entityForm = document.getElementById("entityForm");
     const confirmDeleteButton = document.getElementById("confirmDelete");
 
+    const driversSection = document.getElementById("driversSection");
+    const driversTableBody = document.getElementById("driversTableBody");
+
     let deleteCallback = null;
 
     const fetchEntities = (url, renderFunction) => {
         fetch(url)
-            .then((response) => response.json())
-            .then((data) => renderFunction(data));
+            .then(async (response) => {
+                if (!response.ok) {
+                    const contentType = response.headers.get("Content-Type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "An error occurred.");
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error: ${response.status} - ${errorText}`);
+                    }
+                }
+                return response.json();
+            })
+            .then((data) => renderFunction(data))
+            .catch((error) => {
+                console.error(`Error fetching from ${url}:`, error);
+            });
     };
 
     const renderCompanies = (companies) => {
@@ -35,91 +53,288 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const renderTaxis = (taxis) => {
         taxisTableBody.innerHTML = taxis.map((taxi) => `
+        <tr>
+            <td>${taxi.licensePlate}</td>
+            <td>${taxi.driverName || "No Driver Assigned"}</td>
+            <td>${taxi.companyName}</td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-taxi" 
+                        data-id="${taxi.taxiId}" 
+                        data-license="${taxi.licensePlate}" 
+                        data-driver-id="${taxi.driverId || 0}" 
+                        data-company-id="${taxi.taxiCompanyId}">
+                    Edit
+                </button>
+                <button class="btn btn-danger btn-sm delete-taxi" 
+                        data-id="${taxi.taxiId}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    `).join("");
+        attachListeners();
+    };
+
+    const renderDrivers = (drivers) => {
+        driversTableBody.innerHTML = drivers.map((driver) => `
             <tr>
-                <td>${taxi.licensePlate}</td>
-                <td>${taxi.driverName}</td>
-                <td>${taxi.companyName}</td>
+                <td>${driver.firstName}</td>
+                <td>${driver.lastName}</td>
+                <td>${driver.email}</td>
+                <td>${driver.companyName}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm edit-taxi" data-id="${taxi.taxiId}" data-license="${taxi.licensePlate}" data-driver="${taxi.driverName}" data-company-id="${taxi.taxiCompanyId}">Edit</button>
-                    <button class="btn btn-danger btn-sm delete-taxi" data-id="${taxi.taxiId}">Delete</button>
+                    <button class="btn btn-warning btn-sm edit-driver" 
+                        data-id="${driver.userId}" 
+                        data-firstname="${driver.firstName}" 
+                        data-lastname="${driver.lastName}" 
+                        data-email="${driver.email}">
+                        Edit
+                    </button>
+                    <button class="btn btn-danger btn-sm delete-driver" data-id="${driver.userId}">Delete</button>
                 </td>
             </tr>
         `).join("");
         attachListeners();
     };
 
-    const saveEntity = (url, method, data, refreshFunction) => {
+    const saveEntity = (url, method, data) => {
         fetch(url, {
             method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
-        }).then(() => {
-            entityModal.hide();
-            refreshAll();
-        });
+        })
+            .then(async (response) => {
+                const contentType = response.headers.get("Content-Type");
+                if (!response.ok) {
+                    if (contentType && contentType.includes("application/json")) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "An error occurred.");
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Error: ${response.status} - ${errorText}`);
+                    }
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (data.success) {
+                    entityModal.hide();
+                    refreshAll();
+                } else {
+                    alert(data.message || "An error occurred while saving the entity.");
+                }
+            })
+            .catch((error) => {
+                console.error("Error saving entity:", error);
+                alert(`An error occurred while saving the entity: ${error.message}`);
+            });
     };
 
     const deleteEntity = () => {
-        deleteCallback();
-        deleteModal.hide();
+        if (deleteCallback) {
+            deleteCallback();
+            deleteCallback = null;
+            deleteModal.hide();
+        }
     };
 
     const refreshAll = () => {
-        fetchEntities("/api/TaxiCompany/GetCompanies", renderCompanies);
-        fetchEntities("/api/TaxiCompany/GetTaxis", renderTaxis);
+        fetchEntities("/Admin/TaxiCompany/GetCompanies", renderCompanies);
+        fetchEntities("/Business/TaxiCompany/GetTaxis", renderTaxis);
+        fetchEntities("/Business/TaxiDriver/GetDrivers", renderDrivers);
     };
 
     const attachListeners = () => {
+
         document.querySelectorAll(".edit-company").forEach((button) => {
             button.addEventListener("click", () => {
                 modalTitle.textContent = "Edit Company";
-                entityForm.innerHTML = `
-                    <input type="text" class="form-control mb-3" id="companyName" value="${button.dataset.name}" />
-                    <input type="text" class="form-control mb-3" id="contactInfo" value="${button.dataset.contact}" />
-                    <button type="submit" class="btn btn-primary">Save</button>`;
-                entityForm.onsubmit = (e) => {
-                    e.preventDefault();
-                    saveEntity(`/api/TaxiCompany/EditCompany/${button.dataset.id}`, "PUT", {
-                        companyName: document.getElementById("companyName").value,
-                        contactInfo: document.getElementById("contactInfo").value,
+
+                const companyId = button.dataset.id;
+
+                fetch(`/Admin/TaxiCompany/GetTaxiCompanyUser/${companyId}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (!data.success) {
+                            alert(data.message || "An error occurred while fetching company user.");
+                            return;
+                        }
+
+                        const user = data.data.user;
+                        console.log("User:", user);
+
+                        const userDisplay = user
+                            ? `<p class="form-control mb-3 border"><strong>Assigned User: </strong>${user.firstName} ${user.lastName}</p>
+                               <input type="hidden" id="userId" value="${user.userId}" />`
+                            : `<p class="form-control mb-3 border"><strong>Assigned User: </strong> None</p>`;
+
+                        entityForm.innerHTML = `
+                    ${userDisplay}
+                    <input type="text" class="form-control mb-3" id="companyName" value="${button.dataset.name}" placeholder="Company Name" required />
+                    <input type="text" class="form-control mb-3" id="contactInfo" value="${button.dataset.contact}" placeholder="Contact Info" required />
+                    <button type="submit" class="btn btn-primary">Save</button>
+                `;
+
+                        entityForm.onsubmit = (e) => {
+                            e.preventDefault();
+                            const companyName = document.getElementById("companyName").value.trim();
+                            const contactInfo = document.getElementById("contactInfo").value.trim();
+                            const userId = document.getElementById("userId") ? document.getElementById("userId").value : null;
+
+                            if (companyName && contactInfo) {
+                                saveEntity(`/Admin/TaxiCompany/EditCompany/${companyId}`, "PUT", {
+                                    companyName,
+                                    contactInfo,
+                                    userId: userId ? parseInt(userId, 10) : null
+                                });
+                            } else {
+                                alert("Please fill in all fields.");
+                            }
+                        };
+
+                        entityModal.show();
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching company user:", error);
+                        alert("An error occurred while fetching company user.");
                     });
-                };
-                entityModal.show();
             });
         });
 
         document.querySelectorAll(".edit-taxi").forEach((button) => {
             button.addEventListener("click", () => {
                 modalTitle.textContent = "Edit Taxi";
-                fetch("/api/TaxiCompany/GetCompanies")
+                const taxiId = button.dataset.id;
+
+                fetch(`/Business/TaxiDriver/GetAvailableDrivers/${taxiId}`)
                     .then((response) => response.json())
-                    .then((companies) => {
-                        const companyOptions = companies.map((company) =>
-                            `<option value="${company.taxiCompanyId}" ${company.taxiCompanyId == button.dataset.companyId ? "selected" : ""}>${company.companyName}</option>`
-                        ).join("");
+                    .then((data) => {
+                        if (!data.success) {
+                            alert(data.message || "An error occurred while fetching available drivers.");
+                            return;
+                        }
+
+                        const currentDriverId = parseInt(button.dataset.driverId, 10);
+                        const drivers = data.drivers;
+
+                        let driverOptions = `
+                <option value="0" ${!currentDriverId ? "selected" : ""}>No Driver Assigned</option>
+                `;
+
+                        drivers.forEach((driver) => {
+                            const isSelected = parseInt(driver.userId, 10) === currentDriverId;
+                            driverOptions += `
+                    <option value="${driver.userId}" ${isSelected ? "selected" : ""}>
+                        ${driver.firstName} ${driver.lastName}
+                    </option>
+                `;
+                        });
+
                         entityForm.innerHTML = `
-                            <input type="text" class="form-control mb-3" id="licensePlate" value="${button.dataset.license}" />
-                            <input type="text" class="form-control mb-3" id="driverName" value="${button.dataset.driver}" />
-                            <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
-                            <button type="submit" class="btn btn-primary">Save</button>`;
+                <input type="text" class="form-control mb-3" id="licensePlate" value="${button.dataset.license}" placeholder="License Plate" required />
+                <select class="form-select mb-3" id="driverSelect" required>
+                    ${driverOptions}
+                </select>
+                <button type="submit" class="btn btn-primary">Save</button>
+                `;
+
                         entityForm.onsubmit = (e) => {
                             e.preventDefault();
-                            saveEntity(`/api/TaxiCompany/EditTaxi/${button.dataset.id}`, "PUT", {
-                                licensePlate: document.getElementById("licensePlate").value,
-                                driverName: document.getElementById("driverName").value,
-                                taxiCompanyId: document.getElementById("taxiCompanySelect").value,
-                            });
+                            const licensePlate = document.getElementById("licensePlate").value.trim();
+                            const driverId = parseInt(document.getElementById("driverSelect").value, 10);
+
+                            if (licensePlate) {
+                                saveEntity(`/Business/TaxiCompany/EditTaxi/${taxiId}`, "PUT", {
+                                    licensePlate,
+                                    DriverId: driverId > 0 ? driverId : null, 
+                                });
+                            } else {
+                                alert("Please enter a valid license plate.");
+                            }
                         };
+
                         entityModal.show();
+                    })
+                    .catch((error) => {
+                        console.error("Error fetching drivers:", error);
+                        alert("An error occurred while fetching drivers.");
                     });
             });
         });
 
         document.querySelectorAll(".delete-company, .delete-taxi").forEach((button) => {
             button.addEventListener("click", () => {
+                const entityType = button.classList.contains("delete-company") ? "Company" : "Taxi";
+                const entityId = button.dataset.id;
+
                 deleteCallback = () => {
-                    fetch(`/api/TaxiCompany/${button.classList.contains("delete-company") ? "DeleteCompany" : "DeleteTaxi"}/${button.dataset.id}`, { method: "DELETE" })
-                        .then(() => refreshAll());
+                    fetch(`/Admin/TaxiCompany/Delete${entityType}/${entityId}`, { method: "DELETE" })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                refreshAll();
+                            } else {
+                                alert(data.message || `Failed to delete ${entityType}.`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error(`Error deleting ${entityType}:`, error);
+                            alert(`An error occurred while deleting the ${entityType}.`);
+                        });
+                };
+                deleteModal.show();
+            });
+        });
+
+        document.querySelectorAll(".edit-driver").forEach((button) => {
+            button.addEventListener("click", () => {
+                modalTitle.textContent = "Edit Driver";
+
+                entityForm.innerHTML = `
+                    <input type="text" class="form-control mb-3" id="firstName" value="${button.dataset.firstname}" placeholder="First Name" required/>
+                    <input type="text" class="form-control mb-3" id="lastName" value="${button.dataset.lastname}" placeholder="Last Name" required/>
+                    <input type="email" class="form-control mb-3" id="email" value="${button.dataset.email}" placeholder="Email" required/>
+                    <input type="password" class="form-control mb-3" id="password" placeholder="New Password (leave empty if not changing)" />
+                    <button type="submit" class="btn btn-primary">Save</button>`;
+
+                entityForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const firstName = document.getElementById("firstName").value.trim();
+                    const lastName = document.getElementById("lastName").value.trim();
+                    const email = document.getElementById("email").value.trim();
+                    const password = document.getElementById("password").value;
+
+                    if (firstName && lastName && email) {
+                        saveEntity(`/Business/TaxiDriver/EditDriver/${button.dataset.id}`, "PUT", {
+                            firstName,
+                            lastName,
+                            email,
+                            password: password || null
+                        });
+                    } else {
+                        alert("Please fill in all required fields.");
+                    }
+                };
+                entityModal.show();
+            });
+        });
+
+        document.querySelectorAll(".delete-driver").forEach((button) => {
+            button.addEventListener("click", () => {
+                deleteCallback = () => {
+                    fetch(`/Business/TaxiDriver/DeleteDriver/${button.dataset.id}`, { method: "DELETE" })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                refreshAll();
+                            } else {
+                                alert(data.message || "Failed to delete Driver.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error deleting driver:", error);
+                            alert("An error occurred while deleting the driver.");
+                        });
                 };
                 deleteModal.show();
             });
@@ -129,45 +344,163 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     addEntityButton.addEventListener("click", () => {
-        const isCompany = entitySelect.value === "companies";
-        modalTitle.textContent = isCompany ? "Add Company" : "Add Taxi";
-        if (isCompany) {
-            entityForm.innerHTML = `
-                <input type="text" class="form-control mb-3" id="companyName" placeholder="Company Name" />
-                <input type="text" class="form-control mb-3" id="contactInfo" placeholder="Contact Info" />
-                <button type="submit" class="btn btn-primary">Save</button>`;
-        } else {
-            fetch("/api/TaxiCompany/GetCompanies")
+        const selectedEntity = entitySelect.value;
+
+        if (selectedEntity === "companies") {
+            modalTitle.textContent = "Add Company";
+            fetch("/Admin/TaxiCompany/GetTaxiCompanyUsers")
                 .then((response) => response.json())
-                .then((companies) => {
-                    const companyOptions = companies.map((company) =>
-                        `<option value="${company.taxiCompanyId}">${company.companyName}</option>`
+                .then((users) => {
+                    const userOptions = users.map((user) =>
+                        `<option value="${user.userId}">${user.firstName} ${user.lastName}</option>`
                     ).join("");
+
                     entityForm.innerHTML = `
-                        <select class="form-select mb-3" id="taxiCompanySelect">${companyOptions}</select>
-                        <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" />
-                        <input type="text" class="form-control mb-3" id="driverName" placeholder="Driver Name" />
+                    <input type="text" class="form-control mb-3" id="companyName" placeholder="Company Name" required/>
+                    <input type="text" class="form-control mb-3" id="contactInfo" placeholder="Contact Info" required/>
+                    <select class="form-select mb-3" id="userSelect" required>
+                        <option value="" disabled selected>Select User</option>
+                        ${userOptions}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Save</button>`;
+                    entityForm.onsubmit = (e) => {
+                        e.preventDefault();
+                        const companyName = document.getElementById("companyName").value.trim();
+                        const contactInfo = document.getElementById("contactInfo").value.trim();
+                        const userSelect = document.getElementById("userSelect").value;
+
+                        if (companyName && contactInfo && userSelect) {
+                            saveEntity("/Admin/TaxiCompany/AddCompany", "POST", {
+                                companyName,
+                                contactInfo,
+                                userId: parseInt(userSelect, 10),
+                            });
+                        } else {
+                            alert("Please fill in all required fields.");
+                        }
+                    };
+                    entityModal.show();
+                })
+                .catch((error) => {
+                    console.error("Error fetching Taxi Company Users:", error);
+                    alert("An error occurred while fetching Taxi Company Users.");
+                });
+        } else if (selectedEntity === "taxis") {
+            modalTitle.textContent = "Add Taxi";
+
+            fetch("/Business/TaxiCompany/GetCompany")
+                .then((response) => response.json())
+                .then((company) => {
+                    fetch("/Business/TaxiDriver/GetAvailableDrivers")
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (!data.success) {
+                                alert(data.message || "An error occurred while fetching drivers.");
+                                return;
+                            }
+
+                            const drivers = data.drivers;
+
+                            console.log("drivers", drivers);
+                            const driverOptions = `
+                        <option value="0" selected>No Driver Assigned</option>
+                        ${drivers.map(driver =>
+                                `<option value="${driver.userId}">${driver.firstName} ${driver.lastName}</option>`
+                            ).join("")}
+                    `;
+
+                            entityForm.innerHTML = `
+                        <p class="form-control mb-3 border"><strong>Company: </strong>${company.companyName}</p>
+                        <input type="hidden" id="taxiCompanyId" name="taxiCompanyId" value="${company.taxiCompanyId}" />
+                        <input type="text" class="form-control mb-3" id="licensePlate" placeholder="License Plate" required />
+                        <select class="form-select mb-3" id="driverSelect" required>
+                            ${driverOptions}
+                        </select>
                         <button type="submit" class="btn btn-primary">Save</button>`;
+
+                            entityForm.onsubmit = (e) => {
+                                e.preventDefault();
+                                const licensePlate = document.getElementById("licensePlate").value.trim();
+                                const selectedDriverId = parseInt(document.getElementById("driverSelect").value, 10);
+                                const taxiCompanyId = parseInt(document.getElementById("taxiCompanyId").value, 10);
+
+                                if (licensePlate) {
+                                    saveEntity("/Business/TaxiCompany/AddTaxi", "POST", {
+                                        licensePlate,
+                                        DriverId: selectedDriverId > 0 ? selectedDriverId : null,
+                                        TaxiCompanyId: taxiCompanyId,
+                                    });
+                                    console.log("Payload sent to AddTaxi:", {
+                                        licensePlate,
+                                        DriverId: selectedDriverId > 0 ? selectedDriverId : null,
+                                        TaxiCompanyId: taxiCompanyId,
+                                    });
+                                } else {
+                                    alert("Please enter a valid license plate.");
+                                }
+                            };
+
+                            entityModal.show();
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching drivers:", error);
+                            alert("An error occurred while fetching drivers.");
+                        });
+                })
+                .catch((error) => {
+                    console.error("Error fetching company:", error);
+                    alert("An error occurred while fetching company details.");
                 });
         }
-        entityForm.onsubmit = (e) => {
-            e.preventDefault();
-            saveEntity(isCompany ? "/api/TaxiCompany/AddCompany" : "/api/TaxiCompany/AddTaxi", "POST", {
-                companyName: document.getElementById("companyName")?.value,
-                contactInfo: document.getElementById("contactInfo")?.value,
-                licensePlate: document.getElementById("licensePlate")?.value,
-                driverName: document.getElementById("driverName")?.value,
-                taxiCompanyId: document.getElementById("taxiCompanySelect")?.value,
-            });
-        };
-        entityModal.show();
+        else if (selectedEntity === "drivers") {
+            modalTitle.textContent = "Add Driver";
+            fetch("/Business/TaxiCompany/GetCompany")
+                .then((response) => response.json())
+                .then((company) => {
+                    entityForm.innerHTML = `
+                    <p class="form-control mb-3 border"><strong>Company: </strong>${company.companyName}</p>
+                    <input type="text" class="form-control mb-3" id="firstName" placeholder="First Name" required/>
+                    <input type="text" class="form-control mb-3" id="lastName" placeholder="Last Name" required/>
+                    <input type="email" class="form-control mb-3" id="email" placeholder="Email" required/>
+                    <input type="password" class="form-control mb-3" id="password" placeholder="Password" required/>
+                    <button type="submit" class="btn btn-primary">Save</button>`;
+                    entityForm.onsubmit = (e) => {
+                        e.preventDefault();
+                        const firstName = document.getElementById("firstName").value.trim();
+                        const lastName = document.getElementById("lastName").value.trim();
+                        const email = document.getElementById("email").value.trim();
+                        const password = document.getElementById("password").value;
+
+                        if (firstName && lastName && email && password) {
+                            saveEntity("/Business/TaxiDriver/AddDriver", "POST", {
+                                firstName,
+                                lastName,
+                                email,
+                                password
+                            });
+                        } else {
+                            alert("Please fill in all required fields.");
+                        }
+                    };
+                    entityModal.show();
+                })
+                .catch((error) => {
+                    console.error("Error fetching company:", error);
+                    alert("An error occurred while fetching company details.");
+                });
+        }
     });
 
-    entitySelect.addEventListener("change", () => {
-        const isCompany = entitySelect.value === "companies";
-        companiesSection.classList.toggle("d-none", !isCompany);
-        taxisSection.classList.toggle("d-none", isCompany);
-        addEntityButton.textContent = isCompany ? "Add Company" : "Add Taxi";
+    entitySelect.addEventListener("change", (e) => {
+        const value = e.target.value;
+
+        if (companiesSection) companiesSection.classList.toggle("d-none", value !== "companies");
+        if (taxisSection) taxisSection.classList.toggle("d-none", value !== "taxis");
+        if (driversSection) driversSection.classList.toggle("d-none", value !== "drivers");
+
+        addEntityButton.textContent =
+            value === "companies" ? "Add Company" :
+                value === "taxis" ? "Add Taxi" : "Add Driver";
     });
 
     refreshAll();

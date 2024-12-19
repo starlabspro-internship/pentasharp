@@ -68,6 +68,16 @@ namespace pentasharp.Models.TaxiRequest
         public string Driver { get; set; }
 
         /// <summary>
+        /// The name of the driver.
+        /// </summary>
+        public string DriverName { get; set; }
+
+        /// <summary>
+        /// The unique identifier of the taxi associated with the driver.
+        /// </summary>
+        public int TaxiId { get; set; }
+
+        /// <summary>
         /// Gets or sets the fare.
         /// </summary>
         public decimal? Fare { get; set; }

@@ -6,11 +6,9 @@ namespace WebApplication1.Controllers
 {
     public class BusController : Controller
     {
-
         public IActionResult BusSchedules()
         {
             return View();
         }
-
     }
 }

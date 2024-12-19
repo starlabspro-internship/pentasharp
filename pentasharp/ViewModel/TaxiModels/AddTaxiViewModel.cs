@@ -25,7 +25,7 @@ namespace pentasharp.ViewModel.TaxiModels
         /// Gets or sets the driver's name (required).
         /// </summary>
         [Required]
-        public string DriverName { get; set; }
+        public int? DriverId { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier for the taxi company (required).

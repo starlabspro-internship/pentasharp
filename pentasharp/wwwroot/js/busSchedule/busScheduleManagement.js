@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return Promise.all([
             fetch("/api/BusSchedule/GetSchedules").then(response => response.json()),
             fetch("/api/BusSchedule/GetRoutes").then(response => response.json()),
-            fetch("/api/BusCompany/GetBuses").then(response => response.json())
+            fetch("/Business/BusCompany/GetBuses").then(response => response.json())
         ]).then(([schedules, routes, buses]) => {
             const routeMap = routes.reduce((map, route) => {
                 map[route.routeId] = `${route.fromLocation} - ${route.toLocation}`;
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fetchBuses() {
-        return fetch("/api/BusCompany/GetBuses")
+        return fetch("/Business/BusCompany/GetBuses")
             .then(response => response.json())
             .then(data => {
                 populateBusDropdown(data);
@@ -187,15 +187,30 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     deleteScheduleButton.addEventListener("click", function () {
-        if (!currentEditScheduleId) return;
-        fetch(`/api/BusSchedule/DeleteSchedule/${currentEditScheduleId}`, { method: "DELETE" })
-            .then(response => response.json())
+
+        fetch(`/api/BusSchedule/DeleteSchedule/${currentEditScheduleId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || "Failed to delete the schedule.");
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     scheduleModal.hide();
-                    fetchSchedules();
-                    fetchRoutes();
+                    fetchSchedules(); 
+                    fetchRoutes();  
+                } else {
+                    alert(data.message || "Failed to delete the schedule.");
                 }
+            })
+            .catch(error => {
+                console.error("Error deleting schedule:", error);
             });
     });
 

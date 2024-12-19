@@ -10,21 +10,27 @@ using Microsoft.EntityFrameworkCore;
 using pentasharp.Models.DTOs;
 using pentasharp.Models.Enums;
 using WebApplication1.Filters;
+using pentasharp.Interfaces;
+using pentasharp.Models.Utilities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace WebApplication1.Controllers
 {
     [Route("Authenticate")]
     public class AuthenticateController : Controller
     {
-
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AuthenticateController> _logger;
+        private readonly IAuthenticateService _userService;
 
-        public AuthenticateController(AppDbContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<AuthenticateController> logger)
+        public AuthenticateController(IAuthenticateService userService, IMapper mapper, IHttpContextAccessor httpContextAccessor, ILogger<AuthenticateController> logger)
         {
-            _context = context;
+            _userService = userService;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
@@ -33,49 +39,25 @@ namespace WebApplication1.Controllers
         [HttpGet("Register")]
         public IActionResult Register()
         {
-            var model = new RegisterViewModel();
-            return View(model);
+            return View(new RegisterViewModel());
         }
 
         [HttpPost("Register")]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                // Use AutoMapper to map the model to the User entity
-                var user = _mapper.Map<User>(model);
-                user.PasswordHash = HashPassword(model.Password);  // Handle PasswordHash separately
+            if (!ModelState.IsValid)
+                return View(model);
 
-                _context.Users.Add(user);
-                _context.SaveChanges();
+            var user = await _userService.RegisterAsync(model);
 
-                return RedirectToAction("Index", "Home");
-            }
-
-            return View(model);
-        }
-
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                var builder = new StringBuilder();
-                foreach (var b in bytes)
-                {
-                    builder.Append(b.ToString("x2"));
-                }
-                return builder.ToString();
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet("UserList")]
         [ServiceFilter(typeof(AdminOnlyFilter))]
-        public IActionResult UserList()
+        public async Task<IActionResult> UserList()
         {
-        
-            var users = _context.Users.ToList();
-
+            var users = await _userService.GetAllUsersAsync();
             return View(users);
         }
 
@@ -85,75 +67,66 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet("Edit/{id}")]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
-            {
-                return NotFound();
-            }
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
 
-            // Map User to EditUserViewModel
             var model = _mapper.Map<EditUserViewModel>(user);
             return View(model);
         }
 
         [HttpPost("EditUser")]
-        public IActionResult Edit(EditUserViewModel model)
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
-            var user = _context.Users.Find(model.UserId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            // Map the updated properties from the view model to the User entity
-            _mapper.Map(model, user);
-
-            if (!string.IsNullOrEmpty(model.Password))
-            {
-                user.PasswordHash = HashPassword(model.Password);  // Update password if provided
-            }
-
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            var success = await _userService.EditUserAsync(model.UserId, model);
+            if (!success)
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
 
             return RedirectToAction("UserList");
+        }
+
+        [HttpGet("GetEnums")]
+        public IActionResult GetEnums()
+        {
+            var roles = Enum.GetValues(typeof(UserRole))
+                .Cast<UserRole>()
+                .Select(role => new { Value = (int)role, Text = role.ToString() });
+
+            var businessTypes = Enum.GetValues(typeof(BusinessType))
+                .Cast<BusinessType>()
+                .Select(type => new { Value = (int)type, Text = type.ToString() });
+
+            return Ok(new
+            {
+                Roles = roles,
+                BusinessTypes = businessTypes
+            });
         }
 
         [HttpGet("Delete/{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
-            {
-                return NotFound();
-            }
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
+
             return View(user);
         }
+
         [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = _context.Users.Find(id);
-            if (user != null)
-            {
-                user.IsDeleted = true;
-                _context.Users.Update(user);
-                _context.SaveChanges();
-            }
+            await _userService.SoftDeleteUserAsync(id);
             return RedirectToAction("UserList");
         }
+
         [HttpPost("Restore/{id}")]
-        public IActionResult Restore(int id)
+        public async Task<IActionResult> Restore(int id)
         {
-            var user = _context.Users.Find(id);
-            if (user != null && user.IsDeleted)
-            {
-                user.IsDeleted = false;
-                _context.Users.Update(user);
-                _context.SaveChanges();
-            }
+            await _userService.RestoreUserAsync(id);
             return RedirectToAction("UserList");
         }
 
@@ -172,46 +145,23 @@ namespace WebApplication1.Controllers
                 return View(model);
             }
 
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == model.Email);
+            var user = await _userService.LoginAsync(model.Email, model.Password);
             if (user == null)
             {
-                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.USER_NOT_FOUND, "User not found.");
+                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.LOGIN_FAILED, "User not found.");
 
                 ModelState.AddModelError(string.Empty, "User not found.");
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new StandardResponse(ApiStatusEnum.USER_NOT_FOUND, model.Email, "User not found."));
-                }
+                    return Json(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, "User not found."));
 
                 return View(model);
             }
-
-            if (user.PasswordHash != HashPassword(model.Password))
-            {
-                _logger.LogWarning("Login failed for user {Email}. Error: {ErrorCode} - {ErrorMessage}", model.Email, ApiStatusEnum.LOGIN_FAILED, "Incorrect password.");
-
-                ModelState.AddModelError(string.Empty, "Incorrect password.");
-
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new StandardResponse(ApiStatusEnum.LOGIN_FAILED, model.Email, "Incorrect password."));
-                }
-
-                return View(model);
-            }
-
-            var session = _httpContextAccessor.HttpContext.Session;
-            session.SetInt32("UserId", user.UserId);
-            session.SetString("FirstName", user.FirstName);
-            session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
 
             _logger.LogInformation("User {Email} logged in successfully.", model.Email);
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new StandardResponse(ApiStatusEnum.OK, model.Email, "Login successful."));
-            }
+                return Json(ResponseFactory.SuccessResponse("Login successful.", user));
 
             return RedirectToAction("Index", "Home");
         }
@@ -219,9 +169,7 @@ namespace WebApplication1.Controllers
         [HttpGet("Logout")]
         public IActionResult Logout()
         {
-            var session = _httpContextAccessor.HttpContext.Session;
-            session.Clear();
-            _httpContextAccessor.HttpContext.Response.Cookies.Delete("UserId");
+            _userService.ClearUserSession();
 
             _logger.LogInformation("User logged out successfully.");
 
@@ -229,41 +177,27 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet("GetCurrentUser")]
-        public IActionResult GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser()
         {
-
-            var userId = _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+            var userId = _userService.GetCurrentUserId();
 
             if (!userId.HasValue)
             {
-                return Unauthorized(new StandardResponse(
-                    ApiStatusEnum.UNAUTHORIZED,
-                    Guid.NewGuid().ToString(),
-                    "User is not authorized to access this resource."
-                ));
+                return Unauthorized(ResponseFactory.ErrorResponse(ResponseCodes.Unauthorized, "User is not authorized to access this resource."));
             }
 
-            var user = _context.Users.Find(userId.Value);
+            var user = await _userService.GetCurrentUserAsync(userId.Value);
             if (user == null)
             {
-                return NotFound(new StandardResponse(
-                    ApiStatusEnum.USER_NOT_FOUND,
-                    Guid.NewGuid().ToString(),
-                    "User not found."
-                ));
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, "User not found."));
             }
 
-            return Ok(new StandardResponse(
-                ApiStatusEnum.OK,
-                Guid.NewGuid().ToString(),
-                "Success",
-                new
-                {
-                    user.UserId,
-                    user.FirstName,
-                    user.LastName
-                }
-            ));
+            return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, new
+            {
+                user.UserId,
+                user.FirstName,
+                user.LastName
+            }));
         }
     }
 }

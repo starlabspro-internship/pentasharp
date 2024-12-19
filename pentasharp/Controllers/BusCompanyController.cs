@@ -2,147 +2,117 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using pentasharp.Data;
+using pentasharp.Interfaces;
 using pentasharp.Models.Entities;
+using pentasharp.Models.Enums;
+using pentasharp.Models.Utilities;
 using pentasharp.ViewModel.Bus;
 using WebApplication1.Filters;
 
 namespace WebApplication1.Controllers
 {
-    [Route("api/BusCompany")]
+    [Route("Admin/BusCompany")]
     [ServiceFilter(typeof(AdminOnlyFilter))]
     public class BusCompanyController : Controller
     {
+        private readonly IBusCompanyService _companyService;
         private readonly AppDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly ILogger<BusCompanyController> _logger;
 
-        public BusCompanyController(AppDbContext context, IMapper mapper)
+        public BusCompanyController(IBusCompanyService companyService, IHttpContextAccessor httpContextAccessor, AppDbContext context, IMapper mapper, ILogger<BusCompanyController> logger)
         {
+            _companyService = companyService;
+            _httpContextAccessor = httpContextAccessor;
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        [HttpGet("Bus")]
-        public IActionResult Add()
+        [HttpGet("GetBusCompanyUsers")]
+        public async Task<IActionResult> GetBusCompanyUsersAsync()
         {
-            var companies = _context.BusCompanies.ToList();
+            var users = await _companyService.GetBusCompanyUsersAsync();
 
-            var viewModel = new ManageBusCompanyViewModel
-            {
-                BusCompanies = _mapper.Map<List<BusCompanyViewModel>>(companies),
-            };
-            return View(viewModel);
+            _logger.LogInformation("Successfully retrieved bus company users.");
+
+            return Ok(users);
         }
 
         [HttpPost("AddCompany")]
-        public IActionResult AddCompany([FromBody] BusCompanyViewModel model)
+        public async Task<IActionResult> AddCompanyAsync([FromBody] BusCompanyViewModel model)
         {
-            if (ModelState.IsValid)
+            var result = await _companyService.AddCompanyAsync(model);
+            if (result)
             {
-                var company = _mapper.Map<BusCompany>(model);
-                _context.BusCompanies.Add(company);
-                _context.SaveChanges();
-                return Ok(new { success = true, message = "Company added successfully." });
+                _logger.LogInformation("Successfully added company: {CompanyName}", model.CompanyName);
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
             }
-            return BadRequest(new { success = false, message = "Invalid data provided." });
-        }
 
-        [HttpGet("GetCompanies")]
-        public IActionResult GetCompanies()
-        {
-            var companies = _context.BusCompanies.Include(c => c.Buses).ToList();
-            var viewModel = _mapper.Map<List<BusCompanyViewModel>>(companies);
-            return Ok(viewModel);
+            _logger.LogWarning("Failed to add company: {CompanyName}. Invalid data provided.", model.CompanyName);
+            return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidData, ResponseMessages.InvalidData));
         }
 
         [HttpPut("EditCompany/{id}")]
-        public IActionResult EditCompany(int id, [FromBody] BusCompanyViewModel model)
+        public async Task<IActionResult> EditCompanyAsync(int id, [FromBody] BusCompanyViewModel model)
         {
-            var company = _context.BusCompanies.Find(id);
-            if (company == null) return NotFound(new { success = false, message = "Company not found." });
+            var result = await _companyService.EditCompanyAsync(id, model);
+            if (result)
+            {
+                _logger.LogInformation("Successfully edited company with ID: {CompanyId}", id);
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, result));
+            }
 
-            _mapper.Map(model, company);
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Company updated successfully." });
+            _logger.LogWarning("Failed to edit company with ID: {CompanyId}. Company not found.", id);
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
         }
 
         [HttpDelete("DeleteCompany/{id}")]
-        public IActionResult DeleteCompany(int id)
+        public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = _context.BusCompanies.Include(c => c.Buses)
-                                                    .FirstOrDefault(c => c.BusCompanyId == id);
-
-            if (company == null)
+            var result = await _companyService.DeleteCompanyAsync(id);
+            if (result)
             {
-                return NotFound(new { success = false, message = "Company not found." });
+                _logger.LogInformation("Successfully deleted company with ID: {CompanyId}", id);
+                return Ok(ResponseFactory.SuccessResponse("Company and its buses deleted successfully.", result));
             }
 
-            company.IsDeleted = true;
-            company.UpdatedAt = DateTime.UtcNow;
+            _logger.LogWarning("Failed to delete company with ID: {CompanyId}. Company not found.", id);
+            return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, ResponseMessages.NotFound));
+        }
 
+        [HttpGet("GetCompanies")]
+        public async Task<IActionResult> GetCompaniesAsync()
+        {
+            var companies = await _companyService.GetCompaniesAsync();
 
-            foreach (var bus in company.Buses)
+            _logger.LogInformation("Successfully retrieved {CompanyCount} companies.", companies.Count());
+
+            return Ok(companies);
+        }
+
+        [HttpGet("GetBusCompanyUser/{companyId}")]
+        public async Task<IActionResult> GetBusCompanyUserAsync(int companyId)
+        {
+            var response = await _companyService.GetBusCompanyUserAsync(companyId);
+
+            if (response.Success)
             {
-                bus.IsDeleted = true;
-                bus.UpdatedAt = DateTime.UtcNow;
+                _logger.LogInformation("Successfully retrieved users for company with ID: {CompanyId}", companyId);
+                return Ok(ResponseFactory.SuccessResponse(ResponseMessages.Success, response.Data));
             }
 
-            _context.BusCompanies.Update(company);
-            _context.Buses.UpdateRange(company.Buses);
+            var errorMessage = response.Message.ToLower();
 
-            _context.SaveChanges();
-
-            return Ok(new { success = true, message = "Company and its buses soft deleted successfully." });
-        }
-
-
-        [HttpPost("AddBus")]
-        public IActionResult AddBus([FromBody] AddBusViewModel model)
-        {
-            if (ModelState.IsValid)
+            if (errorMessage.Contains("not found"))
             {
-                var bus = _mapper.Map<Buses>(model);
-                _context.Buses.Add(bus);
-                _context.SaveChanges();
-                return Ok(new { success = true, message = "Bus added successfully." });
+                _logger.LogWarning("No users found for company with ID: {CompanyId}", companyId);
+                return NotFound(ResponseFactory.ErrorResponse(ResponseCodes.NotFound, response.Message));
             }
-            return BadRequest(new { success = false, message = "Invalid data provided." });
-        }
 
-        [HttpGet("GetBuses")]
-        public IActionResult GetBuses()
-        {
-            var buses = _context.Buses.Include(b => b.BusCompany).ToList();
-            var viewModel = buses.Select(b => new BusViewModel
-            {
-                BusId = b.BusId,
-                BusNumber = b.BusNumber,
-                Capacity = b.Capacity,
-                BusCompanyId = b.BusCompanyId,
-                CompanyName = b.BusCompany.CompanyName
-            }).ToList();
-            return Ok(viewModel);
-        }
-
-        [HttpPut("EditBus/{id}")]
-        public IActionResult EditBus(int id, [FromBody] EditBusViewModel model)
-        {
-            var bus = _context.Buses.Find(id);
-            if (bus == null) return NotFound(new { success = false, message = "Bus not found." });
-
-            _mapper.Map(model, bus);
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Bus updated successfully." });
-        }
-
-        [HttpDelete("DeleteBus/{id}")]
-        public IActionResult DeleteBus(int id)
-        {
-            var bus = _context.Buses.Find(id);
-            if (bus == null) return NotFound(new { success = false, message = "Bus not found." });
-
-            _context.Buses.Remove(bus);
-            _context.SaveChanges();
-            return Ok(new { success = true, message = "Bus deleted successfully." });
+            _logger.LogWarning("Invalid operation while retrieving users for company with ID: {CompanyId}. Message: {Message}", companyId, response.Message);
+            return BadRequest(ResponseFactory.ErrorResponse(ResponseCodes.InvalidOperation, response.Message));
         }
     }
-}
+} 
