@@ -10,6 +10,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc;
 
 namespace pentasharp.Services
 {
@@ -76,9 +81,58 @@ namespace pentasharp.Services
             return user;
         }
 
+        public IActionResult InitiateGoogleLogin(string redirectUrl)
+        {
+            return new ChallengeResult(
+                GoogleDefaults.AuthenticationScheme,
+                new AuthenticationProperties { RedirectUri = redirectUrl }
+            );
+        }
+
+        public async Task<User> HandleGoogleResponseAsync(string returnUrl)
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var result = await context.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!result.Succeeded || result.Principal == null)
+            {
+                return null;
+            }
+
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+            {
+                return null;
+            }
+
+            var existingUser = await GetUserByEmailAsync(email);
+            if (existingUser == null)
+            {
+                var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+                var newUser = new RegisterViewModel
+                {
+                    FirstName = name?.Split(' ').FirstOrDefault() ?? "",
+                    LastName = name?.Split(' ').Skip(1).FirstOrDefault() ?? "",
+                    Email = email,
+                    Password = ""
+                };
+                existingUser = await RegisterAsync(newUser);
+            }
+
+            SetUserSession(existingUser);
+            return existingUser;
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _context.Users
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User> GetUserByIdAsync(int id)

@@ -3,6 +3,7 @@ using pentasharp.ViewModel.Authenticate;
 using pentasharp.Models.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace pentasharp.Interfaces
 {
@@ -30,6 +31,21 @@ namespace pentasharp.Interfaces
         /// Retrieves a user by their unique identifier.
         /// </summary>
         Task<User> GetUserByIdAsync(int id);
+
+        /// <summary>
+        /// Initiates the Google login process.
+        /// </summary>
+        IActionResult InitiateGoogleLogin(string redirectUrl);
+
+        /// <summary>
+        /// Handles the Google login response and processes the user information.
+        /// </summary>
+        Task<User> HandleGoogleResponseAsync(string returnUrl);
+
+        /// <summary>
+        /// Retrieves a user by their email address.
+        /// </summary>
+        Task<User> GetUserByEmailAsync(string email);
 
         /// <summary>
         /// Updates the details of an existing user based on the provided view model.

@@ -10,3 +10,4 @@
 *.pdb
 bin/
 obj/
+.env

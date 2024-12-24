@@ -17,6 +17,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using pentasharp.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -164,6 +169,30 @@ namespace WebApplication1.Controllers
                 return Json(ResponseFactory.SuccessResponse("Login successful.", user));
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("GoogleLogin")]
+        public IActionResult GoogleLogin(string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("GoogleResponse", "Authenticate", new { ReturnUrl = returnUrl });
+            return _userService.InitiateGoogleLogin(redirectUrl);
+        }
+
+        [HttpGet("GoogleResponse")]
+        public async Task<IActionResult> GoogleResponse(string returnUrl = null)
+        {
+            var user = await _userService.HandleGoogleResponseAsync(returnUrl);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = Url.Action("Index", "Home");
+            }
+
+            return Redirect(returnUrl);
         }
 
         [HttpGet("Logout")]
