@@ -52,6 +52,9 @@ namespace pentasharp.Data.Configurations
             builder.Property(tb => tb.PassengerCount)
                 .IsRequired();
 
+            builder.Property(tb => tb.DriverId)
+                .IsRequired(false);
+
             builder.Property(tb => tb.TaxiId)
                 .IsRequired(false);
 

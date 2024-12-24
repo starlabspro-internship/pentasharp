@@ -71,6 +71,11 @@ namespace pentasharp.Models.Entities
         public int UserId { get; set; }
 
         /// <summary>
+        /// The identifier of the Driver who is assigned for the booking.
+        /// </summary>
+        public int? DriverId {  get; set; }
+
+        /// <summary>
         /// The identifier of the taxi assigned to the booking, if applicable.
         /// </summary>
         public int? TaxiId { get; set; }

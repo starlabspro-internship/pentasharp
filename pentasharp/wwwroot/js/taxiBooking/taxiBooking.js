@@ -73,7 +73,7 @@ function OpenBookingModal(companyName, companyId) {
     if (taxiCompanyIdInput) {
         taxiCompanyIdInput.value = companyId;
     }
-
+   
     const passengerNameInput = document.getElementById('ModalPassengerName');
     if (passengerNameInput) {
         passengerNameInput.value = "Loading...";
@@ -118,7 +118,7 @@ function SubmitBooking() {
         pickupLocation: document.getElementById('ModalPickupLocation').textContent,
         dropoffLocation: document.getElementById('ModalDropoffLocation').textContent,
         bookingTime: bookingTime.toISOString(),
-        passangerCount: parseInt(document.getElementById('ModalPassengerCount').textContent),
+        passengerCount: parseInt(document.getElementById('ModalPassengerCount').textContent),
         userId: userId,
     };
 

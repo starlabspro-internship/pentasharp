@@ -212,6 +212,7 @@ namespace pentasharp.Services
                 var reservations = await _context.TaxiReservations
                      .Include(r => r.User)
                      .Include(r => r.Taxi)
+                     .ThenInclude(t => t.Driver)
                      .Include(r => r.TaxiCompany)
                      .Where(r => r.UserId == userId)
                      .ToListAsync();
