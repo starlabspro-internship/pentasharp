@@ -68,6 +68,9 @@ namespace WebApplication1
             builder.Services.AddScoped<ISearchBusScheduleService, SearchBusScheduleService>();
             builder.Services.AddScoped<IBusReservationService, BusReservationService>();
             builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
+
+            builder.Services.AddScoped<IDriverDashboardService, DriverDashboardService>();
+
             builder.Services.AddScoped<IReviewService, ReviewService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -130,7 +133,7 @@ namespace WebApplication1
             app.UseForwardedHeaders();
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseSession(); 
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -69,18 +69,11 @@ namespace pentasharp.Services
 
         public async Task<List<TaxiBookingViewModel>> GetAllBookingsAsync()
         {
-
-            var companyId = _authService.GetCurrentCompanyId();
-
-            if (companyId == null)
-                return new List<TaxiBookingViewModel>(); 
-
             var bookings = await _context.TaxiBookings
                 .Include(b => b.User)
                 .Include(b => b.Taxi)
                 .ThenInclude(t => t.Driver)
                 .Include(b => b.TaxiCompany)
-                .Where(b => b.TaxiCompanyId == companyId.Value) 
                 .ToListAsync();
 
             return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
@@ -129,18 +122,28 @@ namespace pentasharp.Services
             booking.TaxiId = model.TaxiId;
             booking.UpdatedAt = model.UpdateAt;
 
+            var taxi = await _context.Taxis.FirstOrDefaultAsync(t=>t.TaxiId == model.TaxiId);
+            if (taxi != null)
+            {
+                booking.DriverId = taxi.DriverId;
+            }
+            else
+            {
+                return false;
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<List<TaxiBookingViewModel>> GetBookingsForUserAsync()
         {
-            var companyId = _authService.GetCurrentCompanyId();
+            var userId = _authService.GetCurrentUserId();
 
-            if (!companyId.HasValue)
+            if (!userId.HasValue)
             {
-                _logger.LogWarning("Company ID is null or not found.");
-                throw new KeyNotFoundException("Company ID not found.");
+                _logger.LogWarning("User ID is null or not found.");
+                throw new KeyNotFoundException("User ID not found.");
             }
 
             try
@@ -148,21 +151,22 @@ namespace pentasharp.Services
                 var bookings = await _context.TaxiBookings
                     .Include(r => r.User)
                     .Include(r => r.Taxi)
+                    .ThenInclude(t => t.Driver)
                     .Include(r => r.TaxiCompany)
-                    .Where(r => r.TaxiCompanyId == companyId.Value)
+                    .Where(r => r.UserId == userId.Value)
                     .ToListAsync();
 
                 if (!bookings.Any()) 
                 {
-                    _logger.LogWarning("No bookings found for company with ID {CompanyId}.", companyId.Value);
-                    throw new KeyNotFoundException($"No bookings found for company with ID {companyId.Value}.");
+                    _logger.LogWarning("No bookings found for user with ID {UserId}.", userId.Value);
+                    throw new KeyNotFoundException($"No bookings found for user with ID {userId.Value}.");
                 }
 
                 return _mapper.Map<List<TaxiBookingViewModel>>(bookings);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching bookings for company with ID {CompanyId}.", companyId.Value);
+                _logger.LogError(ex, "Error occurred while fetching bookings for user with ID {UserId}.", userId.Value);
                 throw;
             }
         }

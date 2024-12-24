@@ -82,7 +82,7 @@ namespace pentasharp.Controllers
             }
             catch (Exception ex)
             {
-                return View("Error", new { message = "An error occurred while retrieving your bookings." });
+                return View("Error", ex);
             }
         }
 

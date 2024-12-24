@@ -49,5 +49,20 @@
         /// Identifier of the assigned taxi, if any.
         /// </summary>
         public int? TaxiId { get; set; }
+
+        /// <summary>
+        /// The time when the trip ended, if available.
+        /// </summary>
+        public DateTime? TripEndTime { get; set; }
+
+        /// <summary>
+        /// The fare for the trip, if applicable.
+        /// </summary>
+        public decimal? Fare { get; set; }
+
+        /// <summary>
+        /// Number of passengers for the booking.
+        /// </summary>
+        public int PassengerCount { get; set; }
     }
 }

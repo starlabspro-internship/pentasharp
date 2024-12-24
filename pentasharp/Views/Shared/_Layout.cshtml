@@ -73,11 +73,14 @@
                             <a asp-controller="Home" asp-action="UserActivity" class="nav-item nav-link @(ViewContext.RouteData.Values["action"].ToString() == "UserActivity" ? "active" : "")">User-Activity</a>
                         }
 
-                        @if (isAdmin || role == "Admin" || role =="Driver" )
+                        @if (isAdmin || role == "Admin" )
                         {
-                    <a asp-controller="Dashboard" asp-action="Dashboard" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
-                        }
-                 
+                            <a asp-controller="Dashboard" asp-action="Dashboard" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
+                        }else if(role == "Driver")
+                        {
+                            <a asp-controller="TaxiDriver" asp-action="TaxiDriver" class="nav-item nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Dashboard" ? "active" : "")">Dashboard</a>
+                        } 
+
                 </div>
                 @if (isLoggedIn)
                     {

@@ -1,5 +1,7 @@
 ﻿@{
     var businessType = ViewContext.HttpContext.Session.GetString("BusinessType"); 
+    var role = ViewContext.HttpContext.Session.GetString("UserRole"); 
+ 
 }
 
 <!DOCTYPE html>
@@ -50,7 +52,7 @@
                         </a>
                     </li>
                 }
-                else if (businessType == "TaxiCompany")
+                else if (businessType == "TaxiCompany" && role == "Admin")
                 {
                     <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "AddCompanyTaxi" ? "active" : "")">
                         <a class="nav-link" asp-controller="Dashboard" asp-action="Taxi">
@@ -60,6 +62,10 @@
                             <span class="nav-link-text ms-1">Add Taxi && Driver</span>
                         </a>
                     </li>
+                 
+                }
+                else if (businessType == "TaxiCompany" && role == "Driver")
+                {
                     <li class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "TaxiDriver" ? "active" : "")">
                         <a class="nav-link" asp-controller="TaxiDriver" asp-action="TaxiDriver">
                             <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
