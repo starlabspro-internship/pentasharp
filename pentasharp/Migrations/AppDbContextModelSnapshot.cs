@@ -372,6 +372,9 @@ namespace pentasharp.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<int?>("DriverId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DropoffLocation")
                         .IsRequired()
                         .HasMaxLength(100)

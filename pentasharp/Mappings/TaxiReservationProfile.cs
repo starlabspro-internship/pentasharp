@@ -25,8 +25,9 @@ namespace pentasharp.Mappings
             .ForMember(dest => dest.DriverName, opt => opt.MapFrom(src =>
               src.Taxi.Driver != null ? $"{src.Taxi.Driver.FirstName} {src.Taxi.Driver.LastName}" : "Unassigned"))
             .ForMember(dest => dest.PassengerCount, opt => opt.MapFrom(src => src.PassengerCount))
-            .ForMember(dest => dest.Fare, opt => opt.MapFrom(src => src.Fare.HasValue ? src.Fare.Value : (decimal?)null));
-
+             .ForMember(dest => dest.PickupLocation, opt => opt.MapFrom(src => src.PickupLocation))
+              .ForMember(dest => dest.DropoffLocation, opt => opt.MapFrom(src => src.DropoffLocation))
+              .ForMember(dest => dest.Fare, opt => opt.MapFrom(src => src.Fare.HasValue ? src.Fare.Value : (decimal?)null));
 
 
             CreateMap<UpdateTaxiReservationViewModel, TaxiReservations>()

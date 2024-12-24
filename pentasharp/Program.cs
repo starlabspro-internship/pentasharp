@@ -35,6 +35,7 @@ namespace WebApplication1
             builder.Services.AddScoped<IBusReservationService, BusReservationService>();
             builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 
+            builder.Services.AddScoped<IDriverDashboardService, DriverDashboardService>();
 
             builder.Services.AddScoped<IReviewService, ReviewService>();
 

@@ -21,7 +21,7 @@ namespace WebApplication1.Filters
             var isAdmin = session?.GetString("IsAdmin") == "true";
             var role = session?.GetString("UserRole");
 
-            if ((isAdmin || role == "Admin") == false)
+            if ((isAdmin || role == "Admin" || role == "Driver") == false)
             {
                 context.Result = new RedirectToActionResult("Index", "Home", null);
                 return;
