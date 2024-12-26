@@ -11,6 +11,8 @@ using pentasharp.Services;
 using pentasharp.Models.Enums;
 using pentasharp.Models.Utilities;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using pentasharp.ViewModel.Dashboard;
 
 namespace WebApplication1.Controllers
 {
@@ -20,16 +22,19 @@ namespace WebApplication1.Controllers
     {
         private readonly IBusCompanyService _busCompanyService;
         private readonly ITaxiCompanyService _taxiCompanyService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardController(ITaxiCompanyService taxiCompanyService, IBusCompanyService busCompanyService)
+        public DashboardController(ITaxiCompanyService taxiCompanyService, IBusCompanyService busCompanyService ,IDashboardService dashboardService)
         {
             _taxiCompanyService = taxiCompanyService;
             _busCompanyService = busCompanyService;
+            _dashboardService = dashboardService;
         }
 
         public IActionResult Dashboard()
         {
-            return View();
+            var model = _dashboardService.GetDashboardData();
+            return View(model);
         }
 
         [HttpGet("Bus")]

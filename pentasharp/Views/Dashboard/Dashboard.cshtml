@@ -1,4 +1,5 @@
-﻿@{
+﻿@model pentasharp.ViewModel.Dashboard.DashboardViewModel
+@{
     var businessType = ViewContext.HttpContext.Session.GetString("BusinessType");
     var isAdmin = ViewContext.HttpContext.Session.GetString("IsAdmin") == "true";
     var role = ViewContext.HttpContext.Session.GetString("UserRole");
@@ -86,8 +87,21 @@
                                  style="width: 70px; height: 70px;">
                                 <i class="bi bi-bus-front text-white" style="font-size: 30px;"></i>
                             </div>
-                            <h6 class="text-uppercase font-weight-bold mb-0">Total Buses</h6>
-                            <h4 class="font-weight-bold mt-2">150</h4>
+                            <h6 class="text-uppercase font-weight-bold mb-0">Bus Companies</h6>
+                            <h4 class="font-weight-bold mt-2">@Model.BusCompanies</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-lg border-0 text-center h-100">
+                        <div class="card-body">
+                            <div class="icon-box bg-gradient-secondary shadow text-center border-radius-lg mb-3 d-flex justify-content-center align-items-center"
+                                 style="width: 70px; height: 70px;">
+                                <i class="bi bi-taxi-front text-white" style="font-size: 30px;"></i>
+                            </div>
+                            <h6 class="text-uppercase font-weight-bold mb-0">Taxi Companies</h6>
+                            <h4 class="font-weight-bold mt-2">@Model.TaxiCompanies</h4>
                         </div>
                     </div>
                 </div>
@@ -100,7 +114,7 @@
                                 <i class="bi bi-calendar3 text-white" style="font-size: 30px;"></i>
                             </div>
                             <h6 class="text-uppercase font-weight-bold mb-0">Bus Schedules</h6>
-                            <h4 class="font-weight-bold mt-2">320</h4>
+                            <h4 class="font-weight-bold mt-2">@Model.BusSchedules</h4>
                         </div>
                     </div>
                 </div>
@@ -113,7 +127,7 @@
                                 <i class="bi bi-check2-circle text-white" style="font-size: 30px;"></i>
                             </div>
                             <h6 class="text-uppercase font-weight-bold mb-0">Bus Reservations</h6>
-                            <h4 class="font-weight-bold mt-2">450</h4>
+                            <h4 class="font-weight-bold mt-2">@Model.BusReservations</h4>
                         </div>
                     </div>
                 </div>
@@ -125,8 +139,8 @@
                                  style="width: 70px; height: 70px;">
                                 <i class="bi bi-car-front text-white" style="font-size: 30px;"></i>
                             </div>
-                            <h6 class="text-uppercase font-weight-bold mb-0">Total Taxis</h6>
-                            <h4 class="font-weight-bold mt-2">90</h4>
+                            <h6 class="text-uppercase font-weight-bold mb-0">Total Drivers</h6>
+                            <h4 class="font-weight-bold mt-2">@Model.TaxiDrivers</h4>
                         </div>
                     </div>
                 </div>
@@ -139,7 +153,7 @@
                                 <i class="bi bi-receipt text-white" style="font-size: 30px;"></i>
                             </div>
                             <h6 class="text-uppercase font-weight-bold mb-0">Taxi Bookings</h6>
-                            <h4 class="font-weight-bold mt-2">200</h4>
+                            <h4 class="font-weight-bold mt-2">@Model.TaxiBookings</h4>
                         </div>
                     </div>
                 </div>
@@ -152,7 +166,7 @@
                                 <i class="bi bi-clipboard2-check text-white" style="font-size: 30px;"></i>
                             </div>
                             <h6 class="text-uppercase font-weight-bold mb-0">Taxi Reservations</h6>
-                            <h4 class="font-weight-bold mt-2">180</h4>
+                            <h4 class="font-weight-bold mt-2">@Model.TaxiReservations</h4>
                         </div>
                     </div>
                 </div>
@@ -165,20 +179,7 @@
                                 <i class="bi bi-people text-white" style="font-size: 30px;"></i>
                             </div>
                             <h6 class="text-uppercase font-weight-bold mb-0">Active Users</h6>
-                            <h4 class="font-weight-bold mt-2">1200</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3 mb-4">
-                    <div class="card shadow-lg border-0 text-center h-100">
-                        <div class="card-body">
-                            <div class="icon-box bg-gradient-secondary shadow text-center border-radius-lg mb-3 d-flex justify-content-center align-items-center"
-                                 style="width: 70px; height: 70px;">
-                                <i class="bi bi-geo-alt text-white" style="font-size: 30px;"></i>
-                            </div>
-                            <h6 class="text-uppercase font-weight-bold mb-0">Cities Covered</h6>
-                            <h4 class="font-weight-bold mt-2">12</h4>
+                            <h4 class="font-weight-bold mt-2">@Model.TotalUsers</h4>
                         </div>
                     </div>
                 </div>

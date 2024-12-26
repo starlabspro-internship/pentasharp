@@ -28,23 +28,25 @@ function HandleSearch(event) {
                 } else {
                     data.companies.forEach(company => {
                         const companyCard = `
-                <div class="container my-3" style="max-width: 600px;">
-                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-                        <div class="row g-0 align-items-center">
-                            <div class="col-4 bg-light d-flex align-items-center justify-content-center p-3">
-                                <i class="fas fa-taxi fa-3x text-warning"></i>
-                            </div>
-                            <div class="col-5 px-4 py-3">
-                                <h5 class="fw-bold text-primary mb-1">${company.companyName}</h5>
-                                <p class="text-muted mb-2">${company.companyName}</p>
-                                <p class="mb-0"><i class="fas fa-user-friends me-2 text-secondary"></i>Up to 3 passengers</p>
-                            </div>
-                            <div class="col-3 text-end pe-4">
-                                <button class="btn btn-primary rounded-pill px-4 py-2" onclick="OpenBookingModal('${company.companyName}', '${company.taxiCompanyId}')">Select</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+                                    <div class="container my-3" style="max-width: 600px;">
+                                          <div class="card shadow-lg border-0 p-4 rounded-4" style="background: linear-gradient(145deg, #ffffff, #f9f9f9);">
+                                              <div class="row align-items-center">
+                                                    <div class="col-3 text-center">
+                                                        <div class="btn btn-primary" style="width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                            <i class="fas fa-taxi text-white" style="font-size: 1.5rem;"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-9">
+                                                        <h5 class="fw-bold text-primary mb-1">${company.companyName}</h5>
+                                                        <p class="text-muted mb-2">Contact: <span class="fw-semibold">${company.contactInfo}</span></p>
+                                                        <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" onclick="openReservationModal('${company.companyName}', ${company.taxiCompanyId})">
+                                                            <i class="fas fa-check-circle me-2 text-white"></i> Reserve Now
+                                                        </button>
+                                                    </div>
+                                               </div>
+                                          </div>
+                                   </div>`;
+
                         ResultsContainer.insertAdjacentHTML('beforeend', companyCard);
                     });
                 }
