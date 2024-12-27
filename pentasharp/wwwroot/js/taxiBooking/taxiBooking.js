@@ -39,7 +39,7 @@ function HandleSearch(event) {
                                                     <div class="col-9">
                                                         <h5 class="fw-bold text-primary mb-1">${company.companyName}</h5>
                                                         <p class="text-muted mb-2">Contact: <span class="fw-semibold">${company.contactInfo}</span></p>
-                                                        <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" onclick="openReservationModal('${company.companyName}', ${company.taxiCompanyId})">
+                                                        <button class="btn btn-primary px-4 py-2 rounded-pill fw-bold" onclick="OpenBookingModal('${company.companyName}', ${company.taxiCompanyId})">
                                                             <i class="fas fa-check-circle me-2 text-white"></i> Reserve Now
                                                         </button>
                                                     </div>
