@@ -159,7 +159,7 @@ namespace pentasharp.Services
                 if (!bookings.Any()) 
                 {
                     _logger.LogWarning("No bookings found for user with ID {UserId}.", userId.Value);
-                    throw new KeyNotFoundException($"No bookings found for user with ID {userId.Value}.");
+                     return new List<TaxiBookingViewModel>();
                 }
 
                 return _mapper.Map<List<TaxiBookingViewModel>>(bookings);

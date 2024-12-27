@@ -270,11 +270,6 @@
                     setTimeout(() => {
                         const modal = bootstrap.Modal.getInstance(document.getElementById("bookingModal"));
                         modal.hide();
-
-                        setTimeout(() => {
-                            confirmationAlert.className = "alert d-none mt-3 text-center";
-                            confirmationAlert.textContent = "";
-                        }, 3000);
                     }, 3000);
                 } else {
                     confirmationAlert.className = "alert alert-danger mt-3 text-center";

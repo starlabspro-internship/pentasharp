@@ -13,7 +13,7 @@ namespace WebApplication1.Filters
         }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            var isLoggedIn = _httpContextAccessor.HttpContext?.Session.GetString("UserId") != null;
+            var isLoggedIn = _httpContextAccessor.HttpContext?.Session.GetInt32("UserId") != null;
 
             if (!isLoggedIn)
             {

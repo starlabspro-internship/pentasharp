@@ -8,7 +8,7 @@
     <div id="searchFormContainer" class="row justify-content-center mb-5">
         <div class="col-md-8">
             <form class="bg-light p-4 rounded shadow-sm" onsubmit="handleSearch(event)">
-                <div class="row mb-3">
+                <div class="row g-2 align-items-center">
                     <div class="col-md-6 form-group">
                         <label for="pickupLocation" class="form-label">Pickup Location</label>
                         <input type="text" class="form-control" id="pickupLocation" placeholder="Enter Pickup Location" required>
@@ -34,8 +34,8 @@
                         <input type="number" class="form-control" id="passengerCount" placeholder="Enter Number of Passengers" min="1" required>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-2 shadow-sm">Search</button>
+                <div class="col-md-2 d-flex align-items-end justify-content-center">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill px-3 py-2 mtop shadow-sm">Search</button>
                 </div>
             </form>
         </div>
@@ -47,11 +47,11 @@
 <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reservationModalLabel">Confirm Your Booking</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title text-white" id="reservationModalLabel">Confirm Your Booking</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <p><strong>Pickup Location:</strong> <span id="modalPickupLocation"></span></p>
                 <p><strong>Dropoff Location:</strong> <span id="modalDropoffLocation"></span></p>
                 <p><strong>Reservation Date:</strong> <span id="modalReservationDate"></span></p>
@@ -59,7 +59,7 @@
                 <p><strong>Number of Passengers:</strong> <span id="modalPassengerCount"></span></p>
                 <p><strong>Selected Company:</strong> <span id="modalCompanyName"></span></p>
                 <p><strong>Passenger Name:</strong> <span id="modalPassengerName"></span></p>
-                <p id="confirmationMessage" style="display: none; margin-top: 10px; font-weight: bold; color: green;"></p>
+                <p id="confirmationMessage" style="alert display: none; margin-top: 10px; font-weight: bold; color: green;"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -82,36 +82,124 @@
 
 <style>
     body {
-        background-color: #f4f7fa;
-        font-family: Arial, sans-serif;
-        color: #343a40;
+        background-color: #f9f9f9;
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
     }
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         color: #007bff;
-        font-weight: 700;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 20px;
     }
 
     .card {
-        border-radius: 10px;
-        transition: box-shadow 0.3s;
+        border-radius: 15px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        background-color: #fff;
+        border: none;
     }
 
         .card:hover {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
     .btn-primary {
-        background-color: #007bff;
-        border: none;
-        font-weight: 600;
-        transition: background-color 0.3s ease, transform 0.3s ease;
+        background-color: #0056b3;
+        border-color: #0056b3;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
         .btn-primary:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0px 4px 10px rgba(0, 91, 187, 0.2);
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 30px;
         }
+
+    .btn-secondary:hover {
+        background-color: #565e64;
+        border-color: #565e64;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        border-radius: 30px;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+    .modal-header {
+        border-bottom: 2px solid #007bff;
+        background-color: #f9f9f9;
+    }
+
+    .modal-footer {
+        border-top: 2px solid #ddd;
+        background-color: #f9f9f9;
+    }
+
+    .modal-content {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #007bff;
+    }
+
+    .shadow {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .shadow-sm {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        padding: 10px 15px;
+        text-align: center;
+    }
+
+    .rounded-pill {
+        border-radius: 50px !important;
+    }
+
+    .card:hover {
+        cursor: pointer;
+        transform: translateY(-5px);
+        transition: transform 0.3s ease-in-out;
+    }
 </style>

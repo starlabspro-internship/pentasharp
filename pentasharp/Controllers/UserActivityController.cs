@@ -10,9 +10,11 @@ using pentasharp.Models.Enums;
 using pentasharp.Models.Utilities;
 using pentasharp.Data;
 using pentasharp.ViewModel.BusReservation;
+using WebApplication1.Filters;
 
 namespace pentasharp.Controllers
 {
+    [ServiceFilter(typeof(LoginRequiredFilter))]
     [Route("UserActivity")]
     public class UserActivityController : Controller
     {

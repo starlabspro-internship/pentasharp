@@ -2,37 +2,40 @@
 @model List<pentasharp.Models.TaxiRequest.TaxiBookingViewModel>
 
 
-<h1>My Bookings</h1>
+<h2 class="text-center mb-4">My Bookings</h2>
 
 @if (Model == null || !Model.Any())
 {
-    <p>You have no bookings at the moment.</p>
+    <div class="alert alert-info text-center mt-4">
+        <strong>No bookings found.</strong><p>You have no bookings at the moment.</p>
+    </div>
 }
 else
 {
-    <div class="container">
+    <div class="container mt-4">
         <div class="row">
             @for (int i = 0; i < Model.Count; i++)
             {
                 var bookings = Model[i];
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="container-item">
-                        <div class="item-header bg-primary text-white">
-                            <h5 class="item-title mb-0">Booking #@(i + 1)</h5>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="text-white">Booking #@(i + 1)</h5>
                         </div>
-                        <div class="item-body">
+                        <div class="card-body">
                             <p><strong>Passenger Name:</strong> @bookings.PassengerName</p>
                             <p><strong>Pickup Location:</strong> @bookings.PickupLocation</p>
                             <p><strong>Dropoff Location:</strong> @bookings.DropoffLocation</p>
                             <p><strong>Booking Time:</strong> @bookings.BookingTime</p>
                             <p><strong>Status:</strong> @bookings.Status</p>
                             <p><strong>Driver:</strong> @bookings.DriverName</p>
-                            <p><strong>Taxi ID:</strong> @(bookings.TaxiId.HasValue ? bookings.TaxiId.Value.ToString() : "N/A")</p>
                         </div>
                         <div class="item-footer d-flex justify-content-between">
                             @if (bookings.Status == "Pending")
                             {
-                                <button onclick="confirmCancel(@bookings.BookingId)" class="btn btn-danger btn-sm">Cancel</button>
+                                <form method="post" action="@Url.Action("CancelBooking", "UserActivity", new { id = bookings.BookingId })">
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                </form>
                             }
                         </div>
                     </div>

@@ -2,13 +2,11 @@ let meterInterval;
 let elapsedTime = 0;
 let isBooking = false;
 
-// Function to claim a booking
 function claimBooking(passenger, pickup, dropoff, status, time, bookingId) {
-    updateCurrentTrip(passenger, pickup, dropoff, status, time, 0, bookingId); // Pass bookingId
+    updateCurrentTrip(passenger, pickup, dropoff, status, time, 0, bookingId); 
     isBooking = true;
 }
 
-// Load available bookings from server
 function loadaaa() {
     fetch('/Driver/Bookings')
         .then(response => response.json())
@@ -40,7 +38,6 @@ function loadaaa() {
         });
 }
 
-// Function to update the UI when a booking is claimed
 function updateCurrentTrip(passenger, pickup, dropoff, status, time, fare, bookingId) {
     fetch(`/Driver/ClaimBooking/${bookingId}`, {
         method: 'POST'
@@ -58,7 +55,7 @@ function updateCurrentTrip(passenger, pickup, dropoff, status, time, fare, booki
                     document.getElementById("startTripButton").style.display = "block";
                     document.getElementById("fareDisplay").style.display = "none";
                     document.getElementById("startTripButton").setAttribute("data-booking-id", bookingId);
-                    alert(data.message || "Booking claimed successfully!");
+                    console.log(data.message || "Booking claimed successfully!");
                 });
             } else {
                 response.json().then(data => {
@@ -84,7 +81,6 @@ function startTrip() {
                 response.json().then(data => {
                     console.log(data);
 
-                    // Update the UI with the new status
                     document.getElementById("currentStatus").textContent = "In Progress";
                     document.getElementById("currentStatus").classList.replace("bg-info", "bg-primary");
                     document.getElementById("startTripButton").style.display = "none";
@@ -94,7 +90,7 @@ function startTrip() {
                     elapsedTime = 0;
                     meterInterval = setInterval(updateMeter, 1000);
 
-                    alert(data.message || "Trip started successfully!");
+                    console.log(data.message || "Trip started successfully!");
                 });
             } else {
                 response.json().then(data => {
@@ -111,8 +107,6 @@ function startTrip() {
     loadaaa();
 }
 
-
-// End the trip
 function endTrip() {
     if (isBooking) {
         clearInterval(meterInterval);
@@ -133,14 +127,13 @@ function endTrip() {
                     response.json().then(data => {
                         console.log(data);
 
-                        // Update the UI with the new status
                         document.getElementById("currentStatus").textContent = "Completed";
                         document.getElementById("currentStatus").classList.replace("bg-primary", "bg-success");
                         document.getElementById("endTripButton").style.display = "none";
                         document.getElementById("taxiMeter").style.display = "none";
                         document.getElementById("fareDisplay").style.display = "block";
 
-                        alert(data.message || "Trip ended successfully!");
+                        console.log(data.message || "Trip ended successfully!");
                     });
                 } else {
                     response.json().then(data => {
@@ -163,7 +156,6 @@ function endTrip() {
     }
 }
 
-// Update the taxi meter (time)
 function updateMeter() {
     elapsedTime++;
     const hours = String(Math.floor(elapsedTime / 3600)).padStart(2, "0");
@@ -217,7 +209,7 @@ function acceptReservation(passengerName, reservationId, pickupLocation, dropoff
             if (response.ok) {
                 response.json().then(data => {
                     console.log(data); 
-                    alert(data.message || "Reservation accepted successfully!");
+                    console.log(data.message || "Reservation accepted successfully!");
 
                     updateCurrentReservation(passengerName, reservationId, pickupLocation, dropoffLocation, fare);
 
@@ -237,10 +229,10 @@ function acceptReservation(passengerName, reservationId, pickupLocation, dropoff
 }
 
 function updateCurrentReservation(passengerName, reservationId, pickupLocation, dropoffLocation, fare) {
-    // Update the UI to show the reservation details
+
     document.getElementById("currentPassenger").textContent = passengerName;
-    document.getElementById("currentPickup").textContent = pickupLocation; // Use actual pickup location
-    document.getElementById("currentDropoff").textContent = dropoffLocation; // Use actual dropoff location
+    document.getElementById("currentPickup").textContent = pickupLocation;
+    document.getElementById("currentDropoff").textContent = dropoffLocation;
     document.getElementById("currentStatus").textContent = "Confirmed";
     document.getElementById("currentStatus").classList.replace("bg-warning", "bg-info");
     document.getElementById("assignedFare").textContent = fare.toFixed(2);
@@ -260,7 +252,6 @@ function startReservationTrip() {
                 response.json().then(data => {
                     console.log(data);
 
-                    // Update the UI with the new status
                     document.getElementById("currentStatus").textContent = "In Progress";
                     document.getElementById("currentStatus").classList.replace("bg-info", "bg-primary");
                     document.getElementById("startReservationTripButton").style.display = "none";
@@ -270,7 +261,7 @@ function startReservationTrip() {
                     elapsedTime = 0;
                     meterInterval = setInterval(updateMeter, 1000);
 
-                    alert(data.message || "Trip started successfully!");
+                    console.log(data.message || "Trip started successfully!");
                     loadReservations();
                 });
             } else {
@@ -297,13 +288,12 @@ function endReservationTrip() {
                 response.json().then(data => {
                     console.log(data);
 
-                    // Update the UI with the new status
                     document.getElementById("currentStatus").textContent = "Completed";
                     document.getElementById("currentStatus").classList.replace("bg-primary", "bg-success");
                     document.getElementById("endReservationTripButton").style.display = "none";
                     document.getElementById("taxiMeter").style.display = "none";
 
-                    alert(data.message || "Reservation trip ended successfully!");
+                    console.log(data.message || "Reservation trip ended successfully!");
                 });
             } else {
                 response.json().then(data => {
@@ -317,5 +307,5 @@ function endReservationTrip() {
             alert("An error occurred while ending the reservation trip.");
         });
 }
-// Call the function when the DOM is loaded
+
 document.addEventListener("DOMContentLoaded", loadReservations);

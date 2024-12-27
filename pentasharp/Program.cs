@@ -9,6 +9,7 @@ using pentasharp.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
+using dotenv.net;
 
 namespace WebApplication1
 {
@@ -16,6 +17,8 @@ namespace WebApplication1
     {
         public static void Main(string[] args)
         {
+            DotEnv.Load();
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration
@@ -68,6 +71,7 @@ namespace WebApplication1
             builder.Services.AddScoped<ISearchBusScheduleService, SearchBusScheduleService>();
             builder.Services.AddScoped<IBusReservationService, BusReservationService>();
             builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
 
             builder.Services.AddScoped<IDriverDashboardService, DriverDashboardService>();
 
